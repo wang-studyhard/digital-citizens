@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(head -100 /tmp/anthropic-skills/skills/pptx/SKILL.md)",
+      "Read(//tmp/anthropic-skills/skills/pptx/**)"
+    ]
+  }
+}

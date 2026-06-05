@@ -1,0 +1,388 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* ============================================================
+   莫兰迪鸭蛋青 · 色彩系统
+   Mo Landi + Duck Egg Blue palette
+   ============================================================ */
+
+@theme {
+  /* -- 主色调：鸭蛋青系（暗色模式翻转） -- */
+  --color-duck-50: #1e3233;
+  --color-duck-100: #263b3c;
+  --color-duck-200: #c5dbd8;
+  --color-duck-300: #a8c5c3;
+  --color-duck-400: #87b0ae;
+  --color-duck-500: #6a9897;
+  --color-duck-600: #557d7c;
+  --color-duck-700: #4a6b6e;
+  --color-duck-800: #3d5859;
+  --color-duck-900: #2d4344;
+  --color-duck-950: #1a2d2e;
+
+  /* -- 暖色调：沙色系（不变，用于稀疏强调） -- */
+  --color-warm-50: #faf7f2;
+  --color-warm-100: #f5efe4;
+  --color-warm-200: #ebdfca;
+  --color-warm-300: #d9c4a4;
+  --color-warm-400: #c4a882;
+  --color-warm-500: #b3926b;
+  --color-warm-600: #a37d58;
+  --color-warm-700: #866649;
+  --color-warm-800: #6e5340;
+  --color-warm-900: #584537;
+  --color-warm-950: #30241d;
+
+  /* -- 中性色（暗色模式：浅色文字，深色边框） -- */
+  --color-cream: #f7f4ef;
+  --color-charcoal: #d4dfe2;
+  --color-slate: #9bb0b2;
+  --color-mist: #3a5052;
+
+  /* -- 图表渐变色阶 — 低饱和，暗色背景适配 -- */
+  --color-chart-1: #a8c5c3;
+  --color-chart-2: #b5c5b0;
+  --color-chart-3: #c4bf9e;
+  --color-chart-4: #cbb28f;
+  --color-chart-5: #c4a882;
+
+  /* -- 字体系统 -- */
+  --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
+  --font-sans: 'Inter', 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* -- 圆角 -- */
+  --radius-card: 1rem;
+  --radius-chart: 0.75rem;
+  --radius-pill: 9999px;
+
+  /* -- 阴影（暗色模式：用亮边替代投影） -- */
+  --shadow-card: 0 1px 0 rgba(185,200,190,0.06);
+  --shadow-card-hover: 0 1px 0 rgba(185,200,190,0.12);
+  --shadow-soft: 0 1px 0 rgba(185,200,190,0.04);
+}
+
+/* ============================================================
+   基础排版
+   ============================================================ */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-slate);
+  background-color: var(--color-duck-950);
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* 学术型章节标题 */
+.chapter-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+/* 诗意引用文本 */
+.quote-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+}
+
+/* 数据标注 */
+.data-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-slate);
+}
+
+/* 正文段落 */
+.prose-body {
+  font-family: var(--font-sans);
+  font-weight: 350;
+  line-height: 1.85;
+  letter-spacing: 0.01em;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-duck-950);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-duck-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-duck-400);
+}
+
+/* 选区颜色 */
+::selection {
+  background: rgba(168, 197, 195, 0.25);
+  color: var(--color-cream);
+}
+
+/* ============================================================
+   全局噪点纹理覆盖层 · Global Grain Overlay
+   微弱的胶片颗粒感 — 增加暗色背景的质感深度
+   ============================================================ */
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* SVG feTurbulence 生成逼真胶片噪点 */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ============================================================
+   全局动画工具类
+   ============================================================ */
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; transform: translateY(0); }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* 玻璃效果导航栏 */
+.glass-nav {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(26, 45, 46, 0.88);
+  border-bottom: 1px solid rgba(168, 197, 195, 0.12);
+}
+
+/* ============================================================
+   湖底场景 · 动画关键帧
+   Underwater Lake Scene Animations
+   ============================================================ */
+
+/* 波浪层水平滑动（marquee 双副本无缝循环） */
+@keyframes waveSlide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* 水面光线缓慢摇摆 */
+@keyframes raySway {
+  0%, 100% { opacity: 0.5; transform: skewX(-0.8deg); }
+  50%      { opacity: 1;   transform: skewX(0.8deg); }
+}
+
+/* 数据粒子从底部上浮 */
+@keyframes dataFloat {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  8%   { opacity: 0.18; }
+  85%  { opacity: 0.10; }
+  100% { transform: translateY(-110vh) translateX(15px); opacity: 0; }
+}
+
+/* 气泡上升 + 水平漂移 */
+@keyframes bubbleUp {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.35; }
+  100% { transform: translateY(-120px) translateX(12px) scale(0.4); opacity: 0; }
+}
+
+/* 像素角色腿部摆动（微旋转） */
+@keyframes swimBob {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  25%      { transform: rotate(3deg) translateY(-3px); }
+  75%      { transform: rotate(-2deg) translateY(2px); }
+}
+
+/* ============================================================
+   深度渐退 · Depth Fade
+   文本随滚动沉入水下 — opacity / scale / translateY
+   范围: opacity 0.2~1  scale 0.92~1  offset 0~12px
+   ============================================================ */
+
+/* 受影响的文本元素 — 从 --scroll-depth 计算视觉样式 */
+p, h1, h2, h3, h4, h5, h6,
+.prose-body, .chapter-title, .quote-text, .data-label,
+blockquote, li, figcaption, label {
+  --depth: var(--scroll-depth, 0);
+  opacity: calc(1 - var(--depth) * 0.8);
+  transform:
+    scale(calc(1 - var(--depth) * 0.08))
+    translateY(calc(var(--depth) * 12px));
+  will-change: transform, opacity;
+}
+
+/* 排除：按钮内文字 / 链接 / canvas / 图表 / 导航 */
+button, button *, a, a *, [role="button"], [role="button"] *,
+canvas, canvas *,
+svg:not(.depth-allow), svg text,
+[data-no-depth], [data-no-depth] *,
+nav, nav *, .glass-nav, .glass-nav *,
+.NavBar, .NavBar *,
+.ScrollProgress, .ScrollProgress * {
+  --depth: 0;
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* ============================================================
+   章节收缩深度指示器 · Chapter Collapse Indicator
+   标题随滚动缩小并固定至屏幕右侧竖向排列
+   ============================================================ */
+
+/* 固定层：贴在屏幕左侧，滚过后出现 */
+.chapter-collapse-fixed {
+  position: fixed;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  /* opacity 由 JS 通过 --collapse-progress 计算 */
+}
+
+/* 竖向章节标签 */
+.chapter-collapse-label {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #b9c8be;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 12px rgba(185,200,190,0.2);
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* 流内层：随滚动向右滑动 + 渐隐 */
+.chapter-collapse-inflow {
+  will-change: transform, opacity;
+}
+
+/* 手机端调整 */
+@media (max-width: 640px) {
+  .chapter-collapse-fixed {
+    left: 0.5rem;
+    gap: 0.25rem;
+  }
+  .chapter-collapse-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* ============================================================
+   聚光灯入场 · Spotlight Entrance
+   黑色遮罩 + 圆形镂空，随滚动扩大揭示内容
+   ============================================================ */
+
+.spotlight-overlay {
+  will-change: mask-image, -webkit-mask-image;
+}
+
+.glass-intro-text {
+  will-change: opacity;
+  transition: none; /* opacity 由 JS rAF 驱动 */
+}
+
+/* ============================================================
+   画像揭示气泡 · Profile Tooltip
+   悬浮在像素画像上方，跟随指针，淡入淡出 0.2s
+   ============================================================ */
+
+.profile-tooltip {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 数字递增动画——无过渡闪烁 */
+.count-up-number {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   文本压力交互 · Text Pressure
+   悬停时水平压缩 + 字距收紧 + 颜色下沉（水下压力感）
+   弹性恢复曲线产生微回弹
+   ============================================================ */
+
+/* 默认 — 弹性恢复过渡 */
+p, .prose-body {
+  transition:
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    letter-spacing 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 悬停 — 水下压力压缩 */
+p:hover, .prose-body:hover {
+  transform:
+    scaleX(calc((1 - var(--depth, 0) * 0.08) * 0.97))
+    scaleY(calc(1 - var(--depth, 0) * 0.08))
+    translateY(calc(var(--depth, 0) * 12px));
+  letter-spacing: -0.5px;
+  color: #4a6b6e;
+  transition:
+    transform 0.4s ease-out,
+    letter-spacing 0.4s ease-out,
+    color 0.4s ease-out;
+}
+
+/* 排除：按钮 / 导航 / 图表内的段落不受压力效果 */
+button p, nav p, a p,
+[data-no-depth] p,
+.chapter-collapse-inflow p {
+  transition: none;
+}
+button p:hover, nav p:hover, a p:hover,
+[data-no-depth] p:hover,
+.chapter-collapse-inflow p:hover {
+  transform: none;
+  letter-spacing: inherit;
+  color: inherit;
+}

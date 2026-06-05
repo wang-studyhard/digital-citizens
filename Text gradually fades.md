@@ -1,0 +1,1 @@
+Fade in the heading character by character, with each letter starting at 50% opacity and moving from a 5px blur to sharp focus. Stagger the delay by 0.02s per character.
