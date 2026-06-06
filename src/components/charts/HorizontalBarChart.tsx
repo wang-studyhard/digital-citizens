@@ -23,6 +23,10 @@ interface HorizontalBarChartProps {
   formatValue?: (v: number) => string
   /** 延迟 stagger */
   staggerDelay?: number
+  /** 自定义边距 (覆盖默认值，适用于小容器) */
+  margin?: Partial<{ top: number; right: number; bottom: number; left: number }>
+  /** 紧凑模式 — 缩小标签和间距 */
+  compact?: boolean
 }
 
 export function HorizontalBarChart({
@@ -32,8 +36,13 @@ export function HorizontalBarChart({
   color = '#A8C5C3',
   formatValue = (v) => `${v}%`,
   staggerDelay = 0.08,
+  margin: customMargin,
+  compact = false,
 }: HorizontalBarChartProps) {
-  const margin = { top: 8, right: 60, bottom: 8, left: 100 }
+  const defaultMargin = compact
+    ? { top: 4, right: 28, bottom: 4, left: 48 }
+    : { top: 8, right: 60, bottom: 8, left: 100 }
+  const margin = { ...defaultMargin, ...customMargin }
   const xMax = width - margin.left - margin.right
   const yMax = height - margin.top - margin.bottom
 
@@ -61,9 +70,9 @@ export function HorizontalBarChart({
       scaleBand<string>({
         domain: data.map((d) => d.label),
         range: [0, yMax],
-        padding: 0.35,
+        padding: compact ? 0.25 : 0.35,
       }),
-    [yMax, data]
+    [yMax, data, compact]
   )
 
   const colors = Array.isArray(color)
@@ -73,10 +82,12 @@ export function HorizontalBarChart({
   if (width < 10) return null
 
   const barHeight = yScale.bandwidth()
+  const labelClass = compact ? 'text-[7px]' : 'text-xs'
+  const valueClass = compact ? 'text-[7px]' : 'text-xs'
 
   return (
     <FadeInView variant="fadeIn" threshold={0.15}>
-      <svg width={width} height={height}>
+      <svg width={width} height={height} style={{ overflow: 'visible' }}>
         <Group left={margin.left} top={margin.top}>
           {/* Y轴标签 */}
           {data.map((d, i) => {
@@ -89,7 +100,7 @@ export function HorizontalBarChart({
                 y={y + barHeight / 2}
                 textAnchor="end"
                 dominantBaseline="middle"
-                className="text-xs fill-slate font-sans"
+                className={`${labelClass} fill-slate font-sans`}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: -8 }}
                 transition={{ delay: 0.2 + i * staggerDelay, duration: 0.5 }}
@@ -139,7 +150,7 @@ export function HorizontalBarChart({
                   x={barWidth + 6}
                   y={y + barHeight / 2}
                   dominantBaseline="middle"
-                  className="text-xs fill-charcoal font-mono"
+                  className={`${valueClass} fill-charcoal font-mono`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: barWidth > 0 ? 1 : 0 }}
                   transition={{

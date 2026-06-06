@@ -47,7 +47,7 @@
   --color-chart-5: #c4a882;
 
   /* -- 字体系统 -- */
-  --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
+  --font-serif: 'SimSun', '宋体', 'Noto Serif SC', 'Source Han Serif SC', 'STSong', serif;
   --font-sans: 'Inter', 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
@@ -228,6 +228,14 @@ body {
   100% { transform: translateY(-120px) translateX(12px) scale(0.4); opacity: 0; }
 }
 
+/* 章节标题背景气泡 — 缓慢上浮 + 水平漂移 + 呼吸缩放 */
+@keyframes chapterBubbleFloat {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: var(--bubble-alpha, 0.22); }
+  30%  { opacity: calc(var(--bubble-alpha, 0.22) * 1.6); }
+  70%  { opacity: calc(var(--bubble-alpha, 0.22) * 0.65); }
+  100% { transform: translateY(-80px) translateX(var(--bubble-drift, 8px)) scale(0.5); opacity: 0; }
+}
+
 /* 像素角色腿部摆动（微旋转） */
 @keyframes swimBob {
   0%, 100% { transform: rotate(-2deg) translateY(0); }
@@ -303,6 +311,12 @@ nav, nav *, .glass-nav, .glass-nav *,
 /* 流内层：随滚动向右滑动 + 渐隐 */
 .chapter-collapse-inflow {
   will-change: transform, opacity;
+}
+
+/* 章节标题模糊 — 独立于 depthFade (后者作用于子元素 transform/opacity) */
+.chapter-blur-target {
+  filter: blur(var(--chapter-blur, 0px));
+  /* will-change: filter 由 JS (useChapterBlur) 根据当前 blur 值条件设置，避免持续占用 GPU */
 }
 
 /* 手机端调整 */

@@ -22,6 +22,8 @@ interface DonutChartProps {
   centerValue?: string
   /** 环的厚度 */
   thickness?: number
+  /** 紧凑模式 — 缩小标签和中心文本 */
+  compact?: boolean
 }
 
 export function DonutChart({
@@ -32,9 +34,13 @@ export function DonutChart({
   centerLabel,
   centerValue,
   thickness = 40,
+  compact = false,
 }: DonutChartProps) {
-  const radius = Math.min(width, height) / 2
-  const innerRadius = radius - thickness
+  const radiusPadding = compact ? 8 : 0
+  const radius = Math.min(width, height) / 2 - radiusPadding
+  // 紧凑模式下自动减薄环宽，防止内圆过小消失
+  const effectiveThickness = compact ? Math.min(thickness, radius * 0.70) : thickness
+  const innerRadius = Math.max(radius - effectiveThickness, radius * 0.18)
 
   const {
     tooltipData,
@@ -58,9 +64,20 @@ export function DonutChart({
 
   const total = data.reduce((sum, d) => sum + d.value, 0)
 
+  // 紧凑模式下缩小标签延伸距离，防止溢出容器
+  const labelLineStart = compact ? 1.02 : 1.30
+  const labelLineEnd = compact ? 1.08 : 1.60
+  const labelTextPos = compact ? 1.12 : 1.65
+  const labelClass = compact ? 'text-[6px]' : 'text-xs'
+  const labelValueClass = compact ? 'text-[6px]' : 'text-[10px]'
+  const labelValueGap = compact ? 7 : 14
+  const centerValueClass = compact ? 'text-sm' : 'text-2xl'
+  const centerLabelClass = compact ? 'text-[8px]' : 'text-xs'
+  const centerLabelY = centerValue ? (compact ? 10 : 18) : 0
+
   return (
     <FadeInView variant="scale" threshold={0.2}>
-      <svg width={width} height={height}>
+      <svg width={width} height={height} style={{ overflow: 'visible' }}>
         <Group left={width / 2} top={height / 2}>
           <Pie
             data={data}
@@ -98,37 +115,37 @@ export function DonutChart({
                       onMouseLeave={hideTooltip}
                       style={{ cursor: 'pointer' }}
                     />
-                    {/* 标签线 + 文本（仅对占比 > 5% 的扇区显示） */}
-                    {arc.data.value / total > 0.05 && (
+                    {/* 标签线 + 文本（紧凑模式仅对占比 > 8% 的扇区显示） */}
+                    {arc.data.value / total > (compact ? 0.08 : 0.05) && (
                       <motion.g
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.6 + i * 0.1 }}
                       >
                         <line
-                          x1={centroidX * 1.3}
-                          y1={centroidY * 1.3}
-                          x2={centroidX * 1.6}
-                          y2={centroidY * 1.6}
+                          x1={centroidX * labelLineStart}
+                          y1={centroidY * labelLineStart}
+                          x2={centroidX * labelLineEnd}
+                          y2={centroidY * labelLineEnd}
                           stroke={arcColor}
-                          strokeWidth={1}
+                          strokeWidth={compact ? 0.6 : 1}
                           opacity={0.5}
                         />
                         <text
-                          x={centroidX * 1.65}
-                          y={centroidY * 1.65}
+                          x={centroidX * labelTextPos}
+                          y={centroidY * labelTextPos}
                           textAnchor={centroidX > 0 ? 'start' : 'end'}
                           dominantBaseline="middle"
-                          className="text-xs fill-charcoal font-sans"
+                          className={`${labelClass} fill-charcoal font-sans`}
                         >
                           {arc.data.label}
                         </text>
                         <text
-                          x={centroidX * 1.65}
-                          y={centroidY * 1.65 + 14}
+                          x={centroidX * labelTextPos}
+                          y={centroidY * labelTextPos + labelValueGap}
                           textAnchor={centroidX > 0 ? 'start' : 'end'}
                           dominantBaseline="middle"
-                          className="text-[10px] fill-slate font-mono"
+                          className={`${labelValueClass} fill-slate font-mono`}
                         >
                           {arc.data.value}%
                         </text>
@@ -152,17 +169,17 @@ export function DonutChart({
                   y={-4}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  className="text-2xl font-bold fill-charcoal font-serif"
+                  className={`${centerValueClass} font-bold fill-charcoal font-serif`}
                 >
                   {centerValue}
                 </text>
               )}
               {centerLabel && (
                 <text
-                  y={centerValue ? 18 : 0}
+                  y={centerLabelY}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  className="text-xs fill-slate font-sans"
+                  className={`${centerLabelClass} fill-slate font-sans`}
                 >
                   {centerLabel}
                 </text>

@@ -66,25 +66,34 @@ export function SectionTitle({
         as="h2"
         text={chapter ? `${chapter}  ${title}` : title}
         style={{
-          fontSize: 'clamp(2rem, 5vw, 3.4rem)',
+          fontSize: 'clamp(2.6rem, 6.5vw, 4.42rem)',
           color: '#b9c8be',
           textShadow:
-            '0 1px 3px rgba(0,0,0,0.10), 0 0 18px rgba(185,200,190,0.15)',
+            '0 1px 3px rgba(0,0,0,0.10), 0 0 22px rgba(185,200,190,0.18)',
           fontFamily: 'var(--font-serif)',
           fontWeight: 700,
-          letterSpacing: '0.02em',
-          lineHeight: 1.3,
-          marginBottom: subtitle ? '0.5rem' : '0',
+          letterSpacing: '0.04em',
+          lineHeight: 1.25,
+          marginBottom: subtitle ? '0.6rem' : '0',
         }}
       />
 
-      {/* 副标题 — 1/4 主标题字号 */}
+      {/* 副标题 — 单行宋体 + 放大 30% */}
       {subtitle && (
         <motion.p
-          className={`max-w-2xl font-sans leading-relaxed ${
+          className={`max-w-[88vw] font-serif ${
             align === 'center' ? 'mx-auto' : ''
           } ${isDark ? 'text-duck-200/80' : 'text-slate'}`}
-          style={{ fontSize: 'clamp(0.5rem, 1.25vw, 0.85rem)' }}
+          style={{
+            fontSize: 'clamp(0.65rem, 1.625vw, 1.1rem)',
+            fontFamily: 'var(--font-serif)',
+            fontWeight: 400,
+            letterSpacing: '0.03em',
+            lineHeight: 1.35,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
           variants={{
             hidden: { opacity: 0, y: 10 },
             visible: { opacity: 1, y: 0 },

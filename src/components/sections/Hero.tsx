@@ -113,7 +113,7 @@ export function Hero() {
   // 每帧更新聚光灯半径 + 毛玻璃透明度
   useAnimationFrame(() => {
     const p = smoothProgress.get()
-    const r = Math.max(4, p * 150) // 最小 4vmax 孔洞，初始就能看到内容
+    const r = p * 150 // 从 0vmax 开始，初始完全黑场，随进度扩大至 150vmax 全透
     const glassAlpha = Math.max(0, 1 - p * 4)
 
     if (spotlightRef.current) {
@@ -248,12 +248,13 @@ export function Hero() {
       </div>
 
       {/* ================================================================ */}
-      {/*  LAYER 7 — 大字报标题层（z-50，高于聚光灯遮罩 z-40）                  */}
+      {/*  LAYER 7 — 大字报标题层（z-30，低于聚光灯遮罩 z-40，被黑场完全覆盖）  */}
+      {/*          标题始终静态存在于背景层，随黑场消退自然露出                  */}
       {/* ================================================================ */}
-      <div className="relative z-50 flex flex-col items-center justify-center" style={{ height: '72vh' }}>
+      <div className="relative z-30 flex flex-col items-center justify-center" style={{ height: '72vh' }}>
 
-        {/* 大字报主标题 · 呼吸动画 */}
-        <motion.h1
+        {/* 大字报主标题 · 始终静态可见，仅被上层黑色遮罩遮挡 */}
+        <h1
           className="tracking-[0.06em] leading-[0.85] select-none text-center"
           style={{
             fontFamily:
@@ -261,41 +262,30 @@ export function Hero() {
             fontSize: 'clamp(5rem, 18vw, 12rem)',
             color: '#b9c8be',
             textShadow:
-              // 墨迹洇开 + 光晕 + 深色投影
               '2px 2px 6px rgba(45,67,68,0.22),' +
               '0 2px 12px rgba(0,0,0,0.18),' +
               '0 0 60px rgba(185,200,190,0.22),' +
               '0 0 120px rgba(168,197,195,0.10)',
             fontWeight: 400,
           }}
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: [1, 1.015, 1, 1.012, 1] }}
-          transition={{
-            opacity: { delay: 0.5, duration: 1 },
-            scale: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
-          }}
         >
           数字江河
-        </motion.h1>
+        </h1>
 
-        {/* 副标题 · 诗意短句 */}
-        <motion.p
+        {/* 副标题 · 始终静态可见，仅被上层黑色遮罩遮挡 */}
+        <p
           className="tracking-[0.12em] select-none text-center font-serif"
           style={{
             fontSize: 'clamp(1.35rem, 5.3vw, 3.3rem)',
             color: '#b9c8be',
-            opacity: 0.8,
             textShadow:
               '0 1px 4px rgba(0,0,0,0.12), 0 0 20px rgba(185,200,190,0.10)',
             fontWeight: 400,
             marginTop: 'clamp(0.8rem, 2vw, 2rem)',
           }}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 0.8, y: 0 }}
-          transition={{ delay: 0.8, duration: 1.2, ease: 'easeOut' }}
         >
           中国数字游民的水下新大陆
-        </motion.p>
+        </p>
       </div>
 
       {/* 向下滚动指示器 */}
