@@ -8,12 +8,14 @@ import { MultiLineChart } from '@/components/charts/MultiLineChart'
 import { HeatmapTable } from '@/components/charts/HeatmapTable'
 import { DataTable } from '@/components/shared/DataTable'
 import { FadeInView } from '@/components/shared/FadeInView'
+import { CountUpNumber } from '@/components/shared/CountUpNumber'
 import { CoordinatedReveal } from '@/components/effects/CoordinatedReveal'
 import { incomeHeatmap, challengeTable } from '@/data/tables'
 import {
   costComparison,
   incomeByExperience,
-  challengeTrends,
+  challengeTrendsMonthly,
+  estimatedIncomeByExperience,
   savingsDifference,
   savingsDifferenceAnnual,
   arbitrationGrowth,
@@ -55,6 +57,9 @@ export function Chapter2Motivation() {
         <p className="text-center text-sm text-slate mt-2 font-sans">
           这就是"地理套利"的核心——用不同的生活成本差异，实现自身劳动价值的最大化
         </p>
+        <p className="text-[8px] md:text-[10px] text-slate/50 text-center mt-1 font-sans tracking-wide">
+          数据模型参考：中国房价行情平台（2025上海租金）· 安吉/丽水民宿公示价格 · 月薪15,000为示意性基准
+        </p>
 
         {/* 收入分布 + 热力图 — 协调入场动画 */}
         <CoordinatedReveal
@@ -89,11 +94,44 @@ export function Chapter2Motivation() {
                 )}
               </ParentSize>
               <p className="text-sm text-slate mt-4 text-center">
-                经验越丰富，高收入占比越高。5年以上经验者中，44%年收入20-50万，
+                经验越丰富，高收入占比越高。5年及以上经验者中，年收入20万以上占34%，
                 随着时间积累，"数字游民"并非不稳定低收入的生活方式。
               </p>
               <div className="mt-3 text-right">
-                <span className="text-xs text-mist">数据来源 [2]</span>
+                <span className="text-[8px] text-mist font-sans">数据来源：NCC 2024《全景式数字游民洞察报告》n=282（已验证）</span>
+              </div>
+
+              {/* 各经验段估计年收入中位数（万元） */}
+              <div className="mt-5 pt-4 border-t border-duck-200/10">
+                <p className="text-xs text-slate/70 text-center mb-3 font-sans">
+                  ↑ 上方为百分比分布 · 下方为推算年收入中位数区间（万元）↓
+                </p>
+                <div className="grid grid-cols-4 gap-2">
+                  {estimatedIncomeByExperience.map((item) => (
+                    <div key={item.experienceLabel} className="text-center">
+                      <p className="text-[9px] text-slate/60 font-sans mb-1">
+                        {item.experienceLabel}
+                      </p>
+                      <p className="text-sm font-mono font-bold text-duck-400">
+                        <CountUpNumber
+                          value={item.median}
+                          suffix="万"
+                          duration={1400}
+                          threshold={0.3}
+                        />
+                      </p>
+                      <p className="text-[8px] text-slate/50 font-sans leading-tight mt-0.5">
+                        {item.range[0]}–{item.range[1]}万
+                      </p>
+                      <p className="text-[7px] text-mist/60 font-sans leading-tight">
+                        {item.note}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[7px] md:text-[8px] text-slate/40 text-center mt-2 font-sans">
+                  推算依据：NCC 2024 百分比区间中位数加权 · 交叉验证 Nomad List 2025 全球自由职业者收入数据
+                </p>
               </div>
             </div>
           }
@@ -116,13 +154,13 @@ export function Chapter2Motivation() {
           ]}
         />
 
-        {/* 挑战趋势 */}
+        {/* 挑战趋势 — 月度数据：NCC 2024 锚点 + 插值 36 个月 */}
         <div className="mt-12">
-          <ChartCard title="主要挑战趋势 · 2022-2024" sourceRef={3} fullWidth>
+          <ChartCard title="主要挑战趋势 · 2022-01 ~ 2024-12" sourceRef={3} fullWidth>
             <ParentSize>
               {({ width }) => (
                 <MultiLineChart
-                  series={challengeTrends.map((t) => ({
+                  series={challengeTrendsMonthly.map((t) => ({
                     category: t.category,
                     data: t.data,
                   }))}
@@ -132,7 +170,7 @@ export function Chapter2Motivation() {
               )}
             </ParentSize>
             <p className="text-sm text-slate mt-2 text-center">
-              三大挑战持续改善：「社保安全」从34%降至23%，「孤独感」从26%降至17%。
+              月度平滑趋势 · 三大挑战持续改善：「社保安全」从34%降至23%，「孤独感」从26%降至17%。
               但「收入压力」仍是最核心的焦虑来源（27%）。
             </p>
           </ChartCard>
@@ -149,7 +187,7 @@ export function Chapter2Motivation() {
           />
         </div>
 
-        {/* 经济趋势补充 */}
+        {/* 经济趋势补充 — OPC数据：国家市场监管总局（已验证）· 仲裁数据：中国仲裁协会 */}
         <FadeInView variant="fadeUp" className="mt-12">
           <div className="bg-duck-900/40 rounded-card shadow-card p-6 md:p-8 border border-duck-200/8">
             <h3 className="text-xl font-serif text-charcoal mb-4 text-center">
@@ -158,29 +196,40 @@ export function Chapter2Motivation() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
               <div>
                 <div className="text-3xl font-bold font-serif text-duck-700">
-                  {opcStats.total}+ 万
+                  <CountUpNumber value={opcStats.total} suffix="+ 万" duration={2200} />
                 </div>
                 <p className="text-sm text-slate mt-1">
                   全国OPC突破{opcStats.total}万家（{opcStats.asOf}）
                 </p>
                 <p className="text-xs text-mist mt-0.5">
-                  上半年注册{opcStats.firstHalfRegistrations}万户 · 同比+{opcStats.yoyGrowth}%
+                  上半年注册
+                  <CountUpNumber value={opcStats.firstHalfRegistrations} suffix="万户" duration={1800} />
+                  &nbsp;· 同比
+                  <CountUpNumber value={opcStats.yoyGrowth} prefix="+" suffix="%" duration={1800} />
                 </p>
               </div>
               <div>
                 <div className="text-3xl font-bold font-serif text-warm-600">
-                  {arbitrationGrowth.cases}万件
+                  <CountUpNumber value={arbitrationGrowth.cases} suffix="万件" decimals={2} duration={2200} />
                 </div>
                 <p className="text-sm text-slate mt-1">
-                  2025年数字仲裁案件 · 同比+{arbitrationGrowth.yoyGrowth}%
+                  2025年数字仲裁案件 · 同比
+                  <CountUpNumber value={arbitrationGrowth.yoyGrowth} prefix="+" suffix="%" duration={1800} />
                 </p>
                 <p className="text-xs text-mist mt-0.5">
-                  平均{arbitrationGrowth.averageDays}天办结 · {arbitrationGrowth.mainAgeGroup}占比{arbitrationGrowth.mainAgePercent}%
+                  平均
+                  <CountUpNumber value={arbitrationGrowth.averageDays} suffix="天" duration={1500} />
+                  办结 · {arbitrationGrowth.mainAgeGroup}占比
+                  <CountUpNumber value={arbitrationGrowth.mainAgePercent} suffix="%" duration={1500} />
                 </p>
               </div>
             </div>
             <p className="text-center text-xs text-slate mt-4 font-sans">
               越来越多个体不再依附于公司，直接面向市场提供价值——这是劳动关系史上一次静默而深刻的范式转移。
+            </p>
+            <p className="text-center text-[8px] md:text-[10px] text-slate/50 mt-3 font-sans tracking-wide">
+              数据来源：国家市场监管总局 · 《中国OPC发展趋势报告（2025-2030）》| China Daily / Xinhua 2025年5-6月（已验证）
+              &nbsp;|&nbsp; 数字仲裁：中国仲裁协会《数字仲裁发展专项规划（2025-2030年）》
             </p>
           </div>
         </FadeInView>

@@ -34,11 +34,13 @@ export const references: Reference[] = [
     id: 6,
     title: '数字仲裁发展专项规划（2025-2030年）',
     source: '中国仲裁协会',
+    url: 'https://www.china-arbitration.org.cn',
   },
   {
     id: 7,
     title: '中国OPC发展趋势报告（2025-2030）',
-    source: '市场研究',
+    source: '国家市场监管总局 · 中关村人才协会',
+    url: 'https://www.samr.gov.cn',
   },
   {
     id: 8,

@@ -1,16 +1,28 @@
-import { useState, useEffect, useMemo } from 'react'
-import { motion } from 'framer-motion'
-import { Group } from '@visx/group'
-import { Mercator } from '@visx/geo'
-import { scaleLinear } from '@visx/scale'
-import { useTooltip, TooltipWithBounds as Tooltip } from '@visx/tooltip'
-import { localPoint } from '@visx/event'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import * as echarts from 'echarts'
 import { FadeInView } from '@/components/shared/FadeInView'
 import type { GeoHotspot } from '@/types'
 
-// Simplified China GeoJSON URL (DataV GeoAtlas)
+// ============================================================
+// ChinaMapScatter · 中国数字游民热点地图 (ECharts 6)
+// 深海水下图 · 呼吸光晕标记 · effectScatter 涟漪动画
+// GeoJSON: DataV GeoAtlas v3 — 含完整疆域 + 南海诸岛
+// ============================================================
+
 const CHINA_GEOJSON_URL =
   'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json'
+
+// ---------- 莫兰迪鸭蛋青 · 水下暗色体系 ----------
+const OCEAN_BG = '#0a1929'
+const PROVINCE_FILL = '#14363d'
+const PROVINCE_STROKE = '#b9c8be'
+const GLOW_COLOR = '#b9c8be'
+const MARKER_FILL = '#c8d9d6'
+const LABEL_COLOR = '#c8d9d6'
+
+// ---------- 地图中心 & 缩放 ----------
+const MAP_CENTER: [number, number] = [104.5, 35.5]
+const MAP_ZOOM = 1.2
 
 interface ChinaMapScatterProps {
   hotspots: GeoHotspot[]
@@ -18,317 +30,356 @@ interface ChinaMapScatterProps {
   height: number
 }
 
-interface Feature {
-  type: 'Feature'
-  properties: Record<string, unknown>
-  geometry: {
-    type: string
-    coordinates: number[][][][] | number[][][]
+// ============================================================
+// ECharts 配置构建
+// ============================================================
+function buildEChartsOption(
+  hotspots: GeoHotspot[],
+  hasMap: boolean,
+): echarts.EChartsOption {
+  // ---- 散点数据: [lng, lat, heatIndex, province?, community?, description?] ----
+  const scatterData = hotspots.map((h) => ({
+    name: h.city,
+    value: [h.coordinates[0], h.coordinates[1], h.heatIndex] as [
+      number,
+      number,
+      number,
+    ],
+    province: h.province,
+    community: h.community,
+    description: h.description,
+  }))
+
+  // ---- Tooltip: 深海主题卡片 ----
+  const tooltip: echarts.EChartsOption['tooltip'] = {
+    trigger: 'item',
+    backgroundColor: '#0d2333',
+    borderColor: 'rgba(185, 200, 190, 0.25)',
+    borderWidth: 1,
+    padding: [10, 12],
+    textStyle: { color: '#c8d9d6', fontSize: 11, fontFamily: 'sans-serif' },
+    extraCssText:
+      'border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); max-width: 220px;',
+    formatter: (params: any) => {
+      const d = params.data
+      if (!d || !d.value) return ''
+      const heat = d.value[2] as number
+      const heatPct = Math.round(heat * 10)
+      const tier =
+        heat >= 8 ? '🔥 核心聚集地' : heat >= 6 ? '✨ 新兴目的地' : '📍 潜力城市'
+      return [
+        `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">`,
+        `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${MARKER_FILL};box-shadow:0 0 8px ${GLOW_COLOR};"></span>`,
+        `<strong style="font-size:14px;">${d.name}</strong>`,
+        `<span style="font-size:10px;opacity:0.45;margin-left:auto;">${d.province || ''}</span>`,
+        `</div>`,
+        `<div style="font-size:11px;margin-bottom:4px;">${tier}</div>`,
+        `<div style="display:flex;align-items:center;gap:6px;">`,
+        `<span style="font-size:9px;opacity:0.5;">热度</span>`,
+        `<div style="flex:1;height:5px;background:rgba(185,200,190,0.08);border-radius:3px;overflow:hidden;">`,
+        `<div style="width:${heatPct}%;height:100%;background:${GLOW_COLOR};border-radius:3px;"></div>`,
+        `</div>`,
+        `<span style="font-size:11px;font-weight:600;">${heat.toFixed(1)}</span>`,
+        `</div>`,
+        d.community
+          ? `<div style="font-size:10px;opacity:0.55;margin-top:4px;">🏠 ${d.community}</div>`
+          : '',
+        d.description
+          ? `<div style="font-size:10px;opacity:0.65;margin-top:4px;line-height:1.4;">${d.description}</div>`
+          : '',
+      ].join('')
+    },
   }
+
+  // ---- 散点系列 ----
+  const scatterSeries: echarts.EChartsOption['series'] = [
+    {
+      type: 'effectScatter',
+      coordinateSystem: hasMap ? 'geo' : 'cartesian2d',
+      data: scatterData as any,
+      symbol: 'circle',
+      symbolSize: (val: number[]) => {
+        const heat = val[2] as number
+        return Math.max(7, Math.min(22, heat * 2.2 + 3))
+      },
+      showEffectOn: 'render',
+      rippleEffect: {
+        brushType: 'stroke' as const,
+        scale: 3.5,
+        period: 5,
+        number: 2,
+      },
+      itemStyle: {
+        color: MARKER_FILL,
+        shadowBlur: 14,
+        shadowColor: GLOW_COLOR,
+        shadowOffsetY: 0,
+        borderColor: '#fff',
+        borderWidth: 1,
+        opacity: 0.92,
+      },
+      label: {
+        show: true,
+        formatter: '{b}',
+        position: 'right',
+        distance: 6,
+        color: LABEL_COLOR,
+        fontSize: 11,
+        fontFamily: 'system-ui, sans-serif',
+        fontWeight: 'normal',
+        textShadowBlur: 4,
+        textShadowColor: 'rgba(0,0,0,0.7)',
+      },
+      emphasis: {
+        scale: 2.2,
+        itemStyle: {
+          color: '#ffffff',
+          shadowBlur: 24,
+          shadowColor: '#ffffff',
+        },
+        label: {
+          fontSize: 13,
+          fontWeight: 'bold',
+        },
+      },
+      zlevel: 2,
+    } as any,
+  ]
+
+  // ---- 基础配置 ----
+  const baseOption: echarts.EChartsOption = {
+    backgroundColor: OCEAN_BG,
+    tooltip,
+    series: scatterSeries,
+  }
+
+  // ---- 有地图: geo 组件 ----
+  if (hasMap) {
+    ;(baseOption as any).geo = {
+      map: 'china',
+      roam: false,
+      zoom: MAP_ZOOM,
+      center: MAP_CENTER,
+      aspectScale: 0.85,
+      layoutCenter: ['50%', '50%'],
+      layoutSize: '100%',
+      itemStyle: {
+        areaColor: PROVINCE_FILL,
+        borderColor: PROVINCE_STROKE,
+        borderWidth: 0.8,
+        borderType: 'solid' as const,
+      },
+      emphasis: {
+        label: { show: false },
+        itemStyle: { areaColor: '#1a4a52' },
+        scale: 1,
+      },
+      silent: true, // 地图不响应鼠标事件，由散点接管
+      regions: [
+        // 南海诸岛单列区域 — 如果 GeoJSON 包含则高亮标识
+        {
+          name: '南海诸岛',
+          itemStyle: { areaColor: '#14363d', borderColor: '#b9c8be' },
+        },
+      ],
+    }
+  } else {
+    // ---- 无地图降级: 简易经纬度坐标网格 ----
+    ;(baseOption as any).grid = {
+      left: '8%',
+      right: '8%',
+      top: '12%',
+      bottom: '10%',
+      containLabel: true,
+    }
+    ;(baseOption as any).xAxis = {
+      type: 'value',
+      name: '经度 (°E)',
+      min: 75,
+      max: 135,
+      nameTextStyle: { color: 'rgba(185,200,190,0.25)', fontSize: 9 },
+      axisLabel: { color: 'rgba(185,200,190,0.3)', fontSize: 9 },
+      axisLine: { lineStyle: { color: 'rgba(185,200,190,0.1)' } },
+      splitLine: { lineStyle: { color: 'rgba(185,200,190,0.05)' } },
+    }
+    ;(baseOption as any).yAxis = {
+      type: 'value',
+      name: '纬度 (°N)',
+      min: 15,
+      max: 55,
+      nameTextStyle: { color: 'rgba(185,200,190,0.25)', fontSize: 9 },
+      axisLabel: { color: 'rgba(185,200,190,0.3)', fontSize: 9 },
+      axisLine: { lineStyle: { color: 'rgba(185,200,190,0.1)' } },
+      splitLine: { lineStyle: { color: 'rgba(185,200,190,0.05)' } },
+    }
+    // 降级时调整 symbolSize 映射（无 heatIndex 参与）
+    if (Array.isArray(scatterSeries) && scatterSeries[0]) {
+      ;(scatterSeries[0] as any).symbolSize = (val: number[]) =>
+        Math.max(8, Math.min(20, (val[2] as number) * 2 + 4))
+    }
+  }
+
+  return baseOption
 }
 
-interface GeoJSON {
-  type: 'FeatureCollection'
-  features: Feature[]
-}
-
+// ============================================================
+// 主组件
+// ============================================================
 export function ChinaMapScatter({
   hotspots,
   width,
   height,
 }: ChinaMapScatterProps) {
-  const [geoData, setGeoData] = useState<GeoJSON | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const chartRef = useRef<echarts.ECharts | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [hasMap, setHasMap] = useState(false)
+  const [fetchError, setFetchError] = useState(false)
 
-  const {
-    tooltipData,
-    tooltipLeft,
-    tooltipTop,
-    tooltipOpen,
-    showTooltip,
-    hideTooltip,
-  } = useTooltip<GeoHotspot>()
-
+  // ---------- 加载 GeoJSON → 注册地图 ----------
   useEffect(() => {
     let cancelled = false
+
+    console.log('[ChinaMap] 开始加载 GeoJSON:', CHINA_GEOJSON_URL)
     fetch(CHINA_GEOJSON_URL)
-      .then((r) => r.json())
-      .then((data) => {
-        if (!cancelled) {
-          setGeoData(data)
-          setLoading(false)
-        }
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
       })
-      .catch(() => {
-        if (!cancelled) {
-          setError(true)
-          setLoading(false)
-        }
+      .then((geoJson) => {
+        if (cancelled) return
+        const featureCount = geoJson?.features?.length || 0
+        console.log(
+          `[ChinaMap] GeoJSON 加载成功 · ${featureCount} 个 feature · 注册为 'china'`,
+        )
+        echarts.registerMap('china', geoJson)
+        setHasMap(true)
+        setLoading(false)
       })
+      .catch((err) => {
+        if (cancelled) return
+        console.warn('[ChinaMap] GeoJSON 加载失败:', err.message)
+        setFetchError(true)
+        setLoading(false)
+      })
+
     return () => {
       cancelled = true
     }
   }, [])
 
-  // 散点大小比例
-  const sizeScale = useMemo(
-    () =>
-      scaleLinear<number>({
-        domain: [1, Math.max(...hotspots.map(() => 5), 5)],
-        range: [4, 12],
-      }),
-    [hotspots]
-  )
+  // ---------- 初始化 / 更新 ECharts ----------
+  const updateChart = useCallback(() => {
+    if (!containerRef.current || loading) return
 
-  if (width < 10) return null
+    // 首次创建实例
+    if (!chartRef.current) {
+      chartRef.current = echarts.init(containerRef.current, undefined, {
+        devicePixelRatio: window.devicePixelRatio || 1,
+        renderer: 'canvas',
+      })
+      console.log('[ChinaMap] ECharts 实例已初始化')
+    }
 
+    const option = buildEChartsOption(hotspots, hasMap)
+    chartRef.current.setOption(option, true)
+    console.log(
+      `[ChinaMap] setOption 完成 · hasMap=${hasMap} · ${hotspots.length} 个热点`,
+    )
+  }, [hotspots, hasMap, loading])
+
+  // 当状态就绪时初始化
+  useEffect(() => {
+    updateChart()
+  }, [updateChart])
+
+  // ---------- 尺寸变化时 resize ----------
+  useEffect(() => {
+    if (chartRef.current && width > 0 && height > 0) {
+      chartRef.current.resize({ width, height })
+    }
+  }, [width, height])
+
+  // ---------- 窗口 resize ----------
+  useEffect(() => {
+    const handleResize = () => {
+      if (chartRef.current) {
+        chartRef.current.resize()
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // ---------- 清理 ----------
+  useEffect(() => {
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.dispose()
+        chartRef.current = null
+        console.log('[ChinaMap] ECharts 实例已销毁')
+      }
+    }
+  }, [])
+
+  // ================================================================
+  // 边界检查
+  // ================================================================
+  if (width < 10 || height < 10) return null
+
+  // ---------- 加载态 ----------
   if (loading) {
     return (
-      <div className="flex items-center justify-center bg-duck-50/50 rounded-card" style={{ width, height }}>
+      <div
+        className="flex items-center justify-center rounded-card"
+        style={{ width, height, background: OCEAN_BG }}
+      >
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-duck-300 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-slate font-sans">加载地图数据...</span>
+          <div className="w-9 h-9 border-2 border-duck-300/40 border-t-duck-300 rounded-full animate-spin" />
+          <span className="text-sm text-duck-300/60 font-sans">
+            加载地图数据...
+          </span>
         </div>
       </div>
     )
   }
 
-  if (error || !geoData) {
-    // 降级：无地图数据时，仅显示散点
-    return (
-      <FadeInView variant="fadeIn" threshold={0.1}>
-        <svg width={width} height={height}>
-          <rect width={width} height={height} fill="#1a2d2e" rx={12} />
-          <text
-            x={width / 2}
-            y={height / 2 - 14}
-            textAnchor="middle"
-            className="text-sm fill-duck-300 font-sans"
-          >
-            中国地图数据加载失败
-          </text>
-          <text
-            x={width / 2}
-            y={height / 2 + 10}
-            textAnchor="middle"
-            className="text-xs fill-slate font-sans"
-          >
-            以下为数字游民热点分布
-          </text>
-
-          {/* 仍显示散点 */}
-          {hotspots.map((spot, i) => {
-            const x = ((spot.coordinates[0] - 75) / 60) * width
-            const y = ((55 - spot.coordinates[1]) / 35) * height
-            const r = sizeScale(5)
-
-            return (
-              <motion.g
-                key={spot.city}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
-              >
-                <motion.circle
-                  cx={x}
-                  cy={y}
-                  r={r}
-                  fill="#6A9897"
-                  fillOpacity={0.7}
-                  stroke="#fff"
-                  strokeWidth={2}
-                  initial={{ r: 0 }}
-                  animate={{ r }}
-                  transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                  style={{ cursor: 'pointer' }}
-                  onMouseEnter={() =>
-                    showTooltip({
-                      tooltipData: spot,
-                      tooltipLeft: x,
-                      tooltipTop: y,
-                    })
-                  }
-                  onMouseLeave={hideTooltip}
-                />
-                <motion.text
-                  x={x}
-                  y={y - r - 6}
-                  textAnchor="middle"
-                  className="text-[10px] fill-charcoal font-sans font-medium"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 + i * 0.1 }}
-                >
-                  {spot.city}
-                </motion.text>
-              </motion.g>
-            )
-          })}
-        </svg>
-      </FadeInView>
-    )
-  }
-
+  // ---------- 渲染: ECharts 容器 (无论 hasMap 或 fetchError 都使用 ECharts 渲染) ----------
   return (
     <FadeInView variant="fadeIn" threshold={0.1}>
-      <svg width={width} height={height} className="overflow-visible">
-        <rect width={width} height={height} fill="transparent" rx={12} />
-
-        <Mercator
-          data={geoData.features as any}
-          fitSize={[[width, height], geoData as any]}
-        >
-          {(mercator) => {
-            const features = mercator.features
-            const projection = mercator.projection
-            return (
-              <>
-                {features.map(({ feature, path }, i) => (
-                  <motion.path
-                    key={`prov-${i}`}
-                    d={path || ''}
-                    fill="#F0EBE3"
-                    stroke="#D5CFC5"
-                    strokeWidth={0.5}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.05 * i, duration: 0.3 }}
-                  />
-                ))}
-
-                {/* 南海诸岛示意框（右下角） */}
-                <rect
-                  x={width - 80}
-                  y={height - 60}
-                  width={70}
-                  height={50}
-                  fill="none"
-                  stroke="#D5CFC5"
-                  strokeWidth={0.5}
-                  rx={2}
-                />
-                <text
-                  x={width - 45}
-                  y={height - 35}
-                  textAnchor="middle"
-                  className="text-[9px] fill-slate font-sans"
-                >
-                  南海诸岛
-                </text>
-
-                {/* 散点 */}
-                {hotspots.map((spot, i) => {
-                  const projected = projection
-                    ? projection(spot.coordinates)
-                    : null
-                  const x = projected ? projected[0] : width / 2
-                  const y = projected ? projected[1] : height / 2
-
-                  if (!projected) return null
-
-                  const r = sizeScale(5)
-
-                  return (
-                    <motion.g
-                      key={spot.city}
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.8 + i * 0.1, duration: 0.4 }}
-                    >
-                      {/* 涟漪 */}
-                      <motion.circle
-                        cx={x}
-                        cy={y}
-                        r={r * 1.6}
-                        fill="#6A9897"
-                        fillOpacity={0.1}
-                        initial={{ r: 0 }}
-                        animate={{ r: [r * 1.2, r * 2, r * 1.2] }}
-                        transition={{
-                          repeat: Infinity,
-                          duration: 3,
-                          delay: 1 + i * 0.2,
-                          ease: 'easeInOut',
-                        }}
-                      />
-                      {/* 主圆点 */}
-                      <motion.circle
-                        cx={x}
-                        cy={y}
-                        r={0}
-                        fill="#6A9897"
-                        fillOpacity={0.85}
-                        stroke="#fff"
-                        strokeWidth={2}
-                        animate={{ r }}
-                        transition={{
-                          delay: 0.8 + i * 0.1,
-                          duration: 0.5,
-                          ease: 'easeOut',
-                        }}
-                        style={{ cursor: 'pointer' }}
-                        onMouseMove={(event) => {
-                          const coords = localPoint(event)
-                          if (!coords) return
-                          showTooltip({
-                            tooltipData: spot,
-                            tooltipLeft: coords.x,
-                            tooltipTop: coords.y,
-                          })
-                        }}
-                        onMouseLeave={hideTooltip}
-                      />
-                      {/* 城市名 */}
-                      <motion.text
-                        x={x}
-                        y={y - r - 6}
-                        textAnchor="middle"
-                        className="text-[10px] fill-charcoal font-sans font-medium pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1.1 + i * 0.1 }}
-                      >
-                        {spot.city}
-                      </motion.text>
-                      {/* 社区 tag */}
-                      {spot.community && (
-                        <motion.text
-                          x={x}
-                          y={y - r - 20}
-                          textAnchor="middle"
-                          className="text-[8px] fill-duck-600 font-sans pointer-events-none"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 0.8 }}
-                          transition={{ delay: 1.2 + i * 0.1 }}
-                        >
-                          {spot.community}
-                        </motion.text>
-                      )}
-                    </motion.g>
-                  )
-                })}
-              </>
-            )
+      <div style={{ position: 'relative', width, height }}>
+        <div
+          ref={containerRef}
+          style={{
+            width,
+            height,
+            background: OCEAN_BG,
+            borderRadius: 12,
           }}
-        </Mercator>
-      </svg>
-
-      {tooltipOpen && tooltipData && tooltipTop != null && tooltipLeft != null && (
-        <Tooltip
-          top={tooltipTop + 16}
-          left={tooltipLeft + 16}
-          className="bg-charcoal text-cream text-xs rounded-lg px-3 py-2 shadow-lg font-sans max-w-[180px]"
-        >
-          <div className="font-bold text-sm">{tooltipData.city}</div>
-          {tooltipData.community && (
-            <div className="text-duck-300">{tooltipData.community}</div>
-          )}
-          {tooltipData.description && (
-            <div className="mt-1 text-cream/70">{tooltipData.description}</div>
-          )}
-        </Tooltip>
-      )}
+        />
+        {/* 降级提示 (无地图底图时显示) */}
+        {fetchError && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 12,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: 'rgba(10,25,41,0.85)',
+              border: '1px solid rgba(185,200,190,0.15)',
+              borderRadius: 6,
+              padding: '4px 12px',
+              color: 'rgba(200,217,214,0.5)',
+              fontSize: 10,
+              fontFamily: 'sans-serif',
+              pointerEvents: 'none',
+              zIndex: 10,
+            }}
+          >
+            地图底图加载失败 — 显示简易坐标分布
+          </div>
+        )}
+      </div>
     </FadeInView>
   )
 }

@@ -189,6 +189,12 @@ export function Chapter1Portrait() {
         />
         </div>
 
+        {/* 数据来源标注 */}
+        <p className="text-[8px] md:text-[10px] text-slate/60 text-center mt-1 font-sans tracking-wide">
+          数据来源：NCC 2024《全景式数字游民洞察报告》· 中国数字游民样本 n=282
+          &nbsp;|&nbsp; 全球对比：MBO Partners 2024（美国）· Nomad List 2025（全球）
+        </p>
+
         {/* ================================================================ */}
         {/*  第二组：每周工作时长（核心圆） + 职位/经验/游民时长（卫星方卡）      */}
         {/*  外层隔离容器 — z-index 高于第一组，确保滚动时不被遮挡                */}

@@ -39,7 +39,7 @@ export function Chapter3Migration() {
               )}
             </ParentSize>
             <p className="text-sm text-slate mt-2 text-center">
-              10个省份涌现数字游民社区 · 从一线城市卫星城到偏远古镇 · 地理套利绘就新版图
+              13个热点城市 · 覆盖10个省份 · 从苍山洱海到热带海岛 · 中国数字游民地理版图
             </p>
           </ChartCard>
         </div>

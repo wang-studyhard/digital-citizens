@@ -75,11 +75,26 @@ export interface ChallengeTrend {
   }[]
 }
 
+/** 月度数据点（用于趋势折线图横坐标扩展） */
+export interface MonthlyDataPoint {
+  year: number
+  month: number // 1-12
+  percentage: number
+}
+
+/** 月度挑战趋势（36个数据点，2022-01 ~ 2024-12） */
+export interface ChallengeTrendMonthly {
+  category: string
+  data: MonthlyDataPoint[]
+}
+
 /** 地理热点城市 */
 export interface GeoHotspot {
   city: string
   province: string
   coordinates: [number, number] // [longitude, latitude]
+  /** 热度指数 1-10，映射到散点大小与光晕强度 */
+  heatIndex: number
   community?: string // 代表性社区
   description?: string
 }
