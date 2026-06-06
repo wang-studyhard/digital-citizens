@@ -10,7 +10,7 @@ npm run build    # 生产构建
 - **框架**: React 18 + TypeScript + Vite
 - **样式**: Tailwind CSS v4
 - **动画**: Framer Motion (主要) · GSAP + ScrollTrigger (水平卷轴)
-- **图表**: visx (@visx/responsive, @visx/geo, @visx/shape)
+- **图表**: ECharts 6 (中国地图) · visx (其他图表: @visx/responsive, @visx/shape, @visx/scale)
 - **字体**: Noto Serif SC · Noto Sans SC · Inter · JetBrains Mono (Google Fonts)
 
 ## 项目结构
@@ -51,10 +51,16 @@ src/
 
 ## 关键状态
 - **GSAP 动画已禁用**: ScrollRevealGroup 和 CoordinatedReveal 目前是纯展示组件。之前 `gsap.quickTo()` 导致 React 渲染崩溃（白屏）。如需恢复动画，请使用更稳健的 GSAP API（如 `gsap.to` 配合 `useLayoutEffect` + 手动 rAF）。
-- **HorizontalScroll 正常运作**: 使用 `ScrollTrigger.create()` + `gsap.set()`，未使用 `quickTo`。
+- **ECharts 中国地图**: ChinaMapScatter 使用 ECharts `geo` + `effectScatter`。GeoJSON 来自 DataV GeoAtlas (`100000_full.json`) → `echarts.registerMap('china', geoJson)`。visx Mercator 因 MultiPolygon 路径退化已弃用。
 - **聚光灯入口**: Hero 标题在 z-50（高于 z-40 遮罩），初始孔洞 ≥4vmax，防止首次加载全黑。
 
+## 地图模块 (ECharts) 关键常量
+- **GeoJSON**: `https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json` (34 features, MultiPolygon, WGS-84)
+- **色彩**: 背景 `#0a1929` · 省份填充 `#14363d` · 省界 `#b9c8be` @ 0.8px · 标记 `#c8d9d6`
+- **投影**: `center: [104.5, 35.5]` · `zoom: 1.2` · `aspectScale: 0.85`
+- **热点**: 大理 9.5 · 安吉 9.0 · 丽江 8.5 · 成都 8.0 · 西双版纳 7.5 · 黄山 7.5 · 福州 7.0 · 陵水 6.5 · 丽水 6.0 · 南京 6.0 · 泉州 5.5 · 上海 5.0 · 威海 5.0
+
 ## 已知问题
-- JS bundle 较大 (~660KB) — 考虑代码分割
+- JS bundle 较大 (~1,766KB，其中 ECharts ~1MB) — 考虑代码分割 (`import()` 动态加载地图组件)
 - 移动端适配待优化
 - 部分图表使用 picsum.photos 占位图
