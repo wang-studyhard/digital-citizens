@@ -2,6 +2,7 @@ import { ParentSize } from '@visx/responsive'
 import { ChapterHeader } from '@/components/shared/ChapterHeader'
 import { QuoteBlock } from '@/components/shared/QuoteBlock'
 import { ChartCard } from '@/components/shared/ChartCard'
+import { DataSource } from '@/components/shared/DataSource'
 import { ChinaMapScatter } from '@/components/charts/ChinaMapScatter'
 import { StackedBarChart } from '@/components/charts/StackedBarChart'
 import { DataTable } from '@/components/shared/DataTable'
@@ -26,22 +27,39 @@ export function Chapter3Migration() {
           size="large"
         />
 
-        {/* 中国地图 */}
-        <div className="mt-16">
-          <ChartCard title="数字游民热点分布" sourceRef={1} fullWidth>
-            <ParentSize>
-              {({ width }) => (
-                <ChinaMapScatter
-                  hotspots={hotspots}
-                  width={width}
-                  height={Math.max(380, width * 0.6)}
-                />
-              )}
-            </ParentSize>
-            <p className="text-sm text-slate mt-2 text-center">
-              13个热点城市 · 覆盖10个省份 · 从苍山洱海到热带海岛 · 中国数字游民地理版图
-            </p>
-          </ChartCard>
+        {/* ============================================================
+            区块 A — 数字游民热点分布地图
+            占据 ≥90vh 确保用户有充足时间停留观看，
+            地图自然向上滚出后画廊才开始触发。
+            地图仅通过自然滚动进出视口，不设置任何
+            opacity/display/visibility 切换逻辑。
+        ============================================================ */}
+        <div className="mt-12" style={{ minHeight: '90vh' }}>
+          <FadeInView variant="fadeUp" threshold={0.08}>
+            <div className="bg-duck-900/50 rounded-card shadow-card p-5 md:p-6 border border-duck-200/8 w-full">
+              <h3 className="text-base md:text-lg font-medium text-charcoal mb-4 font-serif">
+                数字游民热点分布
+              </h3>
+              <ParentSize>
+                {({ width }) => (
+                  <ChinaMapScatter
+                    hotspots={hotspots}
+                    width={width}
+                    height={Math.max(380, width * 0.6)}
+                  />
+                )}
+              </ParentSize>
+              <p className="text-sm text-slate mt-2 text-center">
+                13个热点城市 · 覆盖10个省份 · 从苍山洱海到热带海岛 · 中国数字游民地理版图
+              </p>
+              <div className="mt-3 text-right">
+                <span className="text-xs text-mist">
+                  数据来源
+                  <DataSource refNumber={1} />
+                </span>
+              </div>
+            </div>
+          </FadeInView>
         </div>
 
         {/* 五大标志性社区据点 — 横向画廊滚动 (GSAP ScrollTrigger) */}

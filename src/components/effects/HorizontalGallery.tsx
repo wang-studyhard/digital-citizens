@@ -7,13 +7,15 @@ import type { CommunityHub } from '@/types'
 gsap.registerPlugin(ScrollTrigger)
 
 // ============================================================
-// HorizontalGallery · GSAP 水平画廊 + 滚动劫持
-// 纵向滚动驱动卡片横向平移 · 中心焦点高亮 · 逐卡渐显渐隐
-// 仅用于第三章"五大标志性社区据点"区块
+// HorizontalGallery · GSAP 水平画廊 · scroll-lock + tween
+// 纵向滚动触发 → 锁定 body 滚动 → 完整播放横向动画 → 解锁
 //
-// 设计思路参照 HorizontalScroll.tsx — pin + scrub + onUpdate
-// 滚动至此区域时劫持纵向滚动，转为横向平移卡片组，
-// 全部卡片展示完毕后解锁纵向滚动继续向下。
+// 架构:
+//   ScrollTrigger(start:'top 80%') 检测 gallery 进入视口
+//   onEnter: lockBodyScroll → tween 0→1 (1.6s) → unlockBodyScroll
+//   onEnterBack: lockBodyScroll → tween 1→0 (1.6s) → unlockBodyScroll
+//   无 pin / scrub — body scroll lock 确保动画不被用户滚动打断
+//   地图(区块A)和 DataTable(区块C) 通过自然滚动进出视口，永不隐藏
 //
 // 逐卡 opacity 曲线（距离视口中心的"卡片步数"）：
 //   0.00 – 0.35  → opacity: 1      全亮区
@@ -22,13 +24,11 @@ gsap.registerPlugin(ScrollTrigger)
 // ============================================================
 
 const CARD_WIDTH = 420
-const CARD_GAP = 32 // gap-8
-const CARD_STEP = CARD_WIDTH + CARD_GAP // 卡片中心距 452px
-
-// 逐卡 opacity 曲线参数 (单位: card-steps)
-const FADE_FULL = 0.35 // 距中心 ≤0.35 步 → 全亮
-const FADE_HIDDEN = 1.5 // 距中心 ≥1.5 步 → 全隐
-// 中间区间使用 easeOutQuad: opacity = 1 - t²
+const CARD_GAP = 32
+const CARD_STEP = CARD_WIDTH + CARD_GAP
+const FADE_FULL = 0.35
+const FADE_HIDDEN = 1.5
+const ANIM_DURATION = 1.6
 
 interface HorizontalGalleryProps {
   hubs: CommunityHub[]
@@ -37,18 +37,22 @@ interface HorizontalGalleryProps {
 export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]) // 逐卡 DOM 引用 → gsap.set opacity
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
   const stRef = useRef<ScrollTrigger | null>(null)
-  const isExitedRef = useRef(false) // 标记画廊是否已完全滚出 (section 已隐藏)
-  const isLockedRef = useRef(false) // 纵向滚动锁定状态 → wheel/touch handler 判断依据
-  const progressRef = useRef(0)    // 当前横向进度 [0, 1] → 闭包内读写避免 stale state
-  const totalScrollRef = useRef(0) // 横向可滚动总距离 → resize 后更新
+  const tweenRef = useRef<gsap.core.Tween | null>(null)
+  const progressObjRef = useRef({ value: 0 })
+  const isAnimatingRef = useRef(false)
+  const totalScrollRef = useRef(0)
   const [activeIndex, setActiveIndex] = useState(0)
 
-  // ---- GSAP ScrollTrigger: pin + 手动 wheel/touch 驱动横向卷轴 ----
-  // 核心改动 — 纵向滚动锁定 + 事件劫持:
-  //   进入画廊 → overflow:hidden 锁定纵向滚动 → wheel/touchmove 转为横向进度
-  //   横向到达 0 或 1 → 解锁、ScrollTrigger 自然退出
+  // ---- 窗口 resize → 刷新 ScrollTrigger 测量 ----
+  useEffect(() => {
+    const onResize = () => ScrollTrigger.refresh()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // ---- GSAP ScrollTrigger: 检测进入 → 锁定滚动 → 播放动画 → 解锁 ----
   useLayoutEffect(() => {
     const section = sectionRef.current
     const track = trackRef.current
@@ -57,39 +61,14 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
     const raf = requestAnimationFrame(() => {
       const totalScroll = track.scrollWidth - window.innerWidth
       totalScrollRef.current = totalScroll
-
       if (totalScroll <= 0) return
 
       // ==========================================================
-      // 滚动锁定工具
-      // ==========================================================
-      const lockScroll = () => {
-        if (isLockedRef.current) return
-        isLockedRef.current = true
-        // 补偿滚动条宽度，避免 layout shift
-        const scrollbarW = window.innerWidth - document.documentElement.clientWidth
-        document.documentElement.style.overflow = 'hidden'
-        if (scrollbarW > 0) {
-          document.body.style.paddingRight = `${scrollbarW}px`
-        }
-      }
-
-      const unlockScroll = (targetY?: number) => {
-        if (!isLockedRef.current) return
-        isLockedRef.current = false
-        document.documentElement.style.overflow = ''
-        document.body.style.paddingRight = ''
-        if (targetY !== undefined) {
-          window.scrollTo(0, targetY)
-        }
-      }
-
-      // ==========================================================
-      // 统一视觉更新 (替代原 onUpdate)
+      // 视觉更新 — 每帧由 tween onUpdate 调用
       // ==========================================================
       const updateVisuals = (p: number) => {
         const progress = Math.max(0, Math.min(1, p))
-        progressRef.current = progress
+        progressObjRef.current.value = progress
 
         gsap.set(track, { x: -progress * totalScroll })
 
@@ -118,171 +97,157 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
       }
 
       // ==========================================================
-      // 退出画廊 (向下)
+      // Body scroll lock 工具函数
       // ==========================================================
-      const exitDown = () => {
-        cardRefs.current.forEach((el) => {
-          if (el) gsap.set(el, { opacity: 0 })
+      const getScrollbarWidth = () =>
+        window.innerWidth - document.documentElement.clientWidth
+
+      const lockBodyScroll = () => {
+        const sbw = getScrollbarWidth()
+        document.documentElement.style.overflow = 'hidden'
+        if (sbw > 0) {
+          document.body.style.paddingRight = `${sbw}px`
+        }
+      }
+
+      const unlockBodyScroll = () => {
+        document.documentElement.style.overflow = ''
+        document.body.style.paddingRight = ''
+      }
+
+      // ==========================================================
+      // 正向播放: 0 → 1
+      // ==========================================================
+      const playForward = () => {
+        if (isAnimatingRef.current) return
+        isAnimatingRef.current = true
+        lockBodyScroll()
+
+        tweenRef.current?.kill()
+        tweenRef.current = gsap.to(progressObjRef.current, {
+          value: 1,
+          duration: ANIM_DURATION,
+          ease: 'power2.inOut',
+          onUpdate: () => updateVisuals(progressObjRef.current.value),
+          onComplete: () => {
+            isAnimatingRef.current = false
+            unlockBodyScroll()
+          },
         })
-        if (section) {
-          gsap.set(section, { opacity: 0, pointerEvents: 'none' })
-        }
-        isExitedRef.current = true
       }
 
       // ==========================================================
-      // Wheel 事件 — 劫持纵向滚动 → 横向进度
+      // 逆向播放: 1 → 0
       // ==========================================================
-      const handleWheel = (e: WheelEvent) => {
-        if (!isLockedRef.current) return
-        e.preventDefault()
+      const playReverse = () => {
+        if (isAnimatingRef.current) return
+        isAnimatingRef.current = true
+        lockBodyScroll()
 
-        // 灵敏度: ~400-600 像素 wheel delta = 完整横向滚动
-        const progressDelta = e.deltaY / Math.max(400, totalScroll * 0.9)
-        const newProgress = progressRef.current + progressDelta
-
-        if (newProgress >= 1 && e.deltaY > 0) {
-          updateVisuals(1)
-          exitDown()
-          unlockScroll(st.end + 1)
-          return
-        }
-        if (newProgress <= 0 && e.deltaY < 0) {
-          updateVisuals(0)
-          unlockScroll(st.start - 1)
-          return
-        }
-        updateVisuals(newProgress)
+        tweenRef.current?.kill()
+        tweenRef.current = gsap.to(progressObjRef.current, {
+          value: 0,
+          duration: ANIM_DURATION,
+          ease: 'power2.inOut',
+          onUpdate: () => updateVisuals(progressObjRef.current.value),
+          onComplete: () => {
+            isAnimatingRef.current = false
+            unlockBodyScroll()
+          },
+        })
       }
 
       // ==========================================================
-      // Touch 事件 — 移动端滑动 → 横向进度
-      // ==========================================================
-      let touchStartY = 0
-      const handleTouchStart = (e: TouchEvent) => {
-        if (!isLockedRef.current) return
-        if (e.touches.length === 1) {
-          touchStartY = e.touches[0].clientY
-        }
-      }
-      const handleTouchMove = (e: TouchEvent) => {
-        if (!isLockedRef.current) return
-        if (e.touches.length !== 1) return
-        e.preventDefault()
-
-        const deltaY = touchStartY - e.touches[0].clientY
-        touchStartY = e.touches[0].clientY
-
-        const progressDelta = deltaY / Math.max(400, totalScroll * 0.9)
-        const newProgress = progressRef.current + progressDelta
-
-        if (newProgress >= 1 && deltaY > 0) {
-          updateVisuals(1)
-          exitDown()
-          unlockScroll(st.end + 1)
-          return
-        }
-        if (newProgress <= 0 && deltaY < 0) {
-          updateVisuals(0)
-          unlockScroll(st.start - 1)
-          return
-        }
-        updateVisuals(newProgress)
-      }
-
-      // ==========================================================
-      // ScrollTrigger — 仅负责 pin，动画由 wheel/touch 手动驱动
+      // ScrollTrigger — 仅检测进入/回入，不 pin/scrub
+      // start: 'top 80%' → gallery 顶部到视口 80% 处触发
+      //   即 gallery 顶部距离视口底部还有 20vh 时触发
+      // end: 'bottom top' → gallery 底部到达视口顶部时结束
       // ==========================================================
       const st = ScrollTrigger.create({
         trigger: section,
-        start: 'top top',
-        end: () => `+=${Math.max(totalScroll, window.innerHeight * 0.5)}`,
-        pin: true,
-        pinSpacing: false,
-        onEnter: () => {
-          lockScroll()
-          progressRef.current = 0
-          updateVisuals(0)
-        },
-        onLeave: () => {
-          // 程序化 scrollTo 触发 → 确保解锁
-          if (isLockedRef.current) {
-            unlockScroll(st.end + 1)
-          }
-        },
-        onEnterBack: () => {
-          // 从下方回滚进入画廊
-          if (section) {
-            gsap.set(section, { opacity: 1, pointerEvents: 'auto' })
-          }
-          isExitedRef.current = false
-          lockScroll()
-          progressRef.current = 1
-          updateVisuals(1)
-        },
-        onLeaveBack: () => {
-          // 向上完全退出画廊
-          if (isLockedRef.current) {
-            updateVisuals(0)
-            unlockScroll(st.start - 1)
-          }
-        },
+        start: 'top 80%',
+        end: 'bottom top',
+        onEnter: playForward,
+        onEnterBack: playReverse,
       })
 
       stRef.current = st
 
-      window.addEventListener('wheel', handleWheel, { passive: false })
-      window.addEventListener('touchstart', handleTouchStart, { passive: true })
-      window.addEventListener('touchmove', handleTouchMove, { passive: false })
+      // ---- 动画期间拦截所有滚动事件 ----
+      const handleWheel = (e: WheelEvent) => {
+        if (isAnimatingRef.current) e.preventDefault()
+      }
+      const handleTouchMove = (e: TouchEvent) => {
+        if (isAnimatingRef.current) e.preventDefault()
+      }
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (
+          isAnimatingRef.current &&
+          ['ArrowUp', 'ArrowDown', 'Space', 'PageUp', 'PageDown'].includes(
+            e.key,
+          )
+        ) {
+          e.preventDefault()
+        }
+      }
 
+      window.addEventListener('wheel', handleWheel, { passive: false })
+      window.addEventListener('touchmove', handleTouchMove, {
+        passive: false,
+      })
+      window.addEventListener('keydown', handleKeyDown)
+
+      // ==========================================================
+      // 清理
+      // ==========================================================
       return () => {
         cancelAnimationFrame(raf)
-        window.removeEventListener('wheel', handleWheel)
-        window.removeEventListener('touchstart', handleTouchStart)
-        window.removeEventListener('touchmove', handleTouchMove)
-        stRef.current?.kill()
+        st.kill()
         stRef.current = null
+        tweenRef.current?.kill()
+        tweenRef.current = null
+        unlockBodyScroll()
+        window.removeEventListener('wheel', handleWheel)
+        window.removeEventListener('touchmove', handleTouchMove)
+        window.removeEventListener('keydown', handleKeyDown)
       }
     })
   }, [hubs.length])
 
-  // ---- 窗口 resize → 刷新 ScrollTrigger 测量 ----
-  useEffect(() => {
-    const onResize = () => ScrollTrigger.refresh()
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-
-  // ---- 点击进度点 → 直接更新视觉 (无需 scrollTo，滚动已锁定) ----
+  // ---- 点击进度点 → 跳转到对应卡片 ----
   const jumpToCard = useCallback(
     (index: number) => {
-      const track = trackRef.current
-      if (!track) return
+      if (isAnimatingRef.current) return
 
+      const targetValue = index / Math.max(1, hubs.length - 1)
       const totalScroll = totalScrollRef.current
-      if (totalScroll <= 0) return
 
-      const targetProgress = index / Math.max(1, hubs.length - 1)
-      progressRef.current = targetProgress
+      tweenRef.current?.kill()
+      tweenRef.current = gsap.to(progressObjRef.current, {
+        value: targetValue,
+        duration: 0.6,
+        ease: 'power2.out',
+        onUpdate: () => {
+          const p = progressObjRef.current.value
+          if (totalScroll <= 0) return
+          gsap.set(trackRef.current, { x: -p * totalScroll })
 
-      // 直接更新 track 位移
-      gsap.set(track, { x: -targetProgress * totalScroll })
-      setActiveIndex(index)
-
-      // 同步更新逐卡 opacity (保持与 updateVisuals 一致的曲线)
-      const n = hubs.length
-      cardRefs.current.forEach((el, i) => {
-        if (!el) return
-        const normDist = Math.abs(i - (n - 1) * targetProgress)
-        let opacity: number
-        if (normDist <= FADE_FULL) opacity = 1
-        else if (normDist >= FADE_HIDDEN) opacity = 0
-        else {
-          const t = (normDist - FADE_FULL) / (FADE_HIDDEN - FADE_FULL)
-          opacity = 1 - t * t
-        }
-        gsap.set(el, { opacity })
+          const n = hubs.length
+          cardRefs.current.forEach((el, i) => {
+            if (!el) return
+            const normDist = Math.abs(i - (n - 1) * p)
+            let opacity: number
+            if (normDist <= FADE_FULL) opacity = 1
+            else if (normDist >= FADE_HIDDEN) opacity = 0
+            else {
+              const t = (normDist - FADE_FULL) / (FADE_HIDDEN - FADE_FULL)
+              opacity = 1 - t * t
+            }
+            gsap.set(el, { opacity })
+          })
+        },
       })
+      setActiveIndex(index)
     },
     [hubs.length],
   )
@@ -371,118 +336,119 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
 // opacity 由父组件通过 gsap.set 逐帧控制 (cardRefs)
 // scale / filter / border / shadow 由 isActive 驱动 (React transition)
 // ============================================================
-const GalleryCard = forwardRef<HTMLDivElement, { hub: CommunityHub; isActive: boolean }>(
-  function GalleryCard({ hub, isActive }, ref) {
-    return (
+const GalleryCard = forwardRef<
+  HTMLDivElement,
+  { hub: CommunityHub; isActive: boolean }
+>(function GalleryCard({ hub, isActive }, ref) {
+  return (
+    <div
+      ref={ref}
+      className="shrink-0 select-none"
+      style={{
+        width: CARD_WIDTH,
+        willChange: 'transform, opacity',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* ---- 缩放 + 滤镜层 (React transition, 仅在 activeIndex 变化时触发) ---- */}
       <div
-        ref={ref}
-        className="shrink-0 select-none"
+        className="transition-all duration-500 ease-out flex-1 flex flex-col"
         style={{
-          width: CARD_WIDTH,
-          willChange: 'transform, opacity',
-          display: 'flex',
-          flexDirection: 'column',
+          transform: isActive ? 'scale(1.04)' : 'scale(0.90)',
+          filter: isActive
+            ? 'brightness(1.05) saturate(1.08)'
+            : 'brightness(0.62) saturate(0.55)',
         }}
       >
-        {/* ---- 缩放 + 滤镜层 (React transition, 仅在 activeIndex 变化时触发) ---- */}
         <div
-          className="transition-all duration-500 ease-out flex-1 flex flex-col"
+          className="rounded-2xl overflow-hidden border transition-all duration-500 flex-1 flex flex-col"
           style={{
-            transform: isActive ? 'scale(1.04)' : 'scale(0.90)',
-            filter: isActive
-              ? 'brightness(1.05) saturate(1.08)'
-              : 'brightness(0.62) saturate(0.55)',
+            background: 'rgba(26,45,46,0.78)',
+            borderColor: isActive
+              ? 'rgba(185,200,190,0.22)'
+              : 'rgba(168,197,195,0.05)',
+            boxShadow: isActive
+              ? '0 0 48px rgba(185,200,190,0.07), 0 4px 28px rgba(0,0,0,0.28)'
+              : 'none',
           }}
         >
-          <div
-            className="rounded-2xl overflow-hidden border transition-all duration-500 flex-1 flex flex-col"
-            style={{
-              background: 'rgba(26,45,46,0.78)',
-              borderColor: isActive
-                ? 'rgba(185,200,190,0.22)'
-                : 'rgba(168,197,195,0.05)',
-              boxShadow: isActive
-                ? '0 0 48px rgba(185,200,190,0.07), 0 4px 28px rgba(0,0,0,0.28)'
-                : 'none',
-            }}
-          >
-            {/* ---- 照片区 ---- */}
-            <div className="relative h-52 overflow-hidden shrink-0">
-              {hub.photoUrl ? (
-                <img
-                  src={hub.photoUrl}
-                  alt={hub.name}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-duck-900/60">
-                  <span className="text-duck-300/25 font-serif text-6xl">
-                    {hub.shortName[0]}
-                  </span>
-                </div>
-              )}
-
-              {/* 底部渐变 — 衔接内容区 */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(26,45,46,0.88)] via-transparent to-transparent" />
-
-              {/* 地点标签 */}
-              <div
-                className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-sans backdrop-blur-sm"
-                style={{
-                  background: 'rgba(26,45,46,0.78)',
-                  borderColor: 'rgba(168,197,195,0.10)',
-                  color: '#a8c5c3',
-                }}
-              >
-                <span className="text-[10px]">📍</span>
-                {hub.location}
-              </div>
-            </div>
-
-            {/* ---- 内容区 ---- */}
-            <div className="p-5 flex-1 flex flex-col">
-              <div className="flex items-baseline gap-2 mb-1">
-                <h4 className="font-serif text-xl text-charcoal tracking-wide">
-                  {hub.shortName}
-                </h4>
-                <span className="text-xs text-duck-300/35 font-sans">
-                  创于 {hub.founded}
+          {/* ---- 照片区 ---- */}
+          <div className="relative h-52 overflow-hidden shrink-0">
+            {hub.photoUrl ? (
+              <img
+                src={hub.photoUrl}
+                alt={hub.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-duck-900/60">
+                <span className="text-duck-300/25 font-serif text-6xl">
+                  {hub.shortName[0]}
                 </span>
               </div>
-              <p className="text-xs text-duck-300/40 font-sans mb-3">
-                {hub.name}
-              </p>
+            )}
 
-              {/* ---- 数据指标 ---- */}
-              <div className="flex flex-wrap gap-2 mb-4 shrink-0">
-                {hub.stats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="px-2.5 py-1.5 rounded-lg border"
-                    style={{
-                      background: 'rgba(26,45,46,0.65)',
-                      borderColor: 'rgba(168,197,195,0.05)',
-                    }}
-                  >
-                    <span className="text-[10px] text-duck-300/40 block leading-none mb-0.5">
-                      {stat.label}
-                    </span>
-                    <span className="text-sm font-medium text-[#c8d9d6] font-mono tabular-nums">
-                      {stat.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            {/* 底部渐变 — 衔接内容区 */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(26,45,46,0.88)] via-transparent to-transparent" />
 
-              {/* ---- 描述 ---- */}
-              <p className="text-sm text-slate leading-relaxed line-clamp-3 mt-auto">
-                {hub.description}
-              </p>
+            {/* 地点标签 */}
+            <div
+              className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-sans backdrop-blur-sm"
+              style={{
+                background: 'rgba(26,45,46,0.78)',
+                borderColor: 'rgba(168,197,195,0.10)',
+                color: '#a8c5c3',
+              }}
+            >
+              <span className="text-[10px]">📍</span>
+              {hub.location}
             </div>
+          </div>
+
+          {/* ---- 内容区 ---- */}
+          <div className="p-5 flex-1 flex flex-col">
+            <div className="flex items-baseline gap-2 mb-1">
+              <h4 className="font-serif text-xl text-charcoal tracking-wide">
+                {hub.shortName}
+              </h4>
+              <span className="text-xs text-duck-300/35 font-sans">
+                创于 {hub.founded}
+              </span>
+            </div>
+            <p className="text-xs text-duck-300/40 font-sans mb-3">
+              {hub.name}
+            </p>
+
+            {/* ---- 数据指标 ---- */}
+            <div className="flex flex-wrap gap-2 mb-4 shrink-0">
+              {hub.stats.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="px-2.5 py-1.5 rounded-lg border"
+                  style={{
+                    background: 'rgba(26,45,46,0.65)',
+                    borderColor: 'rgba(168,197,195,0.05)',
+                  }}
+                >
+                  <span className="text-[10px] text-duck-300/40 block leading-none mb-0.5">
+                    {stat.label}
+                  </span>
+                  <span className="text-sm font-medium text-[#c8d9d6] font-mono tabular-nums">
+                    {stat.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* ---- 描述 ---- */}
+            <p className="text-sm text-slate leading-relaxed line-clamp-3 mt-auto">
+              {hub.description}
+            </p>
           </div>
         </div>
       </div>
-    )
-  },
-)
+    </div>
+  )
+})
