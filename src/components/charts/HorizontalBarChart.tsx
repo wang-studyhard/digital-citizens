@@ -40,7 +40,7 @@ export function HorizontalBarChart({
   compact = false,
 }: HorizontalBarChartProps) {
   const defaultMargin = compact
-    ? { top: 4, right: 28, bottom: 4, left: 48 }
+    ? { top: 4, right: 48, bottom: 4, left: 48 }
     : { top: 8, right: 60, bottom: 8, left: 100 }
   const margin = { ...defaultMargin, ...customMargin }
   const xMax = width - margin.left - margin.right
@@ -87,7 +87,7 @@ export function HorizontalBarChart({
 
   return (
     <FadeInView variant="fadeIn" threshold={0.15}>
-      <svg width={width} height={height} style={{ overflow: 'visible' }}>
+      <svg width={width} height={height}>
         <Group left={margin.left} top={margin.top}>
           {/* Y轴标签 */}
           {data.map((d, i) => {

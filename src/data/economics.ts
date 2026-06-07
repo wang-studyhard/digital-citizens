@@ -184,26 +184,26 @@ export const estimatedIncomeByExperience = [
   {
     experienceLabel: '1年以下',
     median: 9,
-    range: [5, 15] as [number, number],
-    note: '超56%年收入≤10万',
+    range: [5, 12] as [number, number],
+    note: '入门期·56%年收入≤10万',
   },
   {
     experienceLabel: '1-3年',
     median: 18,
-    range: [10, 25] as [number, number],
-    note: '中位数约18万·20-50万区间占20%',
+    range: [12, 25] as [number, number],
+    note: '成长期·20-50万区间占20%',
   },
   {
     experienceLabel: '3-5年',
-    median: 28,
-    range: [20, 40] as [number, number],
-    note: '30%达20-50万区间·增速最快',
+    median: 30,
+    range: [22, 42] as [number, number],
+    note: '加速期·30%达20-50万区间',
   },
   {
     experienceLabel: '5年及以上',
-    median: 35,
-    range: [25, 60] as [number, number],
-    note: '年收入20万以上占34%·两极分化',
+    median: 48,
+    range: [30, 65] as [number, number],
+    note: '成熟期·20万以上占34%',
   },
 ]
 

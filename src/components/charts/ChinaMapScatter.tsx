@@ -14,7 +14,7 @@ const CHINA_GEOJSON_URL =
 
 // ---------- 莫兰迪鸭蛋青 · 水下暗色体系 ----------
 const OCEAN_BG = '#0a1929'
-const PROVINCE_FILL = '#14363d'
+const PROVINCE_FILL = 'rgba(185,200,190,0.08)'
 const PROVINCE_STROKE = '#b9c8be'
 const GLOW_COLOR = '#b9c8be'
 const MARKER_FILL = '#c8d9d6'
@@ -179,7 +179,7 @@ function buildEChartsOption(
         // 南海诸岛单列区域 — 如果 GeoJSON 包含则高亮标识
         {
           name: '南海诸岛',
-          itemStyle: { areaColor: '#14363d', borderColor: '#b9c8be' },
+          itemStyle: { areaColor: PROVINCE_FILL, borderColor: '#b9c8be' },
         },
       ],
     }

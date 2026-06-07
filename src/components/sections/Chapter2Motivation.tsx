@@ -3,7 +3,7 @@ import { ChapterHeader } from '@/components/shared/ChapterHeader'
 import { QuoteBlock } from '@/components/shared/QuoteBlock'
 import { ChartCard } from '@/components/shared/ChartCard'
 import { CostComparisonDiagram } from '@/components/charts/CostComparisonDiagram'
-import { StackedBarChart } from '@/components/charts/StackedBarChart'
+import { GroupedBarChart } from '@/components/charts/GroupedBarChart'
 import { MultiLineChart } from '@/components/charts/MultiLineChart'
 import { HeatmapTable } from '@/components/charts/HeatmapTable'
 import { DataTable } from '@/components/shared/DataTable'
@@ -67,12 +67,16 @@ export function Chapter2Motivation() {
           mainScale={1.06}
           main={
             <div className="bg-duck-900/50 rounded-card p-5 md:p-6 border border-duck-200/8">
-              <h3 className="text-base md:text-lg font-medium text-charcoal mb-4 font-serif">
-                各经验段收入分布（年收入/万元）
+              <h3 className="text-base md:text-lg font-medium text-charcoal mb-1 font-serif text-center">
+                各经验段收入分布
               </h3>
+              <p className="text-xs text-slate/60 text-center mb-5 font-sans">
+                按从业经验分组 · 年收入层级百分比
+              </p>
+
               <ParentSize>
                 {({ width }) => (
-                  <StackedBarChart
+                  <GroupedBarChart
                     data={incomeByExperience.map((d) => ({
                       label: d.experienceLabel,
                       segments: d.brackets.map((b) => ({
@@ -81,7 +85,7 @@ export function Chapter2Motivation() {
                       })),
                     }))}
                     width={width}
-                    height={350}
+                    height={380}
                     segmentKeys={[
                       '10万以下',
                       '10-20万',
@@ -89,30 +93,34 @@ export function Chapter2Motivation() {
                       '50-100万',
                       '100万以上',
                     ]}
-                    colors={['#A8C5C3', '#B5C5B0', '#C4BF9E', '#CBB28F', '#C4A882']}
                   />
                 )}
               </ParentSize>
-              <p className="text-sm text-slate mt-4 text-center">
-                经验越丰富，高收入占比越高。5年及以上经验者中，年收入20万以上占34%，
-                随着时间积累，"数字游民"并非不稳定低收入的生活方式。
+
+              <p className="text-sm text-slate mt-5 text-center leading-relaxed">
+                经验越丰富，高收入占比越高。5年及以上经验者中，年收入
+                <span className="text-charcoal font-semibold">20万以上占34%</span>
+                ——随着时间积累，"数字游民"并非不稳定低收入的生活方式。
               </p>
-              <div className="mt-3 text-right">
-                <span className="text-[8px] text-mist font-sans">数据来源：NCC 2024《全景式数字游民洞察报告》n=282（已验证）</span>
+
+              <div className="mt-4 text-right">
+                <span className="text-[8px] text-mist font-sans">
+                  数据来源：NCC 2024《全景式数字游民洞察报告》n=282（已验证）
+                </span>
               </div>
 
               {/* 各经验段估计年收入中位数（万元） */}
               <div className="mt-5 pt-4 border-t border-duck-200/10">
-                <p className="text-xs text-slate/70 text-center mb-3 font-sans">
-                  ↑ 上方为百分比分布 · 下方为推算年收入中位数区间（万元）↓
+                <p className="text-xs text-slate/70 text-center mb-4 font-sans">
+                  推算年收入中位数（万元）
                 </p>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-3">
                   {estimatedIncomeByExperience.map((item) => (
                     <div key={item.experienceLabel} className="text-center">
                       <p className="text-[9px] text-slate/60 font-sans mb-1">
                         {item.experienceLabel}
                       </p>
-                      <p className="text-sm font-mono font-bold text-duck-400">
+                      <p className="text-lg font-mono font-bold text-duck-400">
                         <CountUpNumber
                           value={item.median}
                           suffix="万"
@@ -129,7 +137,7 @@ export function Chapter2Motivation() {
                     </div>
                   ))}
                 </div>
-                <p className="text-[7px] md:text-[8px] text-slate/40 text-center mt-2 font-sans">
+                <p className="text-[7px] md:text-[8px] text-slate/40 text-center mt-3 font-sans">
                   推算依据：NCC 2024 百分比区间中位数加权 · 交叉验证 Nomad List 2025 全球自由职业者收入数据
                 </p>
               </div>
@@ -166,6 +174,15 @@ export function Chapter2Motivation() {
                   }))}
                   width={width}
                   height={380}
+                  colors={[
+                    '#d9a066', // 收入压力 — 暖沙色
+                    '#7fa998', // 社保安全 — 深鸭蛋青
+                    '#9bb7c9', // 远离家人与朋友 — 灰蓝
+                    '#c9b99a', // 时间管理 — 灰沙色
+                    '#8faa9f', // 工作生活平衡 — 潭水绿
+                    '#b38b9d', // 孤独感 — 灰紫
+                    '#c4a484', // 职业发展 — 浅驼色
+                  ]}
                 />
               )}
             </ParentSize>

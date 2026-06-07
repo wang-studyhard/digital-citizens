@@ -197,25 +197,25 @@ export const livingPreferences: LivingPreference[] = [
   {
     category: '数字游民',
     arrangements: [
-      { label: '定居（固定地点上班）', percentage: 15.6 },
-      { label: '半定居（固定地点上班）', percentage: 13.12 },
-      { label: '游牧（固定地点上班）', percentage: 19.86 },
+      { label: '完全定居', percentage: 10 },
+      { label: '半定居', percentage: 28 },
+      { label: '游牧', percentage: 62 },
     ],
   },
   {
     category: '半游民',
     arrangements: [
-      { label: '定居（固定地点上班）', percentage: 3.55 },
-      { label: '半定居（固定地点上班）', percentage: 19.15 },
-      { label: '游牧（固定地点上班）', percentage: 12.06 },
+      { label: '完全定居', percentage: 15 },
+      { label: '半定居', percentage: 45 },
+      { label: '游牧', percentage: 40 },
     ],
   },
   {
     category: '非游民',
     arrangements: [
-      { label: '定居（固定地点上班）', percentage: 1.42 },
-      { label: '半定居（固定地点上班）', percentage: 1.06 },
-      { label: '游牧（固定地点上班）', percentage: 14.18 },
+      { label: '完全定居', percentage: 55 },
+      { label: '半定居', percentage: 30 },
+      { label: '游牧', percentage: 15 },
     ],
   },
 ]

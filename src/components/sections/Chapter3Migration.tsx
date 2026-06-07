@@ -4,9 +4,9 @@ import { QuoteBlock } from '@/components/shared/QuoteBlock'
 import { ChartCard } from '@/components/shared/ChartCard'
 import { ChinaMapScatter } from '@/components/charts/ChinaMapScatter'
 import { StackedBarChart } from '@/components/charts/StackedBarChart'
-import { ImageCard } from '@/components/shared/ImageCard'
 import { DataTable } from '@/components/shared/DataTable'
 import { FadeInView } from '@/components/shared/FadeInView'
+import { HorizontalGallery } from '@/components/effects/HorizontalGallery'
 import { communityComparison } from '@/data/tables'
 import { hotspots, communityHubs, livingPreferences, relocationFrequency } from '@/data/geography'
 
@@ -44,34 +44,23 @@ export function Chapter3Migration() {
           </ChartCard>
         </div>
 
-        {/* 社区据点卡片 — 交错入场 */}
-        <FadeInView variant="fadeUp" className="mt-16">
-          <h3 className="text-2xl font-serif text-charcoal text-center mb-2">
-            五大标志性社区据点
-          </h3>
-          <p className="text-center text-slate mb-8 text-sm">
-            从废弃厂房到云端办公室——中国数字游民社区的空间革命
-          </p>
-        </FadeInView>
+        {/* 五大标志性社区据点 — 横向画廊滚动 (GSAP ScrollTrigger) */}
+        <HorizontalGallery hubs={communityHubs} />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {communityHubs.map((hub, i) => (
-            <FadeInView key={hub.shortName} variant="fadeUp" delay={i * 0.12} threshold={0.05}>
-              <ImageCard
-                alt={hub.name}
-                title={`${hub.shortName} · ${hub.location}`}
-                description={hub.description.slice(0, 120) + '...'}
-                userProvided={hub.userProvided}
-                aspectRatio="4/3"
-              />
-            </FadeInView>
-          ))}
+        {/* 过渡分隔 — 画廊 → 对比表 */}
+        <div className="relative h-6 mt-8" aria-hidden="true">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 max-w-xs h-px bg-gradient-to-r from-transparent via-duck-300/15 to-transparent" />
         </div>
 
         {/* 社区据点对比表 */}
-        <h3 className="text-xl font-serif text-charcoal text-center mt-14 mb-2">
-          五大社区据点对比
-        </h3>
+        <FadeInView variant="fadeUp" threshold={0.05}>
+          <h3 className="text-xl font-serif text-charcoal text-center mb-1">
+            五大社区据点对比
+          </h3>
+          <p className="text-center text-slate text-sm mb-4">
+            横向对比关键指标 · 一览社区生态全景
+          </p>
+        </FadeInView>
         <DataTable
           columns={communityComparison.columns}
           rows={communityComparison.rows}
@@ -94,8 +83,8 @@ export function Chapter3Migration() {
                   }))}
                   width={width}
                   height={280}
-                  segmentKeys={['定居', '半定居', '游牧']}
-                  colors={['#A8C5C3', '#B5C5B0', '#C4A882']}
+                  segmentKeys={['完全定居', '半定居', '游牧']}
+                  colors={['#5c7a73', '#8aa7a0', '#b9c8be']}
                 />
               )}
             </ParentSize>
