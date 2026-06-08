@@ -41,8 +41,10 @@ export function HorizontalScroll() {
       start: 'top top',
       end: () => `+=${track.scrollWidth - window.innerWidth + window.innerHeight}`,
       pin: true,
+      pinSpacing: true,
       scrub: 1.2,
       anticipatePin: 1,
+      refreshPriority: 1,
       onUpdate: (self) => {
         const p = self.progress
         gsap.set(track, {

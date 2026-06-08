@@ -213,6 +213,7 @@ export function ChartConstellation({
       pin: true,
       pinSpacing: true, // 维持自然文档流，防止遮挡
       scrub: 1,
+      refreshPriority: 1,
       onUpdate: (self) => update(self.progress),
     })
 

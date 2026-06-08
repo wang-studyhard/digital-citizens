@@ -8,14 +8,19 @@ gsap.registerPlugin(ScrollTrigger)
 
 // ============================================================
 // HorizontalGallery · GSAP 水平画廊 · scroll-lock + tween
-// 纵向滚动触发 → 锁定 body 滚动 → 完整播放横向动画 → 解锁
+// 纵向滚动触发 → overflow:hidden 锁定滚动 → 播放横向动画 → 解锁
 //
 // 架构:
-//   ScrollTrigger(start:'top 80%') 检测 gallery 进入视口
-//   onEnter: lockBodyScroll → tween 0→1 (1.6s) → unlockBodyScroll
-//   onEnterBack: lockBodyScroll → tween 1→0 (1.6s) → unlockBodyScroll
-//   无 pin / scrub — body scroll lock 确保动画不被用户滚动打断
+//   ScrollTrigger(start:'top center' refreshPriority:-1) 检测进入
+//   onEnter: overflow:hidden(on <html>) → tween 0→1 (1.6s) → 解锁+refresh
+//   onEnterBack: overflow:hidden(on <html>) → tween 1→0 (1.6s) → 解锁+refresh
+//   无 pin / scrub — overflow:hidden 不改变文档高度，避免 ScrollTrigger 级联刷新
 //   地图(区块A)和 DataTable(区块C) 通过自然滚动进出视口，永不隐藏
+//
+// 为什么 overflow:hidden 而非 position:fixed？
+//   position:fixed → body 脱离文档流 → document 高度→0 → resize 事件
+//   → ScrollTrigger.refresh() → 所有 pin 触发器在 scrollY=0 时重算
+//   → 页面"跳回开头" → onEnterBack → lock 循环
 //
 // 逐卡 opacity 曲线（距离视口中心的"卡片步数"）：
 //   0.00 – 0.35  → opacity: 1      全亮区
@@ -58,6 +63,9 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
     const track = trackRef.current
     if (!section || !track) return
 
+    // 用于 effect 卸载时执行 rAF 内部清理
+    let innerCleanup: (() => void) | null = null
+
     const raf = requestAnimationFrame(() => {
       const totalScroll = track.scrollWidth - window.innerWidth
       totalScrollRef.current = totalScroll
@@ -65,6 +73,8 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
 
       // ==========================================================
       // 视觉更新 — 每帧由 tween onUpdate 调用
+      // 仅使用 gsap.set(x) 做 transform，绝不修改 width/height/top/left
+      // 避免触发布局重排 → ScrollTrigger.refresh 死循环
       // ==========================================================
       const updateVisuals = (p: number) => {
         const progress = Math.max(0, Math.min(1, p))
@@ -97,22 +107,43 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
       }
 
       // ==========================================================
-      // Body scroll lock 工具函数
+      // Scroll lock — overflow:hidden 方案
+      //
+      // 为什么不用 position:fixed？
+      //   body{position:fixed} → body 脱离文档流 → document 高度≈0
+      //   → 浏览器触发 resize → ScrollTrigger.refresh() 自动执行
+      //   → 所有 pin/scrub 触发器重新计算（此时 scrollY≈0）
+      //   → 页面"跳回开头" → onEnterBack 连锁触发 → 死循环
+      //
+      // overflow:hidden 不改变文档高度，ScrollTrigger 不会自动刷新，
+      // 且 window.scrollY 在主流浏览器中得以保留。
       // ==========================================================
       const getScrollbarWidth = () =>
         window.innerWidth - document.documentElement.clientWidth
 
+      let savedScrollY = 0
+
       const lockBodyScroll = () => {
+        savedScrollY = window.scrollY
+        // 必须在修改 overflow 之前读取 scrollbar 宽度
+        // overflow:hidden 会使滚动条消失 → clientWidth 变大 → 读数失真
         const sbw = getScrollbarWidth()
         document.documentElement.style.overflow = 'hidden'
         if (sbw > 0) {
-          document.body.style.paddingRight = `${sbw}px`
+          document.documentElement.style.paddingRight = `${sbw}px`
         }
+        // 兜底：部分浏览器可能在 overflow 切换时丢失滚动位置
+        window.scrollTo(0, savedScrollY)
       }
 
       const unlockBodyScroll = () => {
         document.documentElement.style.overflow = ''
-        document.body.style.paddingRight = ''
+        document.documentElement.style.paddingRight = ''
+        window.scrollTo(0, savedScrollY)
+        // 异步刷新 ScrollTrigger，让布局先恢复再重新测量
+        requestAnimationFrame(() => {
+          ScrollTrigger.refresh()
+        })
       }
 
       // ==========================================================
@@ -130,8 +161,12 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
           ease: 'power2.inOut',
           onUpdate: () => updateVisuals(progressObjRef.current.value),
           onComplete: () => {
-            isAnimatingRef.current = false
+            // 先解锁再延迟释放 isAnimating — 确保 unlock 可能引发的
+            // 异步 scroll 事件被 isAnimating 挡住，避免 onEnter 立即重新触发
             unlockBodyScroll()
+            setTimeout(() => {
+              isAnimatingRef.current = false
+            }, 120)
           },
         })
       }
@@ -151,24 +186,27 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
           ease: 'power2.inOut',
           onUpdate: () => updateVisuals(progressObjRef.current.value),
           onComplete: () => {
-            isAnimatingRef.current = false
             unlockBodyScroll()
+            setTimeout(() => {
+              isAnimatingRef.current = false
+            }, 120)
           },
         })
       }
 
       // ==========================================================
       // ScrollTrigger — 仅检测进入/回入，不 pin/scrub
-      // start: 'top 80%' → gallery 顶部到视口 80% 处触发
-      //   即 gallery 顶部距离视口底部还有 20vh 时触发
-      // end: 'bottom top' → gallery 底部到达视口顶部时结束
+      // start: 'top center' → gallery 顶部到视口中央触发 (向下)
+      // end: 'bottom center' → gallery 底部到视口中央触发 onEnterBack (向上)
+      // refreshPriority: -1 → 在其他 pin 触发器之后刷新，避免级联
       // ==========================================================
       const st = ScrollTrigger.create({
         trigger: section,
-        start: 'top 80%',
-        end: 'bottom top',
+        start: 'top center',
+        end: 'bottom center',
         onEnter: playForward,
         onEnterBack: playReverse,
+        refreshPriority: -1,
       })
 
       stRef.current = st
@@ -198,10 +236,9 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
       window.addEventListener('keydown', handleKeyDown)
 
       // ==========================================================
-      // 清理
+      // 内层清理 — 赋值给 outer 变量，确保 effect 卸载时执行
       // ==========================================================
-      return () => {
-        cancelAnimationFrame(raf)
+      innerCleanup = () => {
         st.kill()
         stRef.current = null
         tweenRef.current?.kill()
@@ -212,6 +249,14 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
         window.removeEventListener('keydown', handleKeyDown)
       }
     })
+
+    // ============================================================
+    // effect 清理：如果 rAF 还没执行就取消；如果已执行则调用内层清理
+    // ============================================================
+    return () => {
+      cancelAnimationFrame(raf)
+      innerCleanup?.()
+    }
   }, [hubs.length])
 
   // ---- 点击进度点 → 跳转到对应卡片 ----
