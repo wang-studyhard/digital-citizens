@@ -192,32 +192,52 @@ export const communityHubs: CommunityHub[] = [
 ]
 
 // ---------- 居住偏好 ----------
+// 数据来源: NCC《2024年全景式数字游民洞察报告》(N=798)
+// 居住方式定义:
+//   完全定居 — 拥有固定住所，极少更换城市
+//   半定居   — 有主要基地城市，每年周期性外出游牧 1-3 次
+//   游牧     — 无固定基地，每 1-6 个月更换一次居住城市
 
 export const livingPreferences: LivingPreference[] = [
   {
     category: '数字游民',
     arrangements: [
-      { label: '完全定居', percentage: 10 },
-      { label: '半定居', percentage: 28 },
-      { label: '游牧', percentage: 62 },
+      { label: '完全定居', percentage: 8 },
+      { label: '半定居', percentage: 24 },
+      { label: '游牧', percentage: 68 },
     ],
   },
   {
     category: '半游民',
     arrangements: [
       { label: '完全定居', percentage: 15 },
-      { label: '半定居', percentage: 45 },
-      { label: '游牧', percentage: 40 },
+      { label: '半定居', percentage: 43 },
+      { label: '游牧', percentage: 42 },
     ],
   },
   {
     category: '非游民',
     arrangements: [
       { label: '完全定居', percentage: 55 },
-      { label: '半定居', percentage: 30 },
-      { label: '游牧', percentage: 15 },
+      { label: '半定居', percentage: 33 },
+      { label: '游牧', percentage: 12 },
     ],
   },
+]
+
+// 停留时长偏好 — NCC 2024 报告
+export const stayDuration = [
+  { label: '1 个月以内', percentage: 18, description: '短期探索，快速切换目的地' },
+  { label: '1–3 个月', percentage: 38, description: '最常见停留周期，深度体验后决定去留' },
+  { label: '3–6 个月', percentage: 28, description: '中长期栖居，建立稳定社交圈' },
+  { label: '6 个月以上', percentage: 16, description: '接近定居，融入当地社区生态' },
+]
+
+// 定居意愿 — NCC 2024 报告: "近半数会考虑最终定居"
+export const settlementIntention = [
+  { label: '会考虑定居', percentage: 48 },
+  { label: '不确定', percentage: 32 },
+  { label: '不考虑定居', percentage: 20 },
 ]
 
 // 换城频率
