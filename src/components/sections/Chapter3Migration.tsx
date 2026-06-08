@@ -134,14 +134,17 @@ export function Chapter3Migration() {
 
         {/* ============================================================
             区块 A — 数字游民热点分布地图
-            占据 ≥90vh 确保用户有充足时间停留观看，
-            地图自然向上滚出后画廊才开始触发。
-            地图仅通过自然滚动进出视口，不设置任何
-            opacity/display/visibility 切换逻辑。
+            minHeight: 120vh — 地图获得充足展示时间（~80vh 独享 +
+            ~40vh 与画廊交叉淡入淡出）。
+            画廊 start: 'top 40%' — 画廊从视口 40% 处开始 pin，
+            地图下半部分仍可见时画廊自然入场，形成流畅叠化过渡。
         ============================================================ */}
-        <div className="mt-12" style={{ minHeight: '90vh' }}>
-          <FadeInView variant="fadeUp" threshold={0.08}>
-            <div className="bg-duck-900/50 rounded-card shadow-card p-5 md:p-6 border border-duck-200/8 w-full">
+        <div
+          className="mt-12 flex items-center"
+          style={{ minHeight: '120vh', paddingTop: '2vh', paddingBottom: '4vh' }}
+        >
+          <FadeInView variant="fadeUp" threshold={0} delay={0.05}>
+            <div className="bg-duck-900/50 rounded-card shadow-card p-5 md:p-6 border border-duck-200/8 w-full max-w-6xl mx-auto">
               <h3 className="text-base md:text-lg font-medium text-charcoal mb-4 font-serif">
                 数字游民热点分布
               </h3>

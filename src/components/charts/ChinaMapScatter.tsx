@@ -326,27 +326,15 @@ export function ChinaMapScatter({
   // ================================================================
   if (width < 10 || height < 10) return null
 
-  // ---------- 加载态 ----------
-  if (loading) {
-    return (
-      <div
-        className="flex items-center justify-center rounded-card"
-        style={{ width, height, background: OCEAN_BG }}
-      >
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-9 h-9 border-2 border-duck-300/40 border-t-duck-300 rounded-full animate-spin" />
-          <span className="text-sm text-duck-300/60 font-sans">
-            加载地图数据...
-          </span>
-        </div>
-      </div>
-    )
-  }
-
-  // ---------- 渲染: ECharts 容器 (无论 hasMap 或 fetchError 都使用 ECharts 渲染) ----------
+  // ================================================================
+  // 始终渲染 ECharts 容器 — 海洋背景立即可见
+  // GeoJSON 加载期间显示海底氛围（容器已初始化），加载完成后
+  // setOption 更新为完整地图。消除"白屏等待"感。
+  // ================================================================
   return (
     <FadeInView variant="fadeIn" threshold={0.1}>
       <div style={{ position: 'relative', width, height }}>
+        {/* ECharts 容器 — 始终存在，loading 期间也初始化 */}
         <div
           ref={containerRef}
           style={{
@@ -356,6 +344,55 @@ export function ChinaMapScatter({
             borderRadius: 12,
           }}
         />
+
+        {/* 加载指示器 — 半透明叠加，不遮挡海底背景 */}
+        {loading && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+              zIndex: 5,
+              background:
+                'radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(10,25,41,0.3) 100%)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 10,
+              }}
+            >
+              {/* 呼吸光点 — 模拟海底标记 */}
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: '#b9c8be',
+                  boxShadow: '0 0 12px rgba(185,200,190,0.5), 0 0 28px rgba(185,200,190,0.2)',
+                  animation: 'map-pulse 2s ease-in-out infinite',
+                }}
+              />
+              <span
+                style={{
+                  color: 'rgba(200,217,214,0.4)',
+                  fontSize: 11,
+                  fontFamily: 'system-ui, sans-serif',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                加载地图…
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* 降级提示 (无地图底图时显示) */}
         {fetchError && (
           <div

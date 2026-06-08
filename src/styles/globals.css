@@ -243,6 +243,11 @@ body {
   75%      { transform: rotate(-2deg) translateY(2px); }
 }
 
+@keyframes map-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50%      { opacity: 1;    transform: scale(1.3); }
+}
+
 /* ============================================================
    深度渐退 · Depth Fade
    文本随滚动沉入水下 — opacity / scale / translateY

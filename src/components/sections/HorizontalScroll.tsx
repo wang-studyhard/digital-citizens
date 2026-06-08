@@ -44,6 +44,8 @@ export function HorizontalScroll() {
       pinSpacing: true,
       scrub: 1.2,
       anticipatePin: 1,
+      invalidateOnRefresh: true,
+      fastScrollEnd: true,
       refreshPriority: 1,
       onUpdate: (self) => {
         const p = self.progress

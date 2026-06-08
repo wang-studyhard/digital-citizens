@@ -213,6 +213,8 @@ export function ChartConstellation({
       pin: true,
       pinSpacing: true, // 维持自然文档流，防止遮挡
       scrub: 1,
+      invalidateOnRefresh: true, // resize 后重算 end，防止使用过期值
+      fastScrollEnd: true, // 快滑时吸附终点，避免 scrub 拖尾触发额外刷新
       refreshPriority: 1,
       onUpdate: (self) => update(self.progress),
     })
