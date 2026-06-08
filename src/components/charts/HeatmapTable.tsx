@@ -102,7 +102,7 @@ export function HeatmapTable({
       )}
       {sourceRef && (
         <div className="mt-1">
-          <DataSource refNum={sourceRef} />
+          <DataSource refNumber={sourceRef} />
         </div>
       )}
     </div>

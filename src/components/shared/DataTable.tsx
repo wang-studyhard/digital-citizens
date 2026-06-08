@@ -118,7 +118,7 @@ export function DataTable({
 
       {sourceRef && (
         <div className="mt-2">
-          <DataSource refNum={sourceRef} />
+          <DataSource refNumber={sourceRef} />
         </div>
       )}
     </div>

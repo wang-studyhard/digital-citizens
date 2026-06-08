@@ -144,7 +144,7 @@ export function IncomeGroupedBarChart({
           color: TEXT_COLOR,
           fontSize: 12,
           fontFamily: 'system-ui, sans-serif',
-          fontWeight: '500',
+          fontWeight: 500,
         },
         nameTextStyle: {
           color: TEXT_COLOR,

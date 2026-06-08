@@ -24,27 +24,37 @@ function CharByChar({
   as?: 'span' | 'h2'
   style?: React.CSSProperties
 }) {
-  return (
+  const children = text.split('').map((char, i) => (
     <motion.span
-      as={Tag}
-      style={{ ...style, display: Tag === 'h2' ? 'block' : 'inline' }}
+      key={i}
+      style={{ display: 'inline-block' }}
       variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: 0.02 } },
+        hidden: { opacity: 0.5, filter: 'blur(5px)' },
+        visible: { opacity: 1, filter: 'blur(0px)' },
       }}
     >
-      {text.split('').map((char, i) => (
-        <motion.span
-          key={i}
-          style={{ display: 'inline-block' }}
-          variants={{
-            hidden: { opacity: 0.5, filter: 'blur(5px)' },
-            visible: { opacity: 1, filter: 'blur(0px)' },
-          }}
-        >
-          {char === ' ' ? ' ' : char}
-        </motion.span>
-      ))}
+      {char === ' ' ? ' ' : char}
+    </motion.span>
+  ))
+
+  const variants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.02 } },
+  }
+
+  const commonStyle = { ...style, display: Tag === 'h2' ? ('block' as const) : ('inline' as const) }
+
+  if (Tag === 'h2') {
+    return (
+      <motion.h2 style={commonStyle} variants={variants}>
+        {children}
+      </motion.h2>
+    )
+  }
+
+  return (
+    <motion.span style={commonStyle} variants={variants}>
+      {children}
     </motion.span>
   )
 }
