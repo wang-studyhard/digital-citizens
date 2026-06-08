@@ -7,22 +7,19 @@ import type { CommunityHub } from '@/types'
 gsap.registerPlugin(ScrollTrigger)
 
 // ============================================================
-// HorizontalGallery · GSAP 水平画廊 · scroll-lock + tween
-// 纵向滚动触发 → overflow:hidden 锁定滚动 → 播放横向动画 → 解锁
+// HorizontalGallery · GSAP 水平画廊 · pin + scrub
 //
-// 架构:
-//   ScrollTrigger(start:'top center' refreshPriority:-1) 检测进入
-//   onEnter: overflow:hidden(on <html>) → tween 0→1 (1.6s) → 解锁+refresh
-//   onEnterBack: overflow:hidden(on <html>) → tween 1→0 (1.6s) → 解锁+refresh
-//   无 pin / scrub — overflow:hidden 不改变文档高度，避免 ScrollTrigger 级联刷新
-//   地图(区块A)和 DataTable(区块C) 通过自然滚动进出视口，永不隐藏
+// 标准 GSAP 水平滚动模式：
+//   - pin 锁定 section，scrub 将垂直滚动映射到水平平移
+//   - 无 overflow:hidden 锁，无手动 tween，无级联刷新风险
+//   - 向下滚动 → 卡片向左滑；向上滚动 → 卡片向右滑 — 双向自然
 //
-// 为什么 overflow:hidden 而非 position:fixed？
-//   position:fixed → body 脱离文档流 → document 高度→0 → resize 事件
-//   → ScrollTrigger.refresh() → 所有 pin 触发器在 scrollY=0 时重算
-//   → 页面"跳回开头" → onEnterBack → lock 循环
+// 触发时机：
+//   start: 'top top' — section 顶部触及视口顶部时 pin 住
+//   end: `+=${totalScroll}` — 虚拟滚动距离 = 水平可滑动总距离
+//   scrub: 0.8 — 轻微平滑延迟，消除卡顿感
 //
-// 逐卡 opacity 曲线（距离视口中心的"卡片步数"）：
+// 逐卡 opacity 曲线：
 //   0.00 – 0.35  → opacity: 1      全亮区
 //   0.35 – 1.50  → opacity: 1 → 0  ease-out 渐隐
 //   1.50+        → opacity: 0      完全隐藏
@@ -33,7 +30,6 @@ const CARD_GAP = 32
 const CARD_STEP = CARD_WIDTH + CARD_GAP
 const FADE_FULL = 0.35
 const FADE_HIDDEN = 1.5
-const ANIM_DURATION = 1.6
 
 interface HorizontalGalleryProps {
   hubs: CommunityHub[]
@@ -44,10 +40,6 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
   const trackRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])
   const stRef = useRef<ScrollTrigger | null>(null)
-  const tweenRef = useRef<gsap.core.Tween | null>(null)
-  const progressObjRef = useRef({ value: 0 })
-  const isAnimatingRef = useRef(false)
-  const totalScrollRef = useRef(0)
   const [activeIndex, setActiveIndex] = useState(0)
 
   // ---- 窗口 resize → 刷新 ScrollTrigger 测量 ----
@@ -57,42 +49,35 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  // ---- GSAP ScrollTrigger: 检测进入 → 锁定滚动 → 播放动画 → 解锁 ----
+  // ---- GSAP ScrollTrigger: pin + scrub ----
   useLayoutEffect(() => {
     const section = sectionRef.current
     const track = trackRef.current
     if (!section || !track) return
 
-    // 用于 effect 卸载时执行 rAF 内部清理
-    let innerCleanup: (() => void) | null = null
+    const n = hubs.length
 
     const raf = requestAnimationFrame(() => {
       const totalScroll = track.scrollWidth - window.innerWidth
-      totalScrollRef.current = totalScroll
       if (totalScroll <= 0) return
 
-      // ==========================================================
-      // 视觉更新 — 每帧由 tween onUpdate 调用
-      // 仅使用 gsap.set(x) 做 transform，绝不修改 width/height/top/left
-      // 避免触发布局重排 → ScrollTrigger.refresh 死循环
-      // ==========================================================
-      const updateVisuals = (p: number) => {
-        const progress = Math.max(0, Math.min(1, p))
-        progressObjRef.current.value = progress
+      // ---- 视觉更新 — 每帧由 scrub onUpdate 调用 ----
+      const updateVisuals = (progress: number) => {
+        const p = Math.max(0, Math.min(1, progress))
 
-        gsap.set(track, { x: -progress * totalScroll })
+        // 水平平移（仅 transform，不触发重排）
+        gsap.set(track, { x: -p * totalScroll })
 
         // 焦点卡片索引
-        const centerX = progress * totalScroll + window.innerWidth / 2
+        const centerX = p * totalScroll + window.innerWidth / 2
         const rawIdx = Math.round(centerX / CARD_STEP)
-        const idx = Math.max(0, Math.min(hubs.length - 1, rawIdx))
+        const idx = Math.max(0, Math.min(n - 1, rawIdx))
         setActiveIndex((prev) => (prev === idx ? prev : idx))
 
         // 逐卡渐显 / 渐隐
-        const n = hubs.length
         cardRefs.current.forEach((el, i) => {
           if (!el) return
-          const normDist = Math.abs(i - (n - 1) * progress)
+          const normDist = Math.abs(i - (n - 1) * p)
           let opacity: number
           if (normDist <= FADE_FULL) {
             opacity = 1
@@ -106,193 +91,63 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
         })
       }
 
+      // ---- 初始状态 ----
+      updateVisuals(0)
+
       // ==========================================================
-      // Scroll lock — overflow:hidden 方案
+      // ScrollTrigger: pin + scrub
       //
-      // 为什么不用 position:fixed？
-      //   body{position:fixed} → body 脱离文档流 → document 高度≈0
-      //   → 浏览器触发 resize → ScrollTrigger.refresh() 自动执行
-      //   → 所有 pin/scrub 触发器重新计算（此时 scrollY≈0）
-      //   → 页面"跳回开头" → onEnterBack 连锁触发 → 死循环
-      //
-      // overflow:hidden 不改变文档高度，ScrollTrigger 不会自动刷新，
-      // 且 window.scrollY 在主流浏览器中得以保留。
-      // ==========================================================
-      const getScrollbarWidth = () =>
-        window.innerWidth - document.documentElement.clientWidth
-
-      let savedScrollY = 0
-
-      const lockBodyScroll = () => {
-        savedScrollY = window.scrollY
-        // 必须在修改 overflow 之前读取 scrollbar 宽度
-        // overflow:hidden 会使滚动条消失 → clientWidth 变大 → 读数失真
-        const sbw = getScrollbarWidth()
-        document.documentElement.style.overflow = 'hidden'
-        if (sbw > 0) {
-          document.documentElement.style.paddingRight = `${sbw}px`
-        }
-        // 兜底：部分浏览器可能在 overflow 切换时丢失滚动位置
-        window.scrollTo(0, savedScrollY)
-      }
-
-      const unlockBodyScroll = () => {
-        document.documentElement.style.overflow = ''
-        document.documentElement.style.paddingRight = ''
-        window.scrollTo(0, savedScrollY)
-        // 异步刷新 ScrollTrigger，让布局先恢复再重新测量
-        requestAnimationFrame(() => {
-          ScrollTrigger.refresh()
-        })
-      }
-
-      // ==========================================================
-      // 正向播放: 0 → 1
-      // ==========================================================
-      const playForward = () => {
-        if (isAnimatingRef.current) return
-        isAnimatingRef.current = true
-        lockBodyScroll()
-
-        tweenRef.current?.kill()
-        tweenRef.current = gsap.to(progressObjRef.current, {
-          value: 1,
-          duration: ANIM_DURATION,
-          ease: 'power2.inOut',
-          onUpdate: () => updateVisuals(progressObjRef.current.value),
-          onComplete: () => {
-            // 先解锁再延迟释放 isAnimating — 确保 unlock 可能引发的
-            // 异步 scroll 事件被 isAnimating 挡住，避免 onEnter 立即重新触发
-            unlockBodyScroll()
-            setTimeout(() => {
-              isAnimatingRef.current = false
-            }, 120)
-          },
-        })
-      }
-
-      // ==========================================================
-      // 逆向播放: 1 → 0
-      // ==========================================================
-      const playReverse = () => {
-        if (isAnimatingRef.current) return
-        isAnimatingRef.current = true
-        lockBodyScroll()
-
-        tweenRef.current?.kill()
-        tweenRef.current = gsap.to(progressObjRef.current, {
-          value: 0,
-          duration: ANIM_DURATION,
-          ease: 'power2.inOut',
-          onUpdate: () => updateVisuals(progressObjRef.current.value),
-          onComplete: () => {
-            unlockBodyScroll()
-            setTimeout(() => {
-              isAnimatingRef.current = false
-            }, 120)
-          },
-        })
-      }
-
-      // ==========================================================
-      // ScrollTrigger — 仅检测进入/回入，不 pin/scrub
-      // start: 'top center' → gallery 顶部到视口中央触发 (向下)
-      // end: 'bottom center' → gallery 底部到视口中央触发 onEnterBack (向上)
-      // refreshPriority: -1 → 在其他 pin 触发器之后刷新，避免级联
+      // start: 'top top' →
+      //   section 顶部接触视口顶部时开始 pin，scrub 从 progress=0 开始
+      // end: `+=${totalScroll}` →
+      //   虚拟滚动 totalScroll px 后结束 pin，progress 到达 1
+      //   e.g. 总滑距 1800px → 用户向下再滚 1800px 完成整段画廊
+      // scrub: 0.8 →
+      //   播放头平滑跟随滚动位置，延迟 0.8s，消除抖动
+      // refreshPriority: -1 →
+      //   低于其他 ScrollTrigger 的刷新优先级，避免 pin 重算干扰
       // ==========================================================
       const st = ScrollTrigger.create({
         trigger: section,
-        start: 'top center',
-        end: 'bottom center',
-        onEnter: playForward,
-        onEnterBack: playReverse,
+        start: 'top top',
+        end: `+=${totalScroll}`,
+        pin: true,
+        scrub: 0.8,
         refreshPriority: -1,
+        onUpdate: (self) => updateVisuals(self.progress),
       })
 
       stRef.current = st
-
-      // ---- 动画期间拦截所有滚动事件 ----
-      const handleWheel = (e: WheelEvent) => {
-        if (isAnimatingRef.current) e.preventDefault()
-      }
-      const handleTouchMove = (e: TouchEvent) => {
-        if (isAnimatingRef.current) e.preventDefault()
-      }
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (
-          isAnimatingRef.current &&
-          ['ArrowUp', 'ArrowDown', 'Space', 'PageUp', 'PageDown'].includes(
-            e.key,
-          )
-        ) {
-          e.preventDefault()
-        }
-      }
-
-      window.addEventListener('wheel', handleWheel, { passive: false })
-      window.addEventListener('touchmove', handleTouchMove, {
-        passive: false,
-      })
-      window.addEventListener('keydown', handleKeyDown)
-
-      // ==========================================================
-      // 内层清理 — 赋值给 outer 变量，确保 effect 卸载时执行
-      // ==========================================================
-      innerCleanup = () => {
-        st.kill()
-        stRef.current = null
-        tweenRef.current?.kill()
-        tweenRef.current = null
-        unlockBodyScroll()
-        window.removeEventListener('wheel', handleWheel)
-        window.removeEventListener('touchmove', handleTouchMove)
-        window.removeEventListener('keydown', handleKeyDown)
-      }
     })
 
-    // ============================================================
-    // effect 清理：如果 rAF 还没执行就取消；如果已执行则调用内层清理
-    // ============================================================
     return () => {
       cancelAnimationFrame(raf)
-      innerCleanup?.()
+      stRef.current?.kill()
+      stRef.current = null
     }
   }, [hubs.length])
 
-  // ---- 点击进度点 → 跳转到对应卡片 ----
+  // ---- 点击进度点 → 滚动到对应卡片 ----
   const jumpToCard = useCallback(
     (index: number) => {
-      if (isAnimatingRef.current) return
+      const st = stRef.current
+      if (!st) return
 
-      const targetValue = index / Math.max(1, hubs.length - 1)
-      const totalScroll = totalScrollRef.current
+      const n = Math.max(1, hubs.length - 1)
+      const targetProgress = index / n
 
-      tweenRef.current?.kill()
-      tweenRef.current = gsap.to(progressObjRef.current, {
-        value: targetValue,
-        duration: 0.6,
-        ease: 'power2.out',
-        onUpdate: () => {
-          const p = progressObjRef.current.value
-          if (totalScroll <= 0) return
-          gsap.set(trackRef.current, { x: -p * totalScroll })
+      // 计算目标 scroll 位置:
+      // st.start 是触发开始的 scrollY, st.end 是触发结束的 scrollY
+      // progress 在 start..end 之间线性映射
+      const startScroll = st.start
+      const endScroll = st.end
+      const targetScrollY = startScroll + targetProgress * (endScroll - startScroll)
 
-          const n = hubs.length
-          cardRefs.current.forEach((el, i) => {
-            if (!el) return
-            const normDist = Math.abs(i - (n - 1) * p)
-            let opacity: number
-            if (normDist <= FADE_FULL) opacity = 1
-            else if (normDist >= FADE_HIDDEN) opacity = 0
-            else {
-              const t = (normDist - FADE_FULL) / (FADE_HIDDEN - FADE_FULL)
-              opacity = 1 - t * t
-            }
-            gsap.set(el, { opacity })
-          })
-        },
+      // 用原生 scrollTo 平滑滚动到目标位置
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: 'smooth',
       })
-      setActiveIndex(index)
     },
     [hubs.length],
   )
@@ -369,7 +224,7 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
         ))}
       </div>
 
-      {/* ======== 左右渐变遮罩（暗示还有更多内容） ======== */}
+      {/* ======== 左右渐变遮罩 ======== */}
       <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-duck-950 via-duck-950/70 to-transparent pointer-events-none z-10" />
       <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-r from-transparent via-duck-950/70 to-duck-950 pointer-events-none z-10" />
     </section>
@@ -396,7 +251,7 @@ const GalleryCard = forwardRef<
         flexDirection: 'column',
       }}
     >
-      {/* ---- 缩放 + 滤镜层 (React transition, 仅在 activeIndex 变化时触发) ---- */}
+      {/* ---- 缩放 + 滤镜层 (React transition) ---- */}
       <div
         className="transition-all duration-500 ease-out flex-1 flex flex-col"
         style={{
