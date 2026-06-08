@@ -3,6 +3,11 @@ import { useState, useEffect, useRef } from 'react'
 // ============================================================
 // CountUpNumber · 滚动触发数字递增动画
 // 使用 IntersectionObserver，进入视口时从 0 递增到目标值
+//
+// 稳健策略：
+//  - 立即显示目标值（不依赖 observer 触发才显示数据）
+//  - observer 触发后播放 0→value 计数动画作为视觉增强
+//  - 使用局部闭包变量管理 once/取消，兼容 React 18 StrictMode
 // ============================================================
 
 interface CountUpNumberProps {
@@ -20,7 +25,7 @@ interface CountUpNumberProps {
   className?: string
   /** 触发阈值（元素可见比例） */
   threshold?: number
-  /** 仅播放一次 */
+  /** 仅播放一次（进入视口后不再重播） */
   once?: boolean
 }
 
@@ -35,28 +40,68 @@ export function CountUpNumber({
   once = true,
 }: CountUpNumberProps) {
   const ref = useRef<HTMLSpanElement>(null)
-  const [displayValue, setDisplayValue] = useState(0)
-  const triggered = useRef(false)
+  // 立即显示目标值——不依赖 observer 触发。observer 仅在触发后做一次
+  // 0→value 的计数动画（纯视觉增强）
+  const [displayValue, setDisplayValue] = useState(value)
+  const triggeredRef = useRef(false)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
 
+    // 如果值没变且已经触发过，跳过
+    if (once && triggeredRef.current && displayValue === value) return
+
+    let cancelled = false
+    const targetValue = value
+
+    const play = () => {
+      if (cancelled) return
+      if (once && triggeredRef.current) return
+      triggeredRef.current = true
+      animateValue(0, targetValue, duration, decimals, (v) => {
+        if (!cancelled) setDisplayValue(v)
+      })
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && (!once || !triggered.current)) {
-          triggered.current = true
-          animateValue(0, value, duration, decimals, setDisplayValue)
+        if (cancelled) return
+        if (entry.isIntersecting) {
+          play()
         } else if (!once && !entry.isIntersecting) {
           setDisplayValue(0)
-          triggered.current = false
         }
       },
       { threshold },
     )
 
     observer.observe(el)
-    return () => observer.disconnect()
+
+    // 兜底：如果元素在 observer 创建时已在视口中，
+    // 使用 rAF 延迟一帧触发（让 React 完成 StrictMode 周期）
+    const rect = el.getBoundingClientRect()
+    if (
+      rect.top < window.innerHeight &&
+      rect.bottom > 0 &&
+      rect.width > 0 &&
+      rect.height > 0
+    ) {
+      const frame = requestAnimationFrame(() => play())
+      return () => {
+        cancelled = true
+        cancelAnimationFrame(frame)
+        observer.disconnect()
+      }
+    }
+
+    return () => {
+      cancelled = true
+      observer.disconnect()
+    }
+    // displayValue 不在 deps 中——play() 通过 setDisplayValue 更新，
+    // 此 effect 仅在 value/duration 等变化时重建 observer
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, duration, decimals, threshold, once])
 
   const formatted =
