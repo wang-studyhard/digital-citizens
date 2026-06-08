@@ -9,8 +9,7 @@ import type { GeoHotspot } from '@/types'
 // GeoJSON: DataV GeoAtlas v3 — 含完整疆域 + 南海诸岛
 // ============================================================
 
-const CHINA_GEOJSON_URL =
-  'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json'
+const CHINA_GEOJSON_URL = './geojson/china.json'
 
 // ---------- 莫兰迪鸭蛋青 · 水下暗色体系 ----------
 const OCEAN_BG = '#0a1929'
