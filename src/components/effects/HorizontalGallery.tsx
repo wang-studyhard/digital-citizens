@@ -33,6 +33,8 @@ let savedScrollY = 0
 
 function lockBodyScroll() {
   savedScrollY = window.scrollY
+  // scrollbarGutter 防止滚动条消失导致的布局偏移（进而可能误触发 IO）
+  document.body.style.scrollbarGutter = 'stable'
   document.body.style.overflow = 'hidden'
   document.body.style.touchAction = 'none'
 }
@@ -40,6 +42,7 @@ function lockBodyScroll() {
 function unlockBodyScroll() {
   document.body.style.overflow = ''
   document.body.style.touchAction = ''
+  document.body.style.scrollbarGutter = ''
 }
 
 interface HorizontalGalleryProps {
@@ -162,22 +165,16 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
   const triggerAnimation = useCallback(
     (targetProgress: number) => {
       if (animState !== 'idle') return
+      if (!sectionRef.current) return
 
-      const section = sectionRef.current
-      if (!section) return
-
-      const direction: AnimState = targetProgress > proxyRef.current.progress ? 'forward' : 'backward'
       // 已经在目标位置，无需动画
       if (Math.abs(targetProgress - proxyRef.current.progress) < 0.001) return
 
+      const direction: AnimState = targetProgress > proxyRef.current.progress ? 'forward' : 'backward'
       animState = direction
 
-      // 精确对齐（消除 subpixel 偏差）
-      const offset = section.getBoundingClientRect().top
-      if (Math.abs(offset) > 1) {
-        window.scrollTo({ top: window.scrollY + offset, behavior: 'instant' })
-      }
-
+      // 先锁滚动，再启动动画（不做任何 scrollTo 对齐 —
+      // IO 在 ratio=0.5 触发时 gallery 已处于正确位置）
       lockBodyScroll()
       scrollLockedRef.current = true
 
@@ -259,7 +256,10 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
         if (animState !== 'idle' || scrollLockedRef.current) return
 
         const rect = section.getBoundingClientRect()
-        const ratio = (window.innerHeight - rect.top) / section.offsetHeight
+        const visibleTop = Math.max(0, rect.top)
+        const visibleBottom = Math.min(window.innerHeight, rect.bottom)
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop)
+        const ratio = visibleHeight / section.offsetHeight
 
         // 上穿 0.5 阈值 → 触发
         if (ratio >= 0.5 && prevRatio < 0.5) {
