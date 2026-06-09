@@ -8,16 +8,16 @@ import type { CommunityHub } from '@/types'
 //
 // 设计原则：
 //   1. 所有视觉状态（opacity / scale / filter / border / shadow）
-//      均由 GSAP 直接操作 DOM，React 不参与。避免 React
-//      reconciliation 覆盖 GSAP 样式 → 卡片"消失"。
+//      均由 GSAP 直接操作 DOM，React 不参与。
 //   2. GalleryCard 使用 React.memo 阻止父组件重渲染时
 //      重置 DOM 样式。
-//   3. IntersectionObserver (threshold [0, 1]) 替代 ScrollTrigger：
-//      - ratio=1（完全进入视口）→ 锁定 body 滚动 → GSAP tween
-//        驱动水平滚动动画（0→1 或 1→0）
-//      - ratio=0（完全离开视口）→ 解锁 body 滚动 → 清理状态
-//      确保地图（上方 120vh wrapper）完全滚出视口后才触发动画。
-//   4. isAnimating 模块级防重复标志：动画进行中时忽略新触发。
+//   3. IntersectionObserver threshold [0.5] 替代 ScrollTrigger：
+//      当 gallery 在视口中占比 ≥50%（即顶部到达视口中央），
+//      锁定 body 滚动 → GSAP tween 驱动水平动画（0→1 或 1→0）。
+//      动画完整播放完毕后自动解锁。
+//      向上回滚时逻辑对称：再次居中时逆向播放。
+//   4. animState 模块级状态机（idle / forward / backward）：
+//      同一时间只有一个动画在进行，动画结束后保持最终 progress。
 //   5. 始终 ≥3 张卡片可见（opacity ≥ 0.55），避免用户
 //      感觉内容"凭空消失"。
 // ============================================================
@@ -26,8 +26,9 @@ const CARD_WIDTH = 420
 const CARD_GAP = 32
 const CARD_STEP = CARD_WIDTH + CARD_GAP
 
-// ---- 模块级防重复标志 ----
-let isAnimating = false
+// ---- 模块级动画状态机 ----
+type AnimState = 'idle' | 'forward' | 'backward'
+let animState: AnimState = 'idle'
 let savedScrollY = 0
 
 function lockBodyScroll() {
@@ -127,7 +128,7 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
         if (dist <= 1) {
           opacity = 1
         } else if (dist >= 4) {
-          opacity = 0.08 // 极淡幽灵态，不彻底消失
+          opacity = 0.08 // 极淡幽灵态
         } else {
           const t = (dist - 1) / 3
           opacity = 1 - t * t
@@ -156,7 +157,53 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
   )
 
   // ================================================================
-  // IntersectionObserver — 替代 ScrollTrigger
+  // 动画触发 — 锁定滚动 → 完整播放 → 解锁
+  // ================================================================
+  const triggerAnimation = useCallback(
+    (targetProgress: number) => {
+      if (animState !== 'idle') return
+
+      const section = sectionRef.current
+      if (!section) return
+
+      const direction: AnimState = targetProgress > proxyRef.current.progress ? 'forward' : 'backward'
+      // 已经在目标位置，无需动画
+      if (Math.abs(targetProgress - proxyRef.current.progress) < 0.001) return
+
+      animState = direction
+
+      // 精确对齐（消除 subpixel 偏差）
+      const offset = section.getBoundingClientRect().top
+      if (Math.abs(offset) > 1) {
+        window.scrollTo({ top: window.scrollY + offset, behavior: 'instant' })
+      }
+
+      lockBodyScroll()
+      scrollLockedRef.current = true
+
+      tweenRef.current = gsap.to(proxyRef.current, {
+        progress: targetProgress,
+        duration: 1.8,
+        ease: 'power2.inOut',
+        onUpdate: () => updateVisuals(proxyRef.current.progress),
+        onComplete: () => {
+          // 确保最终值精确到位
+          proxyRef.current.progress = targetProgress
+          updateVisuals(targetProgress)
+          unlockBodyScroll()
+          scrollLockedRef.current = false
+          animState = 'idle'
+          tweenRef.current = null
+        },
+      })
+    },
+    [updateVisuals],
+  )
+
+  // ================================================================
+  // IntersectionObserver + scroll fallback
+  // threshold [0.5] → 当 gallery 在视口中占比 ≥50% 时触发
+  // （gallery 为 100vh，50% 即顶部到达视口中央）
   // ================================================================
   useLayoutEffect(() => {
     const section = sectionRef.current
@@ -167,59 +214,68 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
     if (n === 0) return
 
     // 初始状态：停在第一张卡片
+    proxyRef.current.progress = 0
     updateVisuals(0)
+    animState = 'idle'
+
+    // ---- IntersectionObserver：threshold [0.5] ----
+    // 仅在 ratio 从 <0.5 穿越到 ≥0.5 时触发（即 gallery 进入视口中央）
+    let prevRatio = 0
+    let isIOInitialized = false
 
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
         const ratio = entry.intersectionRatio
 
-        if (ratio >= 0.99) {
-          // ---- 区块完全进入视口 ----
-          if (isAnimating) return
-          isAnimating = true
-
-          lockBodyScroll()
-          scrollLockedRef.current = true
-
-          // 根据当前进度决定方向：
-          //   进度 < 0.5 → 向前播放 (0→1)
-          //   进度 ≥ 0.5 → 向后回退 (1→0)
-          const currentProgress = proxyRef.current.progress
-          const targetProgress = currentProgress < 0.5 ? 1 : 0
-
-          tweenRef.current = gsap.to(proxyRef.current, {
-            progress: targetProgress,
-            duration: 1.8,
-            ease: 'power2.inOut',
-            onUpdate: () => updateVisuals(proxyRef.current.progress),
-            onComplete: () => {
-              unlockBodyScroll()
-              scrollLockedRef.current = false
-              isAnimating = false
-              tweenRef.current = null
-            },
-          })
-        } else if (ratio <= 0.01 && !entry.isIntersecting) {
-          // ---- 区块完全离开视口 ----
-          if (tweenRef.current) {
-            tweenRef.current.kill()
-            tweenRef.current = null
-          }
-          if (scrollLockedRef.current) {
-            unlockBodyScroll()
-            scrollLockedRef.current = false
-          }
-          isAnimating = false
+        // 首帧不触发（防止页面加载时 gallery 已在视口中误触发）
+        if (!isIOInitialized) {
+          prevRatio = ratio
+          isIOInitialized = true
+          return
         }
-      },
-      { threshold: [0, 1] },
-    )
 
+        // 仅在上穿 0.5 阈值时触发（滚动进入 gallery 中央区域）
+        // 动画中 or 已锁定 → 忽略
+        if (ratio >= 0.5 && prevRatio < 0.5 && animState === 'idle' && !scrollLockedRef.current) {
+          const targetProgress = proxyRef.current.progress < 0.5 ? 1 : 0
+          triggerAnimation(targetProgress)
+        }
+
+        prevRatio = ratio
+      },
+      { threshold: [0.5] },
+    )
     observer.observe(section)
     observerRef.current = observer
 
+    // ---- scroll 事件 fallback（CDP / 快速滚动环境） ----
+    let scrollTicking = false
+    const onScroll = () => {
+      if (scrollTicking || animState !== 'idle' || scrollLockedRef.current) return
+      scrollTicking = true
+      requestAnimationFrame(() => {
+        scrollTicking = false
+        if (animState !== 'idle' || scrollLockedRef.current) return
+
+        const rect = section.getBoundingClientRect()
+        const ratio = (window.innerHeight - rect.top) / section.offsetHeight
+
+        // 上穿 0.5 阈值 → 触发
+        if (ratio >= 0.5 && prevRatio < 0.5) {
+          prevRatio = ratio
+          const targetProgress = proxyRef.current.progress < 0.5 ? 1 : 0
+          triggerAnimation(targetProgress)
+        }
+
+        // 彻底离开视口时重置 prevRatio，为下次进入做准备
+        if (ratio < 0.01) prevRatio = 0
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
     return () => {
+      window.removeEventListener('scroll', onScroll)
       observer.disconnect()
       tweenRef.current?.kill()
       tweenRef.current = null
@@ -227,27 +283,25 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
         unlockBodyScroll()
         scrollLockedRef.current = false
       }
-      isAnimating = false
+      animState = 'idle'
     }
-  }, [hubs.length, updateVisuals])
+  }, [hubs.length, updateVisuals, triggerAnimation])
 
   // ---- 点击进度点 → 跳转到对应卡片 ----
   const jumpToCard = useCallback(
     (index: number) => {
       const n = hubs.length
-      if (n <= 1) return
+      if (n <= 1 || animState !== 'idle') return
       const targetProgress = index / (n - 1)
+      if (Math.abs(targetProgress - proxyRef.current.progress) < 0.001) return
 
-      // 终止正在进行的动画
+      // 终止正在进行的动画（理论上不会，但防御编程）
       tweenRef.current?.kill()
 
-      // 锁定滚动（如果尚未锁定）
-      if (!scrollLockedRef.current) {
-        lockBodyScroll()
-        scrollLockedRef.current = true
-      }
+      animState = targetProgress > proxyRef.current.progress ? 'forward' : 'backward'
 
-      isAnimating = true
+      lockBodyScroll()
+      scrollLockedRef.current = true
 
       tweenRef.current = gsap.to(proxyRef.current, {
         progress: targetProgress,
@@ -255,9 +309,11 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
         ease: 'power2.out',
         onUpdate: () => updateVisuals(proxyRef.current.progress),
         onComplete: () => {
+          proxyRef.current.progress = targetProgress
+          updateVisuals(targetProgress)
           unlockBodyScroll()
           scrollLockedRef.current = false
-          isAnimating = false
+          animState = 'idle'
           tweenRef.current = null
         },
       })
