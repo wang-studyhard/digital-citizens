@@ -34,56 +34,7 @@ export const incomeHeatmap = {
   note: '数据来源：NCC 2024《全景式数字游民洞察报告》n=282。随经验增长，高收入区间占比显著提升——"超56%新晋游民年收入≤10万"（已验证）。',
 }
 
-// ---------- 表3: 数字游民社区据点对比（第三章） ----------
-
-export const communityComparison = {
-  columns: [
-    { key: 'name', header: '社区', align: 'left' as const },
-    { key: 'location', header: '地点', align: 'left' as const },
-    { key: 'founded', header: '创立', align: 'center' as const },
-    { key: 'scale', header: '规模', align: 'right' as const },
-    { key: 'highlight', header: '特色', align: 'left' as const },
-  ],
-  rows: [
-    {
-      name: 'DNA数字游民公社',
-      location: '浙江安吉',
-      founded: '2019',
-      scale: '1.5万人次/年\n常态150-200人',
-      highlight: '中国首个·5000㎡·投资2500万',
-    },
-    {
-      name: 'NCC社区',
-      location: '安徽黄山',
-      founded: '2023',
-      scale: '第二站黄山\n首发安吉',
-      highlight: '共居·共创·共栖生态',
-    },
-    {
-      name: 'Q Space',
-      location: '福建福州',
-      founded: '2024',
-      scale: '700+入驻\n2.5万人次累计',
-      highlight: '29%驻留超6月·政府人才支持',
-    },
-    {
-      name: '天星村',
-      location: '四川成都',
-      founded: '2023',
-      scale: '~300入驻\n~60常态驻留',
-      highlight: '全省首个·城乡融合模式',
-    },
-    {
-      name: '莱斯社区',
-      location: '江苏南京',
-      founded: '2023',
-      scale: '~200入驻\n~40常态驻留',
-      highlight: '城市型空间·南京江宁',
-    },
-  ],
-}
-
-// ---------- 表4: 2022-2024 挑战趋势（第二章） ----------
+// ---------- 表3: 2022-2024 挑战趋势（第二章） ----------
 
 // 数据来源：NCC 2024《全景式数字游民洞察报告》n=282 · Nomad List 2025（全球对比）
 export const challengeTable = {

@@ -80,9 +80,6 @@ function buildEChartsOption(
         `</div>`,
         `<span style="font-size:11px;font-weight:600;">${heat.toFixed(1)}</span>`,
         `</div>`,
-        d.community
-          ? `<div style="font-size:10px;opacity:0.55;margin-top:4px;">🏠 ${d.community}</div>`
-          : '',
         d.description
           ? `<div style="font-size:10px;opacity:0.65;margin-top:4px;line-height:1.4;">${d.description}</div>`
           : '',

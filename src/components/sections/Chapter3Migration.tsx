@@ -1,17 +1,19 @@
-import { useState } from 'react'
+import { useState, useRef, useLayoutEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ParentSize } from '@visx/responsive'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ChapterHeader } from '@/components/shared/ChapterHeader'
 import { QuoteBlock } from '@/components/shared/QuoteBlock'
 import { ChartCard } from '@/components/shared/ChartCard'
 import { DataSource } from '@/components/shared/DataSource'
 import { ChinaMapScatter } from '@/components/charts/ChinaMapScatter'
 import { DonutChart } from '@/components/charts/DonutChart'
-import { DataTable } from '@/components/shared/DataTable'
 import { FadeInView } from '@/components/shared/FadeInView'
 import { HorizontalGallery } from '@/components/effects/HorizontalGallery'
-import { communityComparison } from '@/data/tables'
 import { hotspots, communityHubs, livingPreferences, stayDuration, relocationFrequency } from '@/data/geography'
+
+gsap.registerPlugin(ScrollTrigger)
 
 // ---------- 水平堆积条形图（纯 CSS + Framer Motion，不依赖 visx BarStack）----------
 function HorizontalStackedBars({
@@ -117,6 +119,24 @@ function HorizontalStackedBars({
 }
 
 export function Chapter3Migration() {
+  const mapRef = useRef<HTMLDivElement>(null)
+
+  // ---- 地图钉住: 地图滚动到视口顶部后固定, 用户停留观看后再自然滚出 ----
+  useLayoutEffect(() => {
+    const mapEl = mapRef.current
+    if (!mapEl) return
+
+    const st = ScrollTrigger.create({
+      trigger: mapEl,
+      start: 'top top',
+      end: 'bottom top',
+      pin: true,
+      pinSpacing: true,
+    })
+
+    return () => st.kill()
+  }, [])
+
   return (
     <section id="chapter3" className="py-20 md:py-28 px-6">
       <div className="container mx-auto max-w-6xl">
@@ -131,68 +151,62 @@ export function Chapter3Migration() {
           text="2025年数字游民最热门目的地：丽江、大理、西双版纳、海南……这不是度假清单，而是一群人的年度迁徙路线。"
           size="large"
         />
+      </div>
 
-        {/* ============================================================
-            区块 A — 数字游民热点分布地图
-            minHeight: 120vh — 地图获得充足展示时间（~80vh 独享 +
-            ~40vh 与画廊交叉淡入淡出）。
-            画廊 start: 'top 40%' — 画廊从视口 40% 处开始 pin，
-            地图下半部分仍可见时画廊自然入场，形成流畅叠化过渡。
-        ============================================================ */}
-        <div
-          className="mt-12 flex items-center"
-          style={{ minHeight: '120vh', paddingTop: '2vh', paddingBottom: '4vh' }}
+      {/* ============================================================
+          区块 A — 数字游民热点分布地图 · 全宽布局
+          突破所有 max-width 约束，地图撑满视口宽度。
+          motion.div whileInView margin:-600px 让地图在标题完全展示
+          并继续滚动 ~600px 后才独立淡入，不与第三章标题同时出现。
+      ============================================================ */}
+
+      <div ref={mapRef} className="w-full mt-12" style={{ paddingBottom: '3rem' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-600px 0px' }}
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="w-full"
         >
-          <FadeInView variant="fadeUp" threshold={0} delay={0.05}>
-            <div className="bg-duck-900/50 rounded-card shadow-card p-5 md:p-6 border border-duck-200/8 w-full max-w-6xl mx-auto">
-              <h3 className="text-base md:text-lg font-medium text-charcoal mb-4 font-serif">
-                数字游民热点分布
-              </h3>
-              <ParentSize>
-                {({ width }) => (
-                  <ChinaMapScatter
-                    hotspots={hotspots}
-                    width={width}
-                    height={Math.max(380, width * 0.6)}
-                  />
-                )}
-              </ParentSize>
-              <p className="text-sm text-slate mt-2 text-center">
-                13个热点城市 · 覆盖10个省份 · 从苍山洱海到热带海岛 · 中国数字游民地理版图
-              </p>
-              <div className="mt-3 text-right">
-                <span className="text-xs text-mist">
-                  数据来源
-                  <DataSource refNumber={1} />
-                </span>
-              </div>
+          <div className="bg-duck-900/50 rounded-card shadow-card border border-duck-200/8 w-full px-4 md:px-8 py-5 md:py-8">
+            <h3 className="text-base md:text-lg font-medium text-charcoal mb-4 font-serif px-2">
+              数字游民热点分布
+            </h3>
+            <ParentSize>
+              {({ width }) => (
+                <ChinaMapScatter
+                  hotspots={hotspots}
+                  width={width}
+                  height={Math.max(500, width * 0.55)}
+                />
+              )}
+            </ParentSize>
+            <p className="text-sm text-slate mt-2 text-center">
+              13个热点城市 · 覆盖10个省份 · 从苍山洱海到热带海岛 · 中国数字游民地理版图
+            </p>
+            <div className="mt-3 text-right">
+              <span className="text-xs text-mist">
+                数据来源
+                <DataSource refNumber={1} />
+              </span>
             </div>
-          </FadeInView>
-        </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* 分隔过渡 — 地图 → 画廊，确保地图完全滚出后才展示画廊 */}
+      <div className="h-24 md:h-32" aria-hidden="true" />
+
+      {/* 恢复容器约束，后续内容维持 max-w-6xl 阅读宽度 */}
+      <div className="container mx-auto max-w-6xl">
 
         {/* 五大标志性社区据点 — 横向画廊滚动 (GSAP ScrollTrigger) */}
         <HorizontalGallery hubs={communityHubs} />
 
-        {/* 过渡分隔 — 画廊 → 对比表 */}
-        <div className="relative h-6 mt-8" aria-hidden="true">
+        {/* 过渡分隔 — 画廊 → 居住偏好 */}
+        <div className="relative h-10 mt-10" aria-hidden="true">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 max-w-xs h-px bg-gradient-to-r from-transparent via-duck-300/15 to-transparent" />
         </div>
-
-        {/* 社区据点对比表 */}
-        <FadeInView variant="fadeUp" threshold={0.05}>
-          <h3 className="text-xl font-serif text-charcoal text-center mb-1">
-            五大社区据点对比
-          </h3>
-          <p className="text-center text-slate text-sm mb-4">
-            横向对比关键指标 · 一览社区生态全景
-          </p>
-        </FadeInView>
-        <DataTable
-          columns={communityComparison.columns}
-          rows={communityComparison.rows}
-          sourceRef={1}
-          rowDelay={0.08}
-        />
 
         {/* 居住偏好 + 停留时长 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-16">
