@@ -119,19 +119,38 @@ function HorizontalStackedBars({
 }
 
 export function Chapter3Migration() {
-  const mapRef = useRef<HTMLDivElement>(null)
+  // ---- 模块 A：地图 ----
+  const mapSectionRef = useRef<HTMLDivElement>(null)
+  const mapContentRef = useRef<HTMLDivElement>(null)
 
-  // ---- 地图钉住: 地图滚动到视口顶部后固定, 用户停留观看后再自然滚出 ----
+  // ---- 模块 B：横向画廊的哨兵触发器 — 地图底部 + 24px 过渡区 ----
+  const galleryTriggerRef = useRef<HTMLDivElement>(null)
+
+  // ================================================================
+  // 地图淡入 — ScrollTrigger scrub
+  // trigger: 地图容器自身，与画廊完全解耦
+  // start 'top 80%' → 地图顶部到达视口 80% 处，淡入开始
+  // end   'top 20%' → 地图顶部到达视口 20% 处，淡入完成
+  // 之后地图保持完全可见，直到用户继续向下滚动使其自然离开
+  // scrub: 1 → 反向滚动可逆，不残留状态
+  // ================================================================
   useLayoutEffect(() => {
-    const mapEl = mapRef.current
-    if (!mapEl) return
+    const trigger = mapSectionRef.current
+    const content = mapContentRef.current
+    if (!trigger || !content) return
 
     const st = ScrollTrigger.create({
-      trigger: mapEl,
-      start: 'top top',
-      end: 'bottom top',
-      pin: true,
-      pinSpacing: true,
+      trigger,
+      start: 'top 80%',
+      end: 'top 20%',
+      scrub: 1,
+      onUpdate: (self) => {
+        const p = self.progress
+        gsap.set(content, {
+          opacity: p,
+          y: 40 * (1 - p),
+        })
+      },
     })
 
     return () => st.kill()
@@ -139,6 +158,9 @@ export function Chapter3Migration() {
 
   return (
     <section id="chapter3" className="py-20 md:py-28 px-6">
+      {/* ================================================================
+          章节头部 — 约束宽度，保持阅读节奏
+      ================================================================ */}
       <div className="container mx-auto max-w-6xl">
         <ChapterHeader
           chapter="第三章"
@@ -153,20 +175,28 @@ export function Chapter3Migration() {
         />
       </div>
 
-      {/* ============================================================
-          区块 A — 数字游民热点分布地图 · 全宽布局
-          突破所有 max-width 约束，地图撑满视口宽度。
-          motion.div whileInView margin:-600px 让地图在标题完全展示
-          并继续滚动 ~600px 后才独立淡入，不与第三章标题同时出现。
-      ============================================================ */}
+      {/* ================================================================
+          模块 A — 数字游民热点分布地图 · 全宽布局
 
-      <div ref={mapRef} className="w-full mt-12" style={{ paddingBottom: '3rem' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-600px 0px' }}
-          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          ScrollTrigger (独立，仅使用自身 ref):
+            trigger:  mapSectionRef
+            start:    'top 80%'   — 地图顶部到达视口 80% 处开始淡入
+            end:      'top 20%'   — 地图顶部到达视口 20% 处完全可见
+            scrub:    1           — 滚动驱动，反向可逆
+
+          地图完全可见后自然滚出视口，不被固定。
+          与模块 B（画廊）零耦合，两个模块按滚动顺序独立运行。
+      ================================================================ */}
+      <div
+        ref={mapSectionRef}
+        className="w-full mt-12"
+        style={{ paddingBottom: '0.5rem' }}
+      >
+        {/* GSAP ScrollTrigger 控制此层的 opacity / y；初始 hidden 防闪烁 */}
+        <div
+          ref={mapContentRef}
           className="w-full"
+          style={{ opacity: 0, transform: 'translateY(40px)' }}
         >
           <div className="bg-duck-900/50 rounded-card shadow-card border border-duck-200/8 w-full px-4 md:px-8 py-5 md:py-8">
             <h3 className="text-base md:text-lg font-medium text-charcoal mb-4 font-serif px-2">
@@ -191,18 +221,60 @@ export function Chapter3Migration() {
               </span>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* 分隔过渡 — 地图 → 画廊，确保地图完全滚出后才展示画廊 */}
-      <div className="h-24 md:h-32" aria-hidden="true" />
+      {/* ================================================================
+          哨兵元素 — 地图底部 + 24px 紧凑过渡区
 
-      {/* 恢复容器约束，后续内容维持 max-w-6xl 阅读宽度 */}
+          高度 24px + 地图容器 paddingBottom 0.5rem(8px) ≈ 32px 总间距，
+          相当于正常段落间距。紧贴地图容器底部。
+
+          HorizontalGallery 将此 div 作为 ScrollTrigger 的 trigger，
+          其内部使用 start='bottom top' 触发画廊固定。
+
+          触发时刻的几何关系：
+            哨兵底部 = 地图底部 + 24px
+            当 哨兵底部 = 视口顶部 →
+              地图底部 = 视口顶部 − 24px （地图已自然滚出视口）
+              画廊顶部 = 哨兵底部 = 视口顶部  （画廊刚好进入视口）
+
+          反向滚动时画廊水平回退 → 取消固定 → 地图淡入，
+          逻辑完全可逆，不残留状态。
+      ================================================================ */}
+      <div
+        ref={galleryTriggerRef}
+        className="w-full"
+        style={{ height: '24px' }}
+        aria-hidden="true"
+      />
+
+      {/* ================================================================
+          模块 B — 五大社区据点横向滚动画廊 · 全宽布局
+
+          HorizontalGallery 内部 ScrollTrigger:
+            trigger:   galleryTriggerRef (哨兵 div)
+            start:     'bottom top'
+            pin:       section (画廊 section 元素)
+
+          哨兵底部到达视口顶部时画廊被固定，用户继续滚动驱动
+          水平平移浏览 5 张社区据点卡片。
+
+          画廊内部仅包含一份"五大社区据点对比"的卡片内容，
+          无重复内容。
+
+          反向滚动时画廊先水平回退 → 取消固定 → 紧凑过渡区
+          滚入 → 地图淡出。逻辑完全可逆，不残留状态。
+      ================================================================ */}
+      <HorizontalGallery
+        hubs={communityHubs}
+        triggerRef={galleryTriggerRef}
+      />
+
+      {/* ================================================================
+          画廊之后的图表 — 恢复约束宽度，保持阅读节奏
+      ================================================================ */}
       <div className="container mx-auto max-w-6xl">
-
-        {/* 五大标志性社区据点 — 横向画廊滚动 (GSAP ScrollTrigger) */}
-        <HorizontalGallery hubs={communityHubs} />
-
         {/* 过渡分隔 — 画廊 → 居住偏好 */}
         <div className="relative h-10 mt-10" aria-hidden="true">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 max-w-xs h-px bg-gradient-to-r from-transparent via-duck-300/15 to-transparent" />
@@ -255,7 +327,10 @@ export function Chapter3Migration() {
               </ParentSize>
               <div className="mt-3 space-y-1.5">
                 {stayDuration.map((d) => (
-                  <div key={d.label} className="flex items-center justify-between text-xs text-slate font-sans">
+                  <div
+                    key={d.label}
+                    className="flex items-center justify-between text-xs text-slate font-sans"
+                  >
                     <span>{d.label}</span>
                     <span className="text-charcoal font-medium">{d.percentage}%</span>
                   </div>

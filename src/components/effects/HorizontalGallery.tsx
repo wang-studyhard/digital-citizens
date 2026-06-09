@@ -5,16 +5,16 @@ import { motion } from 'framer-motion'
 import type { CommunityHub } from '@/types'
 
 // ============================================================
-// HorizontalGallery · GSAP ScrollTrigger pin + scrub 水平画廊
+// HorizontalGallery · GSAP ScrollTrigger pin 水平画廊
 //
 // 设计原则：
 //   1. 所有视觉状态（opacity / scale / filter / border / shadow）
 //      均由 GSAP 直接操作 DOM，React 不参与。
 //   2. GalleryCard 使用 React.memo 阻止父组件重渲染时
 //      重置 DOM 样式。
-//   3. ScrollTrigger pin + scrub：
-//      - start: 'top top' — gallery 顶部到达视口顶部时开始 pin
-//      - scrub: 1 — 用户滚动直接驱动水平位移，一下一下自然切换
+//   3. ScrollTrigger pin（无 scrub）：
+//      - start: 'bottom top' — 哨兵底部到达视口顶部时开始 pin
+//      - onUpdate 中手动计算进度并驱动水平位移
 //      - 无需 lockBodyScroll，滚动即动画
 //   4. 始终保持 ≥3 张卡片可见（opacity ≥ 0.55），避免用户
 //      感觉内容"凭空消失"。
@@ -29,9 +29,11 @@ const CARD_STEP = CARD_WIDTH + CARD_GAP
 
 interface HorizontalGalleryProps {
   hubs: CommunityHub[]
+  /** 外部触发器 ref — 当提供时，ScrollTrigger 以此元素为 trigger，start='bottom top' */
+  triggerRef?: { current: HTMLElement | null }
 }
 
-export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
+export function HorizontalGallery({ hubs, triggerRef }: HorizontalGalleryProps) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const stRef = useRef<ScrollTrigger | null>(null)
@@ -139,41 +141,56 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
   )
 
   // ================================================================
-  // ScrollTrigger pin + scrub — 滚动驱动水平画廊
-  // start: 'top center' → gallery 顶部到达视口中央时开始 pin
-  // scrub: 1 → 1:1 映射，用户滚动直接控制卡片位移
+  // ScrollTrigger pin — 滚动驱动水平画廊
+  // 若有外部 triggerRef → start: 'bottom top'（哨兵底部触及视口顶部时开始）
+  // 否则 fallback: start: 'top 60%'
+  // onUpdate 中直接从 self.progress 读取滚动进度（0→1），
+  // 不使用 scrub（无对应 GSAP animation 时 scrub 会导致进度异常）。
   // ================================================================
   useLayoutEffect(() => {
     const section = sectionRef.current
     const track = trackRef.current
+    const externalTrigger = triggerRef?.current
     if (!section || !track || hubs.length === 0) return
 
-    const totalScroll = track.scrollWidth - window.innerWidth
+    const calcTotalScroll = () => track.scrollWidth - window.innerWidth
+    const totalScroll = calcTotalScroll()
     if (totalScroll <= 0) return
 
     // 初始状态：停在第一张卡片
     updateVisuals(0)
 
     const st = ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: () => `+=${totalScroll}`,
-      pin: true,
+      trigger: externalTrigger ?? section,
+      start: externalTrigger ? 'bottom top' : 'top 60%',
+      end: () => `+=${calcTotalScroll()}`,
+      pin: section,
       pinSpacing: true,
-      scrub: 1,
       anticipatePin: 1,
       invalidateOnRefresh: true,
       fastScrollEnd: true,
       refreshPriority: 1,
       onUpdate: (self) => {
-        updateVisuals(self.progress)
+        // 手动计算进度：self.progress 无 animation 时始终为 0，
+        // 故用 (scroll() - start) / (end - start) 自行推算。
+        const range = self.end - self.start
+        const progress = range > 0 ? Math.max(0, Math.min(1, (self.scroll() - self.start) / range)) : 0
+        updateVisuals(progress)
       },
     })
     stRef.current = st
 
+    // 图片/字体等异步资源加载后刷新，确保 totalScroll 准确
+    const onLoad = () => { st.refresh() }
+    window.addEventListener('load', onLoad)
+    // 延迟刷新以防初始布局未稳定
+    const refreshTimer = setTimeout(() => { st.refresh() }, 100)
+
     return () => {
       st.kill()
       stRef.current = null
+      window.removeEventListener('load', onLoad)
+      clearTimeout(refreshTimer)
     }
   }, [hubs.length, updateVisuals])
 
@@ -189,9 +206,13 @@ export function HorizontalGallery({ hubs }: HorizontalGalleryProps) {
       const st = stRef.current
       if (!st) return
 
+      // 刷新确保 start/end 反映当前布局（图片加载后文档高度可能变化）
+      st.refresh()
+
       const targetProgress = index / (n - 1)
       const range = st.end - st.start
-      const targetScroll = st.start + targetProgress * range
+      // +1 偏移防止恰好落在 pin 边界外侧
+      const targetScroll = st.start + targetProgress * range + 1
 
       window.scrollTo({ top: Math.round(targetScroll), behavior: 'smooth' })
     },
