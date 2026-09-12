@@ -28,15 +28,15 @@ const MORPH_VIEWS: MorphView[] = [
   },
   {
     id: 'age',
-    label: '年龄（正文）',
-    description: '报告第9页正文与图旁年龄标签存在内部不一致；当前按正文值重排，年龄切面暂不视为最终冻结结论。',
+    label: '年龄',
+    description: '按报告第9页正文中的出生年代比例重排；这是样本内部结构，不是全国年龄分布。',
     groups: [
       { label: '70后', count: 6, color: 'node-yellow', percentage: '2.13%' },
       { label: '80后', count: 48, color: 'node-blue', percentage: '17.02%' },
       { label: '90后', count: 201, color: 'node-green', percentage: '71.28%' },
       { label: '00后', count: 27, color: 'node-red', percentage: '9.57%' },
     ],
-    locator: '原始阅读器第9页（页脚08），正文出生年代段；图旁标签待确认',
+    locator: '原始阅读器第9页（页脚08），正文出生年代段；按用户确认采用正文值',
   },
   {
     id: 'education',
