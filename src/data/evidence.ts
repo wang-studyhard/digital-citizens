@@ -1,7 +1,7 @@
 import type { EvidenceMetric } from '@/types'
 
 /**
- * V2.1 Evidence Registry
+ * V3 Evidence Registry
  *
  * 这是主线数字的唯一入口。NCC 条目描述社区渠道样本；77 家条目描述
  * 一项研究纳入的社区样本；安吉、黄山和丽水条目描述公开报道或政策文本，

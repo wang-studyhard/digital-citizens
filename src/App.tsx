@@ -1,32 +1,31 @@
-import { NavBar } from '@/components/layout/NavBar'
-import { ScrollProgress } from '@/components/layout/ScrollProgress'
-import { BackToTop } from '@/components/layout/BackToTop'
 import { Footer } from '@/components/layout/Footer'
+import { NavBar } from '@/components/layout/NavBar'
 import { EvidenceDrawer } from '@/components/shared/EvidenceDrawer'
-import { Hero } from '@/components/sections/Hero'
-import { Chapter1Portrait } from '@/components/sections/Chapter1Portrait'
-import { Chapter2Motivation } from '@/components/sections/Chapter2Motivation'
-import { Chapter3Migration } from '@/components/sections/Chapter3Migration'
-import { Chapter4Policy } from '@/components/sections/Chapter4Policy'
-import { Chapter5Conclusion } from '@/components/sections/Chapter5Conclusion'
+import { Scene0Hero } from '@/components/scenes/Scene0Hero'
+import { Scene1Sample } from '@/components/scenes/Scene1Sample'
+import { Scene2Work } from '@/components/scenes/Scene2Work'
+import { Scene3Communities } from '@/components/scenes/Scene3Communities'
+import { Scene4Cases } from '@/components/scenes/Scene4Cases'
+import { Scene5Policy } from '@/components/scenes/Scene5Policy'
+import { Scene6Limits } from '@/components/scenes/Scene6Limits'
+import { Scene7Conclusion } from '@/components/scenes/Scene7Conclusion'
 
 export default function App() {
   return (
     <div className="app-shell">
-      <div className="noise-overlay" aria-hidden="true" />
       <NavBar />
-      <ScrollProgress />
       <main>
-        <Hero />
-        <Chapter1Portrait />
-        <Chapter2Motivation />
-        <Chapter3Migration />
-        <Chapter4Policy />
-        <Chapter5Conclusion />
+        <Scene0Hero />
+        <Scene1Sample />
+        <Scene2Work />
+        <Scene3Communities />
+        <Scene4Cases />
+        <Scene5Policy />
+        <Scene6Limits />
+        <Scene7Conclusion />
       </main>
       <Footer />
-      <div className="evidence-dock"><EvidenceDrawer /></div>
-      <BackToTop />
+      <EvidenceDrawer showTrigger={false} />
     </div>
   )
 }

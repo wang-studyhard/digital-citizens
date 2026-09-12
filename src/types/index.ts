@@ -164,7 +164,7 @@ export interface Reference {
 }
 
 /**
- * V2.1 evidence registry entry. Every visible metric must declare its
+ * V3 evidence registry entry. Every visible metric must declare its
  * population, geography, scope, time boundary and provenance.
  */
 export interface EvidenceMetric {
