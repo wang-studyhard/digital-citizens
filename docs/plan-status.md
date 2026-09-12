@@ -28,7 +28,7 @@
 
 - NCC 282 dot morph：已完成，合并进 77 节点结构交互。
 - 安吉复杂 network：已完成。
-- 省级地图、丽水遂昌小案例、独立 policy matrix、额外章节插画：未推进，当前时间线和案例网络承担主线职责。
+- 独立 policy matrix：已接入 Scene 5，并通过内容校验、构建、性能检查与线上回读；省级地图、丽水遂昌小案例、额外章节插画仍未推进，当前时间线和案例网络承担主线职责。
 
 ### P2
 
@@ -53,10 +53,10 @@ npm run verify
 
 ## 发布状态
 
-- GitHub `main` 已包含应用实现提交 `30ffcfe` 与 Node 24 workflow 更新提交 `d31b2f5`、`e08e86c`；GitHub Pages 公开开发版部署成功。
-- Actions run #16 已成功完成；线上页面已检查标题、主线场景、证据抽屉与控制台日志。
+- GitHub `main` 已包含应用实现提交 `30ffcfe`、证据状态矩阵提交 `fff5683` 与 Node 24 workflow 更新提交 `d31b2f5`、`e08e86c`；GitHub Pages 公开开发版部署成功。
+- Actions run #18 已成功完成；线上页面已检查标题、主线场景、证据状态矩阵、来源锚点与控制台日志。
 - 线上地址：<https://wang-studyhard.github.io/digital-citizens/>。
 - 本次发布是公开开发版，不代表比赛资格确认；Gate 0 仍按用户要求暂停。
-- Pages workflow 已升级至 Node 24 action 版本；run #16 无 Annotations 警告。
+- Pages workflow 已升级至 Node 24 action 版本；run #18 无 Annotations 警告。
 
 当前状态：`freeze-candidate`，不是 `FROZEN`。下一步非比赛工作优先级是：补齐 NCC 原始报告归档与可复核图表定位；取得外部人工筛选素材后完成 manifest；在具备视口控制的浏览器环境中完成 Gate 5 与 Lighthouse。
