@@ -27,7 +27,7 @@
 
 - 规范目标目录 `public/assets/photos/`、`illustrations/`、`charts/`、`textures/`、`icons/`、`sources/` 当前不存在；目前实际使用 `public/media/editorial/`。
 - 规范提出的 `asset-manifest.ts` 当前由 `public/media/manifest.json` 部分承担；暂不重复建立第二个事实源，迁移前先确认字段和调用方。
-- 字体已本地化为 Fontsource 的变量 WOFF2 包：`@fontsource-variable/noto-sans-sc@5.3.0`、`@fontsource-variable/noto-serif-sc@5.3.0`、`@fontsource-variable/jetbrains-mono@5.3.0`，均按 OFL-1.1 使用；入口在 `src/main.tsx`，CSS 通过 `@font-face` 的 `unicode-range` 按需匹配字符子集，满足 `font-display: swap`。
+- 正文已本地化为阿里巴巴普惠体 3.0 的四个 WOFF2 实际字重（400/500/600/700），文件位于 `public/fonts/alibaba-puhuiti/`，入口为 `public/fonts.css`；Display 使用 Fontsource Noto Serif SC，Mono 使用 Fontsource JetBrains Mono，均按包内 OFL-1.1 说明使用并采用 `font-display: swap`。阿里巴巴普惠体来源与授权说明见 [Alibaba Fonts 字体详情](https://www.alibabafonts.com/#/font)，下载包只用于获取本地 WOFF2，不作为运行时依赖。
 - 没有可用于首屏的独立 Level A 现场图；若首屏使用现有图片局部，必须继续保留 caption、credit、date 和 source，不能裁成无地点的装饰背景。
 
 ## 资产红线

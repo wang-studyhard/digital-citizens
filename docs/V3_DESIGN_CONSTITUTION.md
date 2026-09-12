@@ -58,7 +58,7 @@ MOBILE RECOMPOSITION > DESKTOP SHRINKING
 
 - 最多三类：1 个中文正文、1 个 Display、1 个 Mono。
 - 目标是 WOFF2、`font-display: swap`、只加载实际字重、尽可能 subset。
-- 字体已改为本地 Fontsource 变量 WOFF2：Noto Sans SC、Noto Serif SC、JetBrains Mono；入口统一位于 `src/main.tsx`，使用 `font-display: swap`，由字体包的 `unicode-range` 选择实际字符子集。字体授权按包内 OFL-1.1 说明执行。
+- 正文使用本地阿里巴巴普惠体 3.0 WOFF2（400/500/600/700），由 `public/fonts.css` 统一加载；Display 使用本地 Fontsource Noto Serif SC，Mono 使用本地 Fontsource JetBrains Mono，由 `src/main.tsx` 加载。三类字体均使用 `font-display: swap`；阿里巴巴普惠体以官方 Alibaba Fonts 页面所述免费商用范围使用，Noto Serif SC 与 JetBrains Mono 按包内 OFL-1.1 说明使用。
 - 正文保持可持续阅读的行高；标题不以超大字号替代层级设计。
 - Mono 仅用于 `N = 798`、`SOURCE 014`、`FIELD NOTE`、日期、状态和指标编号，不用于长段落。
 

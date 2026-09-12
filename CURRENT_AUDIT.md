@@ -21,7 +21,7 @@
 - `npm run content:check`：通过，48 条 evidence metrics
 - `npm run lint`：通过
 - 三张 manifest 图片均存在于本地 `public/media/editorial/`
-- 当前源码没有发现远程新闻图片、AI 图片或图片 URL；但字体仍通过 Google Fonts 远程加载
+- 当前源码没有发现远程新闻图片、AI 图片、图片 URL 或远程字体加载；正文与数据标签使用本地字体资产
 - 本次未重新执行会写入 `dist/` 的构建，也未重新做浏览器、Lighthouse 或真实设备测试
 
 工作区状态：当前已有用户文件和两个未跟踪的规范文件；本审计新增的 `CURRENT_AUDIT.md` 不覆盖既有文件。
@@ -129,7 +129,7 @@
 
 ### 字体
 
-当前通过 `src/main.tsx` 引入 Fontsource 的本地变量 WOFF2：Noto Sans SC、Noto Serif SC、JetBrains Mono；CSS 分别映射为 `--sans`、`--serif`、`--mono`。字体包按 `unicode-range` 拆分字符子集并使用 `font-display: swap`，不再依赖 Google Fonts 远程样式表。字体数量仍控制在正文、标题、等宽三类。
+正文通过 `public/fonts.css` 使用本地阿里巴巴普惠体 3.0 WOFF2（400/500/600/700），Display 与数据标记继续使用本地 Fontsource Noto Serif SC、JetBrains Mono；三类字体均使用 `font-display: swap`，不依赖 Google Fonts 远程样式表。字体数量仍控制在正文、标题、等宽三类。
 
 ### 颜色
 
@@ -162,7 +162,7 @@
 1. 先冻结一套更明确的 Grid、Typography、Paper identity、Chart grammar 和 Motion grammar。
 2. 把现有 Scene 0—7 从“统一 SceneShell + 重复信息块”改成节奏不同、但仍共享底层网格的编辑叙事。
 3. 补全 Scene Matrix、Content Audit、Asset Audit，以及图表和动效的可核验字段。
-4. 优先解决远程字体、资产目录契约、首屏现场材料和 2—3 个真正有解释作用的 scrollytelling 记忆点。
+4. 优先解决资产目录契约、首屏现场材料和 2—3 个真正有解释作用的 scrollytelling 记忆点。
 5. 保持当前证据边界和已通过的内容门禁；不恢复旧版统计、不补造新闻摄影、不把报道或目标改写成结果。
 
 下一阶段应先写入 `docs/V3_DESIGN_CONSTITUTION.md`、`docs/V3_SCENE_MATRIX.md` 和资产/内容审计，再进入 UI 改造。

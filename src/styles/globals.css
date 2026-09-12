@@ -15,7 +15,7 @@
   --night: #263b4b;
   --night-soft: #334f60;
   --serif: 'Noto Serif SC Variable', 'Noto Serif SC', 'Songti SC', STSong, serif;
-  --sans: 'Noto Sans SC Variable', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --sans: 'Alibaba PuHuiTi 3.0', 'Alibaba PuHuiTi', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --mono: 'JetBrains Mono Variable', 'JetBrains Mono', 'Cascadia Mono', Consolas, monospace;
   color: var(--ink);
   background: var(--paper);
