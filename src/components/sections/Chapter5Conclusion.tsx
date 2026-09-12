@@ -1,6 +1,7 @@
 import { ChapterHeader } from '@/components/shared/ChapterHeader'
 import { EvidenceDrawer } from '@/components/shared/EvidenceDrawer'
 import { FinaleNetwork } from './FinaleNetwork'
+import { PolicyMatrix } from './PolicyMatrix'
 import { PolicyTimeline } from './PolicyTimeline'
 import { TensionField } from './TensionField'
 
@@ -11,6 +12,7 @@ export function Chapter5Conclusion() {
         <div className="mx-auto max-w-6xl">
           <ChapterHeader chapter="Scene 5" title="地方怎样“接住”这些流动？" subtitle="政策先提供条件，社区再把条件变成相遇；最后还要看有没有具体项目与被报道的结果。" align="left" mode="dark" />
           <div className="mt-12"><PolicyTimeline /></div>
+          <PolicyMatrix />
         </div>
       </section>
 
