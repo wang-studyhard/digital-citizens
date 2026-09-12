@@ -1,0 +1,206 @@
+import type { EvidenceMetric } from '@/types'
+
+/**
+ * V2.1 Evidence Registry
+ *
+ * 这是主线数字的唯一入口。NCC 条目描述社区渠道样本；77 家条目描述
+ * 一项研究纳入的社区样本；安吉、黄山和丽水条目描述公开报道或政策文本，
+ * 不把地方案例外推成全国人口或全国经济结果。
+ */
+export const evidenceMetrics: EvidenceMetric[] = [
+  {
+    id: 'ncc-response-total', value: 827, unit: '份问卷',
+    population: 'NCC 社区渠道问卷参与者', geography: '中国（社区渠道）', scope: 'community-channel-sample',
+    period: '2024-04—2024-05', cutoff: '调查结束：2024-05', sourceId: 1,
+    locator: '研究说明：问卷回收段', claimType: 'survey-statistic', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'ncc-valid-total', value: 798, unit: '份有效问卷',
+    population: 'NCC 社区渠道问卷参与者', geography: '中国（社区渠道）', scope: 'community-channel-sample',
+    period: '2024-04—2024-05', cutoff: '调查结束：2024-05', sourceId: 1,
+    locator: '研究说明：清洗后有效问卷段', claimType: 'survey-statistic', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'ncc-digital-nomad-sample', value: 282, unit: '人',
+    population: 'NCC 公开预览中的数字游民样本', geography: '中国（社区渠道）', scope: 'community-channel-sample',
+    period: '2024-04—2024-05', cutoff: '调查结束：2024-05', sourceId: 1,
+    locator: '研究说明：样本构成段', claimType: 'survey-statistic', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '这是便利样本中的数字游民样本，不是中国数字游民人口总量。',
+  },
+  {
+    id: 'ncc-explorer-sample', value: 516, unit: '人',
+    population: 'NCC 公开预览中的数字游民探索者样本', geography: '中国（社区渠道）', scope: 'community-channel-sample',
+    period: '2024-04—2024-05', cutoff: '调查结束：2024-05', sourceId: 1,
+    locator: '研究说明：样本构成段', claimType: 'survey-statistic', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'ncc-structured-interviews', value: 8, unit: '名受访者',
+    population: 'NCC 定性访谈对象', geography: '中国（社区渠道）', scope: 'community-channel-interview-sample',
+    period: '2024-05', cutoff: '访谈结束：2024-05', sourceId: 1,
+    locator: '研究说明：结构化访谈段', claimType: 'survey-statistic', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-total-2025', value: 77, unit: '家社区',
+    population: '研究纳入的中国内地正常运营数字游民社区', geography: '中国内地（港澳台未纳入）', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第51段；注释②', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '研究样本，不是官方普查；筹建中和已关闭社区未纳入。',
+  },
+  {
+    id: 'community-new-2025', value: 33, unit: '家社区',
+    population: '研究纳入的中国内地数字游民社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '2025', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第51段', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-rural', value: 52, unit: '家社区',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第57段；第134段', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-peri-urban', value: 13, unit: '家社区',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第57段；第134段', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-urban', value: 12, unit: '家社区',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第57段；第134段', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-scenic', value: 45.5, unit: '%',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第61段；图3说明', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-ecological', value: 28.5, unit: '%',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第61段；图3说明', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-urban-hub', value: 14.3, unit: '%',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第61段；图3说明', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-industry', value: 11.7, unit: '%',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第61段；图3说明', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-small', value: 68, unit: '家社区',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第66段', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'community-large', value: 9, unit: '家社区',
+    population: '研究纳入的77家社区', geography: '中国内地', scope: 'community-research-sample',
+    period: '截至2025-12-31', cutoff: '2025-12-31', sourceId: 3,
+    locator: '正文第66段', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'anji-space-reuse', value: 37000, unit: '平方米',
+    population: '安吉青年入乡项目公开报道涉及的空间资源', geography: '浙江安吉', scope: 'youth-rural-employment',
+    period: '报道截至2025-02-08', cutoff: '2025-02-08', sourceId: 5,
+    locator: '正文“青来集”空间整合段', claimType: 'reported-fact', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '青年入乡生态数据，不等于数字游民人数或数字游民社区产出。',
+  },
+  {
+    id: 'anji-youth-office', value: 1200, unit: '余名青年',
+    population: '安吉项目公开报道中的常态化办公青年', geography: '浙江安吉', scope: 'youth-rural-employment',
+    period: '报道截至2025-02-08', cutoff: '2025-02-08', sourceId: 5,
+    locator: '正文青年入乡与常态化办公段', claimType: 'reported-fact', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '不能写成安吉数字游民人口。',
+  },
+  {
+    id: 'huangshan-rooms', value: 58, unit: '个房间',
+    population: '黄山黟县社区公开报道中的旅居空间', geography: '安徽黟县', scope: 'huangshan-community-case',
+    period: '报道截至2025-03-27', cutoff: '2025-03-27', sourceId: 4,
+    locator: '正文工业遗址改造与房间数段', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'huangshan-stays', value: 500, unit: '人左右',
+    population: '黄山黟县社区公开报道中的旅居者', geography: '安徽黟县', scope: 'huangshan-community-case',
+    period: '成立不到一年时的报道', cutoff: '2025-03-27', sourceId: 4,
+    locator: '正文社区运营与旅居人数段', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '是旅居案例的报道数量，不代表长期居住人数或全市规模。',
+  },
+  {
+    id: 'huangshan-target-bases-2027', value: 8, unit: '个基地',
+    population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
+    period: '目标至2027年', cutoff: '政策目标时点：2027', sourceId: 6,
+    locator: '行动方案相关目标条款', claimType: 'policy-target', status: 'target',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '目标不是已实现结果。',
+  },
+  {
+    id: 'huangshan-target-teams-2027', value: 500, unit: '个团队',
+    population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
+    period: '目标至2027年', cutoff: '政策目标时点：2027', sourceId: 6,
+    locator: '行动方案相关目标条款', claimType: 'policy-target', status: 'target',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '目标不是已实现结果。',
+  },
+  {
+    id: 'huangshan-target-visits-2027', value: 200000, unit: '人次',
+    population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
+    period: '目标至2027年', cutoff: '政策目标时点：2027', sourceId: 6,
+    locator: '行动方案相关目标条款', claimType: 'policy-target', status: 'target',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '目标不是已实现结果。',
+  },
+  {
+    id: 'lishui-communities-2025', value: 4, unit: '个社区',
+    population: '丽水公开报道中的常态化数字游民社区', geography: '浙江丽水', scope: 'lishui-policy-case',
+    period: '2025', cutoff: '2025-12-12', sourceId: 7,
+    locator: '公开报道中的社区进展段', claimType: 'reported-result', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'lishui-stations-2025', value: 6, unit: '个旅居型驿站',
+    population: '丽水公开报道中的旅居型驿站', geography: '浙江丽水', scope: 'lishui-policy-case',
+    period: '2025', cutoff: '2025-12-12', sourceId: 7,
+    locator: '公开报道中的旅居型驿站段', claimType: 'reported-result', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'lishui-participants-2025', value: 3000, unit: '余人',
+    population: '丽水公开报道中的入驻者', geography: '浙江丽水', scope: 'lishui-policy-case',
+    period: '2025', cutoff: '2025-12-12', sourceId: 7,
+    locator: '公开报道中的入驻人数段', claimType: 'reported-result', status: 'reported',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '入驻人数不能直接等同于长期留下或共创项目成果。',
+  },
+]
+
+export const evidenceById = Object.fromEntries(
+  evidenceMetrics.map((metric) => [metric.id, metric]),
+) as Record<string, EvidenceMetric>

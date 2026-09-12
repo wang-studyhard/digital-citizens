@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "content:check": "node --experimental-strip-types scripts/validate-content.ts",
+    "verify": "npm run content:check && npm run lint && npm run build"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",

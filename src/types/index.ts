@@ -162,3 +162,32 @@ export interface Reference {
   status?: 'verified' | 'reported' | 'pending'
   note?: string
 }
+
+/**
+ * V2.1 evidence registry entry. Every visible metric must declare its
+ * population, geography, scope, time boundary and provenance.
+ */
+export interface EvidenceMetric {
+  id: string
+  value: number | string
+  unit?: string
+  population: string
+  geography: string
+  scope: string
+  period?: string
+  cutoff?: string
+  sourceId: number
+  locator: string
+  claimType:
+    | 'research-statistic'
+    | 'survey-statistic'
+    | 'reported-fact'
+    | 'policy-measure'
+    | 'policy-target'
+    | 'reported-result'
+    | 'editorial-diagram'
+  status: 'verified' | 'reported' | 'secondary' | 'target' | 'pending'
+  canUseAsPrimary: boolean
+  canGeneralizeNationally: boolean
+  note?: string
+}
