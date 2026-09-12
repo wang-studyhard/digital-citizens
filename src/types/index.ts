@@ -160,6 +160,8 @@ export interface Reference {
   url?: string
   locator?: string
   status?: 'verified' | 'reported' | 'pending'
+  type?: 'SURVEY' | 'RESEARCH' | 'REPORT' | 'POLICY' | 'NOTICE' | 'OFFICIAL' | 'PENDING'
+  usedFor?: string
   note?: string
 }
 

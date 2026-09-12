@@ -35,10 +35,10 @@ export function Scene3Communities() {
             {communityViews.map((view) => <button key={view.id} type="button" onClick={() => setMode(view.id)} aria-pressed={mode === view.id}>{view.label}</button>)}
           </div>
           <div className="community-field" data-mode={mode} role="img" aria-label={`${current.label}视图：${current.groups.map((group) => `${group.label}${groupCount(group)}家`).join('，')}`}>
+            {/* PURPOSE: 让同一批 77 家社区的分类关系可见； TRIGGER: 切换聚合维度； DURATION: 360ms； REDUCED-MOTION FALLBACK: 直接切换节点位置。 */}
             {nodes.map((node) => <motion.span layout={reducedMotion ? false : true} transition={{ duration: 0.36, ease: 'easeOut' }} key={node.key} className={`community-node community-node--${node.color}`} aria-hidden="true" />)}
           </div>
           <div className="community-legend">{current.groups.map((group) => <span key={group.label}><i className={`legend-dot legend-dot--${group.color}`} aria-hidden="true" /><strong>{group.label}</strong> {groupLabel(group)}</span>)}</div>
-          <p className="community-panel__note">点阵是辅助视觉；每个分类的准确口径见下方静态表格。地图不进入本章，因为当前没有足以支撑地点级绘制的逐社区记录。</p>
         </div>
       </VizFigure>
     </SceneShell>

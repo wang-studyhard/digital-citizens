@@ -13,7 +13,6 @@ export function Scene0Hero() {
       <div className="hero-scene__ruler" aria-hidden="true"><span>01</span><i /><span>02</span><i /><span>03</span><i /><span>04</span><i /><span>05</span></div>
       <div className="hero-scene__inner">
         <div className="hero-copy">
-          <p className="hero-kicker">数字新闻 / 一扇观察窗口</p>
           <h1 id="hero-title">数字江河</h1>
           <p className="hero-question">当工作离开固定办公室，<br /><em>年轻人与地方正在发生什么？</em></p>
           <p className="hero-intro">我们从一组社区渠道样本出发，再把视线放到社区、真实报道与地方政策。它不是一张全国人口画像，而是一份有边界的观察台账。</p>

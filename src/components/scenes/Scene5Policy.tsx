@@ -27,7 +27,7 @@ function policyRows(): EvidenceRow[] {
 
 export function Scene5Policy() {
   return (
-    <SceneShell id="scene5" number="05" title="地方政策：措施、报道、目标分开读" intro="同一条地方叙事里，措施怎么做、报道说发生了什么、目标想走到哪里，不应被压成一个“成效”数字。" tone="night">
+    <SceneShell id="scene5" number="05" title="把地方政策放回档案里读" intro="一份政策档案要分开记录：措施做了什么，报道说发生了什么，目标想走到哪里。它们不能被压成一个“成效”数字。" tone="night">
       <div className="policy-status-legend" aria-label="政策证据状态"><span><i className="status-line status-line--measure" />措施：做了什么</span><span><i className="status-line status-line--reported" />已报道：公开材料记录了什么</span><span><i className="status-line status-line--target" />目标：政策希望走到哪里</span></div>
       <VizFigure id="policy-ledger" title="政策证据台账" unit="每行一条地方证据记录" population="丽水与大黄山公开政策 / 报道材料" scope="policy-ledger" period="2024—2026；目标至 2027" cutoff="按各来源发布时间与目标时点" sourceRefs={[6, 7, 14]} locator="各条记录的来源编号、正文定位与状态见数据、来源与方法" scopeNote="空白字段表示当前来源没有提供该类信息。状态标签始终带文字，不靠颜色单独编码。" table={<EvidenceTable caption="政策证据台账静态表" columns={[{ key: 'place', label: '地点' }, { key: 'date', label: '时间' }, { key: 'measure', label: '措施' }, { key: 'reported', label: '已报道' }, { key: 'target', label: '目标' }, { key: 'limitation', label: '不能推出' }]} rows={policyRows()} />}>
         <div className="policy-ledger-preview">

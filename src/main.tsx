@@ -1,5 +1,8 @@
 import { Component, StrictMode, type ErrorInfo, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '@fontsource-variable/jetbrains-mono/wght.css'
+import '@fontsource-variable/noto-sans-sc/wght.css'
+import '@fontsource-variable/noto-serif-sc/wght.css'
 import '@/styles/globals.css'
 import App from './App.tsx'
 

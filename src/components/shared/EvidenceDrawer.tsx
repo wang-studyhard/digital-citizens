@@ -51,6 +51,11 @@ export function EvidenceDrawer({ showTrigger = true }: { showTrigger?: boolean }
                 <div className="reference-item__top"><span className="reference-number">[{reference.id}]</span><span className={`reference-status reference-status--${reference.status ?? 'pending'}`}>{STATUS_LABEL[reference.status ?? 'pending']}</span></div>
                 <h4>{reference.title}</h4>
                 <p>{reference.source}</p>
+                <dl className="reference-item__meta">
+                  <div><dt>TYPE</dt><dd>{reference.type ?? 'PENDING'}</dd></div>
+                  <div><dt>USED FOR</dt><dd>{reference.usedFor ?? '未进入主线'}</dd></div>
+                  <div><dt>EVIDENCE</dt><dd>{STATUS_LABEL[reference.status ?? 'pending']}</dd></div>
+                </dl>
                 {reference.locator && <p className="reference-locator">定位：{reference.locator}</p>}
                 {reference.note && <p className="reference-note">口径：{reference.note}</p>}
                 {reference.url && <a href={reference.url} target="_blank" rel="noreferrer">打开来源 ↗</a>}

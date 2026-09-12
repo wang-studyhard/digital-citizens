@@ -48,10 +48,54 @@ function profileTable(groups: readonly { label: string; metricId: string }[]): E
   }))
 }
 
+const unitRows: EvidenceRow[] = [
+  { id: 'digital-nomads', cells: { category: '数字游民样本', count: <EvidenceValue metricId="ncc-digital-nomad-sample" />, note: '社区渠道样本内的一个分支' } },
+  { id: 'explorers', cells: { category: '数字游民探索者样本', count: <EvidenceValue metricId="ncc-explorer-sample" />, note: '有效问卷中的另一分支' } },
+]
+
+function UnitSampleChart() {
+  const fieldRef = React.useRef<HTMLDivElement>(null)
+  const [revealed, setRevealed] = React.useState(false)
+  React.useEffect(() => {
+    const field = fieldRef.current
+    if (!field || typeof IntersectionObserver === 'undefined') {
+      setRevealed(true)
+      return
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setRevealed(true)
+        observer.disconnect()
+      }
+    }, { threshold: 0.2 })
+    observer.observe(field)
+    return () => observer.disconnect()
+  }, [])
+  const units = Array.from({ length: 798 }, (_, index) => index < 282 ? 'nomad' : 'explorer')
+  return (
+    <div className="unit-chart">
+      <div className="unit-chart__topline"><span>N = 798</span><strong>有效问卷全部进入视野</strong></div>
+      <div ref={fieldRef} className={`unit-field${revealed ? ' is-revealed' : ''}`} role="img" aria-label="798 个有效问卷单位，其中 282 个数字游民样本，516 个数字游民探索者样本">
+        {/* PURPOSE: 让 798 个样本从散点收拢成可读分组； TRIGGER: 图表进入视口； DURATION: 900ms； REDUCED-MOTION FALLBACK: 直接显示静态网格。 */}
+        {units.map((type, index) => <i key={index} className={`unit-dot unit-dot--${type}`} style={{ '--scatter-x': `${((index * 37) % 161) - 80}px`, '--scatter-y': `${((index * 61) % 91) - 45}px` } as React.CSSProperties} aria-hidden="true" />)}
+      </div>
+      <div className="unit-chart__legend" aria-label="798 个有效问卷的分支说明">
+        <span><i className="unit-key unit-key--nomad" aria-hidden="true" />282 数字游民样本</span>
+        <span><i className="unit-key unit-key--explorer" aria-hidden="true" />516 数字游民探索者样本</span>
+      </div>
+      <p className="chart-annotation">先看见全部 798 份有效问卷，再拆分 282 / 516；这个切面仍然属于 NCC 社区渠道样本。</p>
+    </div>
+  )
+}
+
 export function Scene1Sample() {
   const [age, education, gender] = [nccProfileViews.age, nccProfileViews.education, nccProfileViews.gender]
   return (
-    <SceneShell id="scene1" number="01" title="我们到底知道多少？" intro="先把样本的入口、分支和统计对象讲清楚。282 是 NCC 社区渠道里的数字游民样本，不是全国人口。">
+    <SceneShell id="scene1" number="01" title="这 798 份有效问卷，能告诉我们什么？" intro="先看见全部有效问卷，再拆出样本分支。282 是 NCC 社区渠道里的数字游民样本，不是全国人口。">
+      <VizFigure id="ncc-valid-unit-chart" title="先看见全部有效问卷" unit="每个点代表 1 份有效问卷" population="NCC 社区渠道有效问卷" scope="community-channel-sample" period="2024-04—2024-05" cutoff="调查结束：2024-05" sourceRefs={[1]} locator="公开预览 p.04“研究说明”：清洗后有效问卷段" scopeNote="798 个点是有效问卷的样本单位；282 / 516 是样本链内部的两个分支，不是全国人口拆分。" table={<EvidenceTable caption="798 份有效问卷的分支静态表" columns={[{ key: 'category', label: '分支' }, { key: 'count', label: '数量' }, { key: 'note', label: '说明' }]} rows={unitRows} />}>
+        <UnitSampleChart />
+      </VizFigure>
+
       <div className="sample-ledger" aria-label="NCC 样本台账">
         {sampleLedger.map((item, index) => (
           <article key={item.label} className="ledger-row">
