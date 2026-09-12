@@ -53,10 +53,10 @@ npm run verify
 
 ## 发布状态
 
-- GitHub `main` 最新已推送至 `3fadd42`；应用实现提交为 `30ffcfe`，GitHub Pages 公开开发版部署成功。
-- Actions run #12 已成功完成；线上页面已检查标题、主线场景、证据抽屉与控制台日志。
+- GitHub `main` 最新已推送至 `e08e86c`；应用实现提交为 `30ffcfe`，GitHub Pages 公开开发版部署成功。
+- Actions run #15 已成功完成；线上页面已检查标题、主线场景、证据抽屉与控制台日志。
 - 线上地址：<https://wang-studyhard.github.io/digital-citizens/>。
 - 本次发布是公开开发版，不代表比赛资格确认；Gate 0 仍按用户要求暂停。
-- Actions 仍有 Node.js 20 弃用提示，当前不阻断构建；后续可单独升级 workflow action 版本。
+- Pages workflow 已升级至 Node 24 action 版本；run #15 无 Annotations 警告。
 
 当前状态：`freeze-candidate`，不是 `FROZEN`。下一步非比赛工作优先级是：补齐 NCC 原始报告归档与可复核图表定位；取得外部人工筛选素材后完成 manifest；在具备视口控制的浏览器环境中完成 Gate 5 与 Lighthouse。
