@@ -71,12 +71,9 @@ export function ImageCard({
               <span className="text-xs font-mono">素材待提供</span>
             </div>
           ) : (
-            <img
-              src={`https://picsum.photos/seed/${encodeURIComponent(alt.replace(/\s+/g, '-').toLowerCase())}/800/600`}
-              alt={alt}
-              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-              loading="lazy"
-            />
+            <div className="flex h-full items-center justify-center px-6 text-center text-xs font-mono text-duck-300">
+              素材待确认
+            </div>
           )}
         </div>
 

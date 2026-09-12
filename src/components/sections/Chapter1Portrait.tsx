@@ -1,6 +1,7 @@
 import { ChapterHeader } from '@/components/shared/ChapterHeader'
 import { EvidenceDrawer } from '@/components/shared/EvidenceDrawer'
 import { EvidenceValue } from '@/components/shared/EvidenceValue'
+import { Ncc282Morph } from './Ncc282Morph'
 
 const SAMPLE_STEPS = [
   { id: 'ncc-response-total', label: '回收', display: '827', tone: 'paper-blue' },
@@ -40,6 +41,8 @@ export function Chapter1Portrait() {
             <figcaption className="mt-6 border-t border-duck-200/10 pt-4 text-xs leading-6 text-mist">827 份问卷回收后得到 798 份有效问卷，其中包含 282 名数字游民和 516 名探索者。样本来自社区渠道，不能外推全国人口。</figcaption>
           </figure>
         </div>
+
+        <Ncc282Morph />
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
           <article className="evidence-card"><p className="data-label text-duck-300">what we can say</p><h3 className="mt-3 font-serif text-2xl text-charcoal">样本如何构成</h3><p className="mt-3 text-sm leading-7 text-slate">可以描述这 282 名数字游民样本的回答，也可以把 8 名结构化访谈作为经验材料。</p><p className="mt-5 font-mono text-sm text-duck-200"><EvidenceValue metricId="ncc-structured-interviews" display="8 名" /></p></article>
