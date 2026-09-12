@@ -9,7 +9,7 @@
 | Gate | 状态 | 证据与剩余项 |
 |---|---|---|
 | Gate 0｜比赛资格 | 暂停 | 赛道、资格、指导教师、设计报告与参赛版隐私扫描不推进。 |
-| Gate 1｜Evidence Freeze | 部分完成 | `docs/source-registry.md`、`docs/content-audit.md`、`src/data/evidence.ts`、`src/data/references.ts` 已建立；37 条主线证据无 `pending`。NCC 方法与样本数字定位到公开预览 p.04；用户完成可见登录后，第9页（页脚08）和第11页（页脚10）的画像字段已核验并用于 282 点阵重绘，报告整页未归档。 |
+| Gate 1｜Evidence Freeze | 部分完成 | `docs/source-registry.md`、`docs/content-audit.md`、`src/data/evidence.ts`、`src/data/references.ts` 已建立；主线证据无 `pending`。NCC 方法与样本数字定位到公开预览 p.04；用户完成可见登录后，第9页（页脚08）和第11页（页脚10）的画像字段已定位并用于 282 点阵重绘。第9页年龄正文与图旁标签存在内部不一致，报告整页未归档，年龄切面不视为最终冻结结论。 |
 | Gate 2｜Content Freeze | 已完成候选 | 静态文本、静态 SVG/CSS 图形和证据边界可以独立读完主线；旧版未核数字已退出。 |
 | Gate 3｜Visual Freeze | 部分完成 | V2.1 叠层纸片视觉已实现并通过反模式检测；安吉、黟县官方报道图片已下载、接入并登记到 `public/media/manifest.json`。三张 Image 2.5 style test 仍需外部人工生成、筛选和 manifest，Codex 不执行生成。 |
 | Gate 4｜Interaction | 已完成候选 | 77 morph、黄山步骤、安吉 network、policy timeline、finale 已接入。 |
@@ -26,7 +26,7 @@
 
 ### P1
 
-- NCC 282 dot morph：已完成，已依据登录后原始阅读器第9/11页重绘年龄、学历、性别切面；与 77 节点结构交互分开，均保留各自统计口径。
+- NCC 282 dot morph：已完成候选，已依据登录后原始阅读器第9/11页重绘年龄、学历、性别切面；教育/性别可用，年龄切面暂采用正文值并保留图旁标签冲突说明。与 77 节点结构交互分开，均保留各自统计口径。
 - 安吉复杂 network：已完成。
 - 独立 policy matrix：已接入 Scene 5，并通过内容校验、构建、性能检查与线上回读；省级地图、丽水遂昌小案例、额外章节插画仍未推进，当前时间线和案例网络承担主线职责。
 
@@ -59,4 +59,4 @@ npm run verify
 - 本次发布是公开开发版，不代表比赛资格确认；Gate 0 仍按用户要求暂停。
 - Pages workflow 已升级至 Node 24 action 版本；run #18 无 Annotations 警告。
 
-当前状态：`freeze-candidate`，不是 `FROZEN`。下一步非比赛工作优先级是：保留 Image 2.5 外部人工筛选流程；在具备视口控制的浏览器环境中完成 Gate 5 与 Lighthouse。比赛资格 Gate 0 仍按用户要求暂停。
+当前状态：`freeze-candidate`，不是 `FROZEN`。下一步非比赛工作优先级是：先解决 NCC 第9页年龄正文/图旁标签冲突；保留 Image 2.5 外部人工筛选流程；在具备视口控制的浏览器环境中完成 Gate 5 与 Lighthouse。比赛资格 Gate 0 仍按用户要求暂停。
