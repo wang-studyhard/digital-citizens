@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T00:00:00+08:00",
+  "title": "数字江河",
+  "description": "编辑拼贴式数据新闻 H5：用路线、坐标、纸片、案例网络和社区节点讲述工作地点移动后的关系变化。",
+  "sourceOfTruth": {
+    "tokens": "src/styles/globals.css",
+    "components": "src/components",
+    "content": "src/data/evidence.ts",
+    "references": "src/data/references.ts"
+  },
+  "colors": {
+    "ink": { "value": "#17292b", "role": "主工作台与深色正文背景" },
+    "inkDeep": { "value": "#0e1d1f", "role": "页脚和最深层次" },
+    "paper": { "value": "#d7e2dd", "role": "浅色纸面" },
+    "paperWarm": { "value": "#d9c4a4", "role": "重点、测量线、暖色纸片" },
+    "teal": { "value": "#a8c5c3", "role": "路线、节点、辅助信息" },
+    "red": { "value": "#c99682", "role": "案例转折与关系节点" },
+    "green": { "value": "#b5c5b0", "role": "社区、已报告状态" },
+    "muted": { "value": "#7f9a9b", "role": "非核心说明" }
+  },
+  "typography": {
+    "display": { "family": "var(--font-serif)", "role": "章节标题、案例名称、叙事句", "weight": "600" },
+    "body": { "family": "var(--font-sans)", "role": "正文与控件", "weight": "400" },
+    "data": { "family": "var(--font-mono)", "role": "数字、坐标、来源编号、状态", "weight": "400" }
+  },
+  "spacing": {
+    "unit": "0.25rem",
+    "scale": ["0.5rem", "0.75rem", "1rem", "1.25rem", "1.5rem", "2rem", "3rem", "4rem"]
+  },
+  "radii": {
+    "surface": "0",
+    "pill": "999px",
+    "node": "50%"
+  },
+  "shadows": {
+    "paper": "0.45rem 0.55rem 1rem rgba(23, 41, 43, 0.16)",
+    "panel": "0.5rem 0.65rem 1.25rem rgba(23, 41, 43, 0.12)",
+    "node": "0.35rem 0.35rem 0 rgba(23, 41, 43, 0.14)"
+  },
+  "motion": {
+    "nodeLayout": { "duration": "0.42s", "easing": "ease" },
+    "uiTransition": { "duration": "0.28s", "easing": "ease" },
+    "reducedMotion": "关闭承载结论的过渡，保留静态信息和交互反馈"
+  },
+  "breakpoints": {
+    "mobile": "600px",
+    "tablet": "900px",
+    "wide": "1408px"
+  },
+  "components": [
+    { "name": "site-nav", "surface": "ink", "interaction": "章节跳转与窄屏菜单" },
+    { "name": "paper-note", "surface": "paperWarm", "interaction": "静态证据便签" },
+    { "name": "morph-control", "surface": "transparent", "interaction": "aria-pressed 模式切换" },
+    { "name": "evidence-dialog", "surface": "ink", "interaction": "原生 dialog、关闭、来源回链" },
+    { "name": "community-node", "surface": "ink", "interaction": "节点布局过渡与静态图例" }
+  ],
+  "narrative": {
+    "do": ["先证据，再表达", "先说明边界，再展示数字", "案例回到具体地点、行动与关系"],
+    "dont": ["不恢复水下潜水员、漂浮关键词、像素角色", "不把目标写成结果", "不添加伪造新闻摄影"]
+  }
+}

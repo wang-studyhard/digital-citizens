@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion'
-
 interface SectionTitleProps {
   chapter?: string
   title: string
@@ -20,21 +18,9 @@ export function SectionTitle({
   const alignClass = align === 'center' ? 'text-center' : 'text-left'
 
   return (
-    <motion.div
-      className={alignClass}
-      initial={false}
-      whileInView={{ y: 0, opacity: 1 }}
-      viewport={{ once: true, margin: '-10% 0px' }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-    >
+    <div className={`${alignClass} max-w-3xl ${align === 'center' ? 'mx-auto' : ''}`}>
       <h2
-        className="font-serif font-bold leading-tight tracking-[0.02em]"
-        style={{
-          fontSize: 'clamp(2.25rem, 6vw, 4.25rem)',
-          color: '#b9c8be',
-          textShadow: '0 1px 3px rgba(0,0,0,0.18), 0 0 22px rgba(185,200,190,0.14)',
-          marginBottom: subtitle ? '0.75rem' : '0',
-        }}
+        className="chapter-title text-[clamp(2.25rem,6vw,4.5rem)] text-charcoal"
       >
         {chapter && <span className="mr-3 text-[0.55em] font-normal text-duck-300/80">{chapter}</span>}
         {title}
@@ -49,6 +35,6 @@ export function SectionTitle({
           {subtitle}
         </p>
       )}
-    </motion.div>
+    </div>
   )
 }

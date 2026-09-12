@@ -1,66 +1,29 @@
 import { ChapterHeader } from '@/components/shared/ChapterHeader'
-import { QuoteBlock } from '@/components/shared/QuoteBlock'
-import { CostComparisonDiagram } from '@/components/charts/CostComparisonDiagram'
-import { FadeInView } from '@/components/shared/FadeInView'
-import { DataSource } from '@/components/shared/DataSource'
-import { costComparison, savingsDifference } from '@/data/economics'
 
-const SUPPORTS = [
-  ['稳定交付', '远程工作的前提仍是清晰的任务、稳定的网络和可预期的协作。'],
-  ['自我管理', '公开采访中的受访者提到，自由意味着自己安排工作节奏，也要承担失去项目的风险。'],
-  ['社会连接', '社区提供交流机会，但它不能替代劳动保障、医疗服务和长期的社会关系。'],
+const TIME_STEPS = [
+  ['地点变了', '办公桌从固定场所离开，日常被重新放进村庄、县城或旅居社区。'],
+  ['时间重新组织', '自主安排带来弹性，也把排期、交付和自我管理交回个人。'],
+  ['项目仍有截止时间', '工作地点可以移动，客户、团队和合同的时间不会因此消失。'],
+  ['关系需要重新建立', '网络连接解决的是沟通，不自动产生信任、归属与劳动保障。'],
 ]
 
 export function Chapter2Motivation() {
   return (
-    <section id="chapter2" className="py-20 md:py-28 px-6">
-      <div className="container mx-auto max-w-6xl">
-        <ChapterHeader
-          chapter="第二章"
-          title="自由需要支撑"
-          subtitle="工作地点可以移动，交付、收入、公共服务与人与人的连接仍然存在。"
-        />
+    <section id="scene2" className="scene scene--ink px-6 py-20 md:py-32">
+      <div className="mx-auto max-w-6xl">
+        <ChapterHeader chapter="Scene 2" title="离开办公室以后，工作真的更自由了吗？" subtitle="自由不是地点的同义词。地点变化之后，时间、交付和关系被重新编排。" align="left" mode="dark" />
 
-        <QuoteBlock
-          text="数字游民不是把工作留在城市之外，而是把工作带进新的生活场景。"
-          size="large"
-        />
-
-        <FadeInView variant="fadeUp" className="mt-14">
-          <h3 className="text-2xl font-serif text-charcoal text-center">同一份收入，生活成本会怎样变化？</h3>
-          <p className="mt-2 text-center text-sm text-slate">
-            以下是帮助读者理解“地理套利”的示意模型，不代表调查结果或任何个人的实际预算。
-          </p>
-        </FadeInView>
-
-        <div className="mt-8">
-          <CostComparisonDiagram
-            leftData={costComparison[0]}
-            rightData={costComparison[1]}
-            savingsDifference={savingsDifference}
-          />
-          <p className="mt-3 text-center text-xs leading-relaxed text-mist">
-            假设月收入均为15,000元，仅比较示例中的房租和日常支出；交通、医疗、税费与家庭责任未纳入。
-          </p>
-        </div>
-
-        <FadeInView variant="fadeUp" className="mt-20">
-          <div className="border-t border-duck-200/15 pt-8">
-            <h3 className="text-2xl font-serif text-charcoal text-center">地点改变之后，什么仍然重要？</h3>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
-              {SUPPORTS.map(([title, text], index) => (
-                <article key={title} className="border-l border-duck-300/35 pl-4">
-                  <p className="font-serif text-lg text-duck-200">{String(index + 1).padStart(2, '0')} {title}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-slate">{text}</p>
-                </article>
-              ))}
-            </div>
-            <p className="mt-7 text-center text-xs text-mist">
-              受访者经验来自公开媒体报道，不能代替对所有数字游民的调查。
-              <DataSource refNumber={2} />
-            </p>
+        <figure className="time-diagram mt-14" aria-labelledby="time-diagram-title">
+          <div className="max-w-2xl"><p className="data-label text-warm-300">editorial time diagram · not a statistical chart</p><h3 id="time-diagram-title" className="mt-3 font-serif text-3xl leading-tight text-charcoal md:text-5xl">工作地点离开固定办公室，<br /><em className="text-warm-300">劳动本身没有离开。</em></h3></div>
+          <div className="time-rail" role="list" aria-label="自由与不稳定的关系链">
+            {TIME_STEPS.map(([title, text], index) => <div key={title} className="time-node" role="listitem"><div className="time-node__number">0{index + 1}</div><div><h4 className="font-serif text-xl text-charcoal md:text-2xl">{title}</h4><p className="mt-2 max-w-[28ch] text-sm leading-7 text-slate">{text}</p></div></div>)}
           </div>
-        </FadeInView>
+          <figcaption className="mt-10 border-t border-duck-200/10 pt-4 text-xs leading-6 text-mist">这是编辑图解，用来说明一条关系链，不把学术概念伪装成统计趋势。研究讨论的“时间编织”“结构性悬浮”和情感连接，需要回到具体地方与劳动经验中理解。</figcaption>
+        </figure>
+
+        <div className="mt-16 grid gap-0 border-y border-duck-200/10 md:grid-cols-3">
+          {[['稳定交付', '网络、协作和任务边界，是远程工作能够持续的前提。'], ['自我管理', '弹性时间同时意味着排期、收入和项目风险由个人承担更多。'], ['社会连接', '社区提供相遇机会，但不能替代医疗、社保和长期关系。']].map(([title, text], index) => <article key={title} className="border-b border-duck-200/10 px-1 py-7 md:border-b-0 md:border-r md:px-7 md:first:pl-0 md:last:border-r-0 md:last:pr-0"><p className="font-mono text-xs text-warm-300">0{index + 1}</p><h4 className="mt-3 font-serif text-2xl text-charcoal">{title}</h4><p className="mt-3 text-sm leading-7 text-slate">{text}</p></article>)}
+        </div>
       </div>
     </section>
   )
