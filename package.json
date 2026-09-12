@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "content:check": "node --experimental-strip-types scripts/validate-content.ts",
-    "verify": "npm run content:check && npm run lint && npm run build"
+    "perf:check": "node scripts/check-performance.mjs",
+    "verify": "npm run content:check && npm run lint && npm run build && npm run perf:check"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",

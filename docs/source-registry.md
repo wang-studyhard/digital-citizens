@@ -22,7 +22,10 @@
 4. [新华社：引导数字游民更好参与乡村振兴](https://www3.xinhuanet.com/politics/20250327/cb9de601c22e44c59843ab96124b30f8/c.html)：黄山黟县社区行动案例。
 5. [新华社：浙江安吉青年入乡新观察](https://www.xinhuanet.com/20250208/e67b874a40c0474a825fed82f95d623c/c.html)：安吉青年入乡生态，统一使用 `youth-rural-employment` scope。
 6. [大黄山全球数字游民集聚创业地建设行动方案](https://www.cnjx.gov.cn/OpennessContent/show/3392059.html)：黄山政策目标，只能标为 `target`。
-7. [丽水市支持数字游民旅居共创十条措施](https://tradeinservices.mofcom.gov.cn/article/szmy/hydt/202512/180554.html)：丽水政策与公开进展，状态为 `reported`。
+7. [在丽水，看见诗画中国](https://zjnews.zjol.com.cn/ymkzj/202512/t20251204_31380400.shtml)：2025 年丽水社区、驿站与旅居进展，状态为 `reported`。
+14. [浙江丽水：红绿生辉处 老区“新”意浓](https://zj.people.com.cn/n2/2026/0618/c186327-41615033.html)：2026 年 5 个常态化社区、41 个共创提案与 12 个落地项目，状态为 `reported`。
+15. [2026年安吉县青年入乡发展会议暨数字游民共创计划发布会举行](https://app.xinhuanet.com/news/article.html?articleId=20260430f2a4c089608644dd82108d3f970021e5)：5.1 万青年、1000 余个青创项目与百个乡村工位，统一使用 `youth-rural-employment` scope。
+16. [黄山市人民政府关于黟县数字游民生态的公开信息](https://www.huangshan.gov.cn/zwgk/public/6615714/11966730.html)：5000 余人次、47 场、18 项、22 个与 2200 余万元等后续报道口径，状态为 `reported`。
 
 ## 使用红线
 
