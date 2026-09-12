@@ -53,8 +53,8 @@ npm run verify
 
 ## 发布状态
 
-- GitHub `main` 已推送至 `30ffcfe`，GitHub Pages 公开开发版部署成功。
-- Actions run #11 已成功完成；线上页面已检查标题、主线场景、证据抽屉与控制台日志。
+- GitHub `main` 最新已推送至 `3fadd42`；应用实现提交为 `30ffcfe`，GitHub Pages 公开开发版部署成功。
+- Actions run #12 已成功完成；线上页面已检查标题、主线场景、证据抽屉与控制台日志。
 - 线上地址：<https://wang-studyhard.github.io/digital-citizens/>。
 - 本次发布是公开开发版，不代表比赛资格确认；Gate 0 仍按用户要求暂停。
 - Actions 仍有 Node.js 20 弃用提示，当前不阻断构建；后续可单独升级 workflow action 版本。
