@@ -54,4 +54,4 @@ night       #213746
 
 ## 验收底线
 
-Scene 0—7 独立可读；390 / 430 / 768 / 1024 / 1440 / 1920px 无全局横向溢出；图片有尺寸、alt 和失败占位；图表有静态表格；键盘、触摸、Escape、focus-visible 和 reduced-motion 可用；不部署正式版本。
+Scene 0—7 独立可读；390 / 430 / 768 / 1024 / 1440 / 1920px 无全局横向溢出；图片有尺寸、alt 和失败占位；图表有静态表格；键盘、触摸、Escape、focus-visible 和 reduced-motion 可用。V3 已发布为公开 GitHub Pages 版本，正式比赛版仍需另行确认。

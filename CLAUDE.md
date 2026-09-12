@@ -51,7 +51,7 @@ scripts/check-performance.mjs       构建资产预算
 
 ## 当前发布边界
 
-- 本轮只在本地分支 `v3-freeze-candidate` 完成实现与 QA；不推送、不部署。
-- 若未来发布，推送前必须运行 `npm run verify`；发布也不代表比赛资格已确认。
+- V3 已由 `v3-freeze-candidate` 推送到 `main` 并发布到 GitHub Pages；当前线上地址见 `docs/plan-status.md`。
+- 后续每次发布前必须运行 `npm run verify`；发布也不代表比赛资格已确认。
 - 不把原始蓝图文件纳入提交，不删除用户残留文件，不自动清理工作区。
 - 详细完成度和待补项以 `docs/plan-status.md` 为准；无法核实的来源保持 `reported` 或 `pending`。

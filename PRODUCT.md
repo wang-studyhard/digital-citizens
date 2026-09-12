@@ -34,7 +34,7 @@
 - 每个数据图通过 `VizFigure` 提供标题、单位、population、scope、period、cutoff、来源定位和静态表格 fallback。
 - 真实照片自然比例显示，不默认裁切；所有媒体有尺寸、alt、来源和版权说明。
 - 主要交互最多两个；全部具备键盘、触摸和 `prefers-reduced-motion` fallback。
-- 页面不自动部署正式版本，不推送 `main`。
+- V3 当前已推送 `main` 并发布为公开 GitHub Pages 版本；不把它表述为已确认的比赛参赛版。
 
 ## 交付边界
 
