@@ -50,7 +50,10 @@ export function GroupedBarChart({
     hideTooltip,
   } = useTooltip<{ key: string; value: number; bar: string }>()
 
-  const keys = segmentKeys || data[0]?.segments.map((s) => s.key) || []
+  const keys = useMemo(
+    () => segmentKeys || data[0]?.segments.map((s) => s.key) || [],
+    [segmentKeys, data],
+  )
 
   const maxValue = Math.max(
     ...data.flatMap((d) => d.segments.map((s) => s.value))

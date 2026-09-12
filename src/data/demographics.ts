@@ -18,10 +18,10 @@ import type {
 // ---------- 年龄分布 ----------
 
 export const ageDistribution: AgeGroup[] = [
-  { label: '70后（1981前）', percentage: 2.13, description: '不惑之年的先行者' },
-  { label: '80后（1981-1990）', percentage: 17.02, description: '千禧一代的中坚' },
-  { label: '90后（1991-2000）', percentage: 71.28, description: '绝对主力军' },
-  { label: '00后（2001后）', percentage: 9.57, description: 'Z世代的边缘实验' },
+  { label: '70后及更早', percentage: 2.13, description: '样本占比' },
+  { label: '80后', percentage: 17.02, description: '样本占比' },
+  { label: '90后', percentage: 71.28, description: '样本占比' },
+  { label: '00后及以后', percentage: 9.57, description: '样本占比' },
 ]
 
 export const averageAge = 31
@@ -39,9 +39,10 @@ export const educationDistribution: EducationLevel[] = [
 
 export const higherEducationPercent = 86.52 // 本科及以上
 export const mastersPercent = 25.17 // 含硕士及以上
-export const studyAbroadPercent = 19.50 // 海外留学比例
-export const topStudyDestinations = ['英国', '澳大利亚', '新加坡']
-export const ukPercent = 36.36 // 英国留学占比
+// 留学相关数据在公开预览中存在口径差异，暂不进入主线。
+export const studyAbroadPercent = null
+export const topStudyDestinations: string[] = []
+export const ukPercent = null
 
 // ---------- 性别分布 ----------
 
@@ -103,7 +104,8 @@ export const nomadDuration: SurveyResult = {
 }
 
 // 1年内才开始的占比（增长趋势）
-export const recentNomadPercent = 54.40
+// 旧版“近1年”数字与报告不同题目的统计混用，保留导出以兼容旧组件，主线不展示。
+export const recentNomadPercent = null
 
 // ---------- 每周工作时长 ----------
 

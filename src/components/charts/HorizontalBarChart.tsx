@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Bar } from '@visx/shape'
 import { Group } from '@visx/group'
 import { scaleBand, scaleLinear } from '@visx/scale'
 import { useTooltip, TooltipWithBounds as Tooltip } from '@visx/tooltip'

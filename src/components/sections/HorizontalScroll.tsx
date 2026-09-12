@@ -13,7 +13,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 const LINES = [
   '数字江河之下',
-  '千万中国青年正在流动',
+  '许多中国青年正在流动',
   '他们叫「数字游民」',
   '与时代同频共振',
   '在城乡之间重塑工作的意义',
@@ -35,6 +35,7 @@ export function HorizontalScroll() {
     const section = sectionRef.current
     const track = trackRef.current
     if (!section || !track) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const st = ScrollTrigger.create({
       trigger: section,
@@ -80,6 +81,7 @@ export function HorizontalScroll() {
 
   // ---- 文本压力：rAF 中计算每个 chunk 与指针的距离 ----
   useAnimationFrame(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const { x: px, y: py, active } = pointerRef.current
     if (!active) return
 
@@ -110,8 +112,7 @@ export function HorizontalScroll() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-duck-950"
-      style={{ height: '100vh' }}
+      className="horizontal-scroll-section relative overflow-hidden bg-duck-950"
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
     >
@@ -119,10 +120,10 @@ export function HorizontalScroll() {
       <div className="absolute inset-0 bg-gradient-to-r from-duck-950 via-duck-900/30 to-duck-950 pointer-events-none" />
 
       {/* 水平滚动轨道 */}
-      <div className="absolute inset-0 flex items-center">
+      <div className="horizontal-scroll-stage absolute inset-0 flex items-center">
         <div
           ref={trackRef}
-          className="flex items-center gap-8 md:gap-12 lg:gap-16 whitespace-nowrap px-[20vw] select-none"
+          className="horizontal-scroll-track flex items-center gap-8 md:gap-12 lg:gap-16 whitespace-nowrap px-[20vw] select-none"
           style={{ willChange: 'transform' }}
         >
           {LINES.map((text, i) => (

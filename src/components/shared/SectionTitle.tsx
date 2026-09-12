@@ -1,10 +1,4 @@
 import { motion } from 'framer-motion'
-import { FadeInView } from './FadeInView'
-
-// ============================================================
-// SectionTitle · 字符级逐字淡入 + 模糊→锐利
-// "第X章"与主标题同字号同行，副标题 1/4 主标题
-// ============================================================
 
 interface SectionTitleProps {
   chapter?: string
@@ -14,51 +8,7 @@ interface SectionTitleProps {
   mode?: 'light' | 'dark'
 }
 
-/** 字符串拆为字符级 motion.span，stagger 0.02s 模糊→锐利 */
-function CharByChar({
-  text,
-  as: Tag = 'span',
-  style,
-}: {
-  text: string
-  as?: 'span' | 'h2'
-  style?: React.CSSProperties
-}) {
-  const children = text.split('').map((char, i) => (
-    <motion.span
-      key={i}
-      style={{ display: 'inline-block' }}
-      variants={{
-        hidden: { opacity: 0.5, filter: 'blur(5px)' },
-        visible: { opacity: 1, filter: 'blur(0px)' },
-      }}
-    >
-      {char === ' ' ? ' ' : char}
-    </motion.span>
-  ))
-
-  const variants = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.02 } },
-  }
-
-  const commonStyle = { ...style, display: Tag === 'h2' ? ('block' as const) : ('inline' as const) }
-
-  if (Tag === 'h2') {
-    return (
-      <motion.h2 style={commonStyle} variants={variants}>
-        {children}
-      </motion.h2>
-    )
-  }
-
-  return (
-    <motion.span style={commonStyle} variants={variants}>
-      {children}
-    </motion.span>
-  )
-}
-
+/** 章节标题保持首屏可见；动画只作为进入后的轻微增强，不承担内容显示。 */
 export function SectionTitle({
   chapter,
   title,
@@ -70,48 +20,35 @@ export function SectionTitle({
   const alignClass = align === 'center' ? 'text-center' : 'text-left'
 
   return (
-    <FadeInView variant="fadeUp" className={`${alignClass}`}>
-      {/* "第X章" + 主标题 — 同一行，同字号 */}
-      <CharByChar
-        as="h2"
-        text={chapter ? `${chapter}  ${title}` : title}
+    <motion.div
+      className={alignClass}
+      initial={false}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true, margin: '-10% 0px' }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <h2
+        className="font-serif font-bold leading-tight tracking-[0.02em]"
         style={{
-          fontSize: 'clamp(2.6rem, 6.5vw, 4.42rem)',
+          fontSize: 'clamp(2.25rem, 6vw, 4.25rem)',
           color: '#b9c8be',
-          textShadow:
-            '0 1px 3px rgba(0,0,0,0.10), 0 0 22px rgba(185,200,190,0.18)',
-          fontFamily: 'var(--font-serif)',
-          fontWeight: 700,
-          letterSpacing: '0.04em',
-          lineHeight: 1.25,
-          marginBottom: subtitle ? '0.6rem' : '0',
+          textShadow: '0 1px 3px rgba(0,0,0,0.18), 0 0 22px rgba(185,200,190,0.14)',
+          marginBottom: subtitle ? '0.75rem' : '0',
         }}
-      />
+      >
+        {chapter && <span className="mr-3 text-[0.55em] font-normal text-duck-300/80">{chapter}</span>}
+        {title}
+      </h2>
 
-      {/* 副标题 — 单行宋体 + 放大 30% */}
       {subtitle && (
-        <motion.p
-          className={`max-w-[88vw] font-serif ${
+        <p
+          className={`max-w-[70ch] text-base md:text-lg leading-relaxed ${
             align === 'center' ? 'mx-auto' : ''
-          } ${isDark ? 'text-duck-200/80' : 'text-slate'}`}
-          style={{
-            fontSize: 'clamp(0.65rem, 1.625vw, 1.1rem)',
-            fontFamily: 'var(--font-serif)',
-            fontWeight: 400,
-            letterSpacing: '0.03em',
-            lineHeight: 1.35,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-          variants={{
-            hidden: { opacity: 0, y: 10 },
-            visible: { opacity: 1, y: 0 },
-          }}
+          } ${isDark ? 'text-duck-200/85' : 'text-slate'}`}
         >
           {subtitle}
-        </motion.p>
+        </p>
       )}
-    </FadeInView>
+    </motion.div>
   )
 }

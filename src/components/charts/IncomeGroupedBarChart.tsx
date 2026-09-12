@@ -97,11 +97,11 @@ export function IncomeGroupedBarChart({
         },
         extraCssText:
           'border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.35);',
-        formatter: (params: any) => {
+        formatter: (params) => {
           if (!Array.isArray(params) || params.length === 0) return ''
-          const expLabel = params[0]?.axisValueLabel ?? ''
+          const expLabel = params[0]?.name ?? ''
           const lines = params.map(
-            (p: any) =>
+            (p) =>
               `<div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
                 <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};"></span>
                 <span style="flex:1;">${p.seriesName}</span>

@@ -1,9 +1,6 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { BigNumber } from '@/components/shared/BigNumber'
 import { FadeInView } from '@/components/shared/FadeInView'
-import { averageAge } from '@/data/demographics'
-import { genZWillingness } from '@/data/policy'
 
 // ============================================================
 // 序言 · 位于首页与第一章之间
@@ -62,34 +59,33 @@ export function Preamble() {
         {/* 核心介绍段落 */}
         <FadeInView variant="fadeUp" delay={0.4}>
           <p
-            className="prose-body text-[1.15rem] md:text-[1.35rem] leading-[2.1] text-duck-200/60 max-w-2xl mx-auto mb-14"
+            className="prose-body text-[1.15rem] md:text-[1.35rem] leading-[2.1] text-duck-200/85 max-w-2xl mx-auto mb-10"
             style={{
               textShadow: '0 0 80px rgba(168,197,195,0.06), 0 1px 3px rgba(0,0,0,0.08)',
             }}
           >
-            截至2023年底，约7000万至1亿中国青年
+            一根网线，让工作地点开始移动。
             <br />
-            正在经历这场流动的生存实验。
+            当青年走进乡村，流动能否留下新的连接？
             <br />
-            <span className="text-duck-200/40 text-sm">
-              ——这不只是远程办公，而是一种新生活形态的集体实践。
+            <span className="text-duck-200/60 text-sm">
+              ——我们从公开报道、研究与政策文本中，寻找正在发生的答案。
             </span>
           </p>
         </FadeInView>
 
-        {/* 关键数字 — BigNumber */}
         <FadeInView variant="fadeUp" delay={0.8}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 max-w-2xl mx-auto mb-14">
-            <BigNumber value={75} suffix="M+" label="中国数字游民规模" color="#C4A882" light />
-            <BigNumber value={averageAge} suffix="岁" label="平均年龄" color="#A8C5C3" light />
-            <BigNumber value={71.28} suffix="%" label="90后为主力" color="#B5C5B0" light />
-            <BigNumber
-              value={genZWillingness.percentage}
-              suffix="%"
-              label="00后愿成为数字游民"
-              color="#87B0AE"
-              light
-            />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-2xl mx-auto mb-14 text-left">
+            {[
+              ['看见', '谁在移动，以及他们如何工作'],
+              ['追踪', '青年与地方发生联系的具体时刻'],
+              ['追问', '一段合作怎样才能真正持续'],
+            ].map(([label, text]) => (
+              <div key={label} className="border-l border-duck-300/30 pl-4">
+                <p className="text-duck-200 font-serif text-lg">{label}</p>
+                <p className="text-duck-200/65 text-sm leading-relaxed mt-1">{text}</p>
+              </div>
+            ))}
           </div>
         </FadeInView>
 
@@ -99,7 +95,7 @@ export function Preamble() {
             className="text-sm text-duck-300/35 font-mono tracking-wider"
             style={{ textShadow: '0 0 40px rgba(168,197,195,0.04)' }}
           >
-            这并非大厂逃离的浪漫叙事，而是结构性压力下的生存实验。
+            一份基于公开资料的交互专题 · 更新至 2026 年 9 月
           </p>
         </FadeInView>
       </div>

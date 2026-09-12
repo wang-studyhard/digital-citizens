@@ -27,6 +27,21 @@ interface ChinaMapScatterProps {
   hotspots: GeoHotspot[]
   width: number
   height: number
+  onSelect?: (city: string) => void
+}
+
+interface MapDataItem {
+  name: string
+  value: [number, number, number]
+  province?: string
+  community?: string
+  description?: string
+}
+
+function isMapDataItem(value: unknown): value is MapDataItem {
+  if (typeof value !== 'object' || value === null) return false
+  const record = value as Record<string, unknown>
+  return typeof record.name === 'string' && Array.isArray(record.value)
 }
 
 // ============================================================
@@ -36,10 +51,10 @@ function buildEChartsOption(
   hotspots: GeoHotspot[],
   hasMap: boolean,
 ): echarts.EChartsOption {
-  // ---- 散点数据: [lng, lat, heatIndex, province?, community?, description?] ----
+  // ---- 散点数据: 坐标只用于定位，不映射热度或规模 ----
   const scatterData = hotspots.map((h) => ({
     name: h.city,
-    value: [h.coordinates[0], h.coordinates[1], h.heatIndex] as [
+    value: [h.coordinates[0], h.coordinates[1], 1] as [
       number,
       number,
       number,
@@ -59,27 +74,17 @@ function buildEChartsOption(
     textStyle: { color: '#c8d9d6', fontSize: 11, fontFamily: 'sans-serif' },
     extraCssText:
       'border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); max-width: 220px;',
-    formatter: (params: any) => {
-      const d = params.data
-      if (!d || !d.value) return ''
-      const heat = d.value[2] as number
-      const heatPct = Math.round(heat * 10)
-      const tier =
-        heat >= 8 ? '🔥 核心聚集地' : heat >= 6 ? '✨ 新兴目的地' : '📍 潜力城市'
+    formatter: (params) => {
+      const current = Array.isArray(params) ? params[0] : params
+      const d = current?.data
+      if (!isMapDataItem(d)) return ''
       return [
         `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">`,
         `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${MARKER_FILL};box-shadow:0 0 8px ${GLOW_COLOR};"></span>`,
         `<strong style="font-size:14px;">${d.name}</strong>`,
         `<span style="font-size:10px;opacity:0.45;margin-left:auto;">${d.province || ''}</span>`,
         `</div>`,
-        `<div style="font-size:11px;margin-bottom:4px;">${tier}</div>`,
-        `<div style="display:flex;align-items:center;gap:6px;">`,
-        `<span style="font-size:9px;opacity:0.5;">热度</span>`,
-        `<div style="flex:1;height:5px;background:rgba(185,200,190,0.08);border-radius:3px;overflow:hidden;">`,
-        `<div style="width:${heatPct}%;height:100%;background:${GLOW_COLOR};border-radius:3px;"></div>`,
-        `</div>`,
-        `<span style="font-size:11px;font-weight:600;">${heat.toFixed(1)}</span>`,
-        `</div>`,
+        `<div style="font-size:11px;margin-bottom:4px;opacity:0.75;">案例地点</div>`,
         d.description
           ? `<div style="font-size:10px;opacity:0.65;margin-top:4px;line-height:1.4;">${d.description}</div>`
           : '',
@@ -92,12 +97,9 @@ function buildEChartsOption(
     {
       type: 'effectScatter',
       coordinateSystem: hasMap ? 'geo' : 'cartesian2d',
-      data: scatterData as any,
+      data: scatterData,
       symbol: 'circle',
-      symbolSize: (val: number[]) => {
-        const heat = val[2] as number
-        return Math.max(7, Math.min(22, heat * 2.2 + 3))
-      },
+      symbolSize: 10,
       showEffectOn: 'render',
       rippleEffect: {
         brushType: 'stroke' as const,
@@ -139,7 +141,7 @@ function buildEChartsOption(
         },
       },
       zlevel: 2,
-    } as any,
+    } satisfies echarts.EffectScatterSeriesOption,
   ]
 
   // ---- 基础配置 ----
@@ -151,7 +153,7 @@ function buildEChartsOption(
 
   // ---- 有地图: geo 组件 ----
   if (hasMap) {
-    ;(baseOption as any).geo = {
+    baseOption.geo = {
       map: 'china',
       roam: false,
       zoom: MAP_ZOOM,
@@ -168,7 +170,6 @@ function buildEChartsOption(
       emphasis: {
         label: { show: false },
         itemStyle: { areaColor: '#1a4a52' },
-        scale: 1,
       },
       silent: true, // 地图不响应鼠标事件，由散点接管
       regions: [
@@ -181,14 +182,14 @@ function buildEChartsOption(
     }
   } else {
     // ---- 无地图降级: 简易经纬度坐标网格 ----
-    ;(baseOption as any).grid = {
+    baseOption.grid = {
       left: '8%',
       right: '8%',
       top: '12%',
       bottom: '10%',
       containLabel: true,
     }
-    ;(baseOption as any).xAxis = {
+    baseOption.xAxis = {
       type: 'value',
       name: '经度 (°E)',
       min: 75,
@@ -198,7 +199,7 @@ function buildEChartsOption(
       axisLine: { lineStyle: { color: 'rgba(185,200,190,0.1)' } },
       splitLine: { lineStyle: { color: 'rgba(185,200,190,0.05)' } },
     }
-    ;(baseOption as any).yAxis = {
+    baseOption.yAxis = {
       type: 'value',
       name: '纬度 (°N)',
       min: 15,
@@ -208,11 +209,7 @@ function buildEChartsOption(
       axisLine: { lineStyle: { color: 'rgba(185,200,190,0.1)' } },
       splitLine: { lineStyle: { color: 'rgba(185,200,190,0.05)' } },
     }
-    // 降级时调整 symbolSize 映射（无 heatIndex 参与）
-    if (Array.isArray(scatterSeries) && scatterSeries[0]) {
-      ;(scatterSeries[0] as any).symbolSize = (val: number[]) =>
-        Math.max(8, Math.min(20, (val[2] as number) * 2 + 4))
-    }
+    // 降级时仍使用等大小点，避免把坐标图误读成排名图。
   }
 
   return baseOption
@@ -225,6 +222,7 @@ export function ChinaMapScatter({
   hotspots,
   width,
   height,
+  onSelect,
 }: ChinaMapScatterProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<echarts.ECharts | null>(null)
@@ -236,7 +234,6 @@ export function ChinaMapScatter({
   useEffect(() => {
     let cancelled = false
 
-    console.log('[ChinaMap] 开始加载 GeoJSON:', CHINA_GEOJSON_URL)
     fetch(CHINA_GEOJSON_URL)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
@@ -244,10 +241,6 @@ export function ChinaMapScatter({
       })
       .then((geoJson) => {
         if (cancelled) return
-        const featureCount = geoJson?.features?.length || 0
-        console.log(
-          `[ChinaMap] GeoJSON 加载成功 · ${featureCount} 个 feature · 注册为 'china'`,
-        )
         echarts.registerMap('china', geoJson)
         setHasMap(true)
         setLoading(false)
@@ -274,15 +267,15 @@ export function ChinaMapScatter({
         devicePixelRatio: window.devicePixelRatio || 1,
         renderer: 'canvas',
       })
-      console.log('[ChinaMap] ECharts 实例已初始化')
     }
 
     const option = buildEChartsOption(hotspots, hasMap)
     chartRef.current.setOption(option, true)
-    console.log(
-      `[ChinaMap] setOption 完成 · hasMap=${hasMap} · ${hotspots.length} 个热点`,
-    )
-  }, [hotspots, hasMap, loading])
+    chartRef.current.off('click')
+    chartRef.current.on('click', (params) => {
+      if (params?.name) onSelect?.(params.name)
+    })
+  }, [hotspots, hasMap, loading, onSelect])
 
   // 当状态就绪时初始化
   useEffect(() => {
@@ -313,7 +306,6 @@ export function ChinaMapScatter({
       if (chartRef.current) {
         chartRef.current.dispose()
         chartRef.current = null
-        console.log('[ChinaMap] ECharts 实例已销毁')
       }
     }
   }, [])
@@ -384,7 +376,7 @@ export function ChinaMapScatter({
                   letterSpacing: '0.05em',
                 }}
               >
-                加载地图…
+                地图加载中…
               </span>
             </div>
           </div>
@@ -409,7 +401,7 @@ export function ChinaMapScatter({
               zIndex: 10,
             }}
           >
-            地图底图加载失败 — 显示简易坐标分布
+            地图底图加载失败 — 下方案例列表仍可阅读
           </div>
         )}
       </div>

@@ -13,7 +13,7 @@ interface ChapterInfo {
 }
 
 const chapterMap = new Map<HTMLElement, ChapterInfo>()
-let listeners = new Set<Listener>()
+const listeners = new Set<Listener>()
 let activeLabel: string | null = null
 let activeEl: HTMLElement | null = null
 let observer: IntersectionObserver | null = null

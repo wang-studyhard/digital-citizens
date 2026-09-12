@@ -45,10 +45,11 @@ export function StackedBarChart({
     hideTooltip,
   } = useTooltip<{ key: string; value: number; bar: string }>()
 
-  const keys =
-    segmentKeys || data[0]?.segments.map((s) => s.key) || []
+  const keys = useMemo(
+    () => segmentKeys || data[0]?.segments.map((s) => s.key) || [],
+    [segmentKeys, data],
+  )
 
-  const allValues = data.flatMap((d) => d.segments.map((s) => s.value))
   const maxTotal = Math.max(
     ...data.map((d) => d.segments.reduce((sum, s) => sum + s.value, 0))
   )

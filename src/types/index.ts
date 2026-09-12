@@ -93,10 +93,11 @@ export interface GeoHotspot {
   city: string
   province: string
   coordinates: [number, number] // [longitude, latitude]
-  /** 热度指数 1-10，映射到散点大小与光晕强度 */
-  heatIndex: number
+  /** 仅用于地图定位的坐标，不代表热度或规模 */
+  heatIndex?: number
   community?: string // 代表性社区
   description?: string
+  sourceId?: number
 }
 
 /** 数字游民社区据点 */
@@ -113,6 +114,8 @@ export interface CommunityHub {
   }[]
   photoUrl?: string
   userProvided?: boolean
+  sourceId?: number
+  evidenceStatus?: 'verified' | 'reported' | 'pending'
 }
 
 /** 政策卡片 */
@@ -126,6 +129,8 @@ export interface PolicyCard {
     value: string
   }[]
   source: string
+  sourceId?: number
+  status?: 'measure' | 'target' | 'reported' | 'pending'
 }
 
 /** 居住偏好 */
@@ -153,4 +158,7 @@ export interface Reference {
   title: string
   source: string
   url?: string
+  locator?: string
+  status?: 'verified' | 'reported' | 'pending'
+  note?: string
 }

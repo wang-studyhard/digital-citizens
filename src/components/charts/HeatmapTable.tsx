@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { FadeInView } from '@/components/shared/FadeInView'
 import { DataSource } from '@/components/shared/DataSource'
 import { CountUpNumber } from '@/components/shared/CountUpNumber'
 

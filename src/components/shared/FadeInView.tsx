@@ -64,17 +64,6 @@ const scaleVariants: Variants = {
   },
 }
 
-const staggerContainerVariants: Variants = {
-  hidden: { opacity: 1 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
-}
-
 const variantMap: Record<string, Variants> = {
   fadeUp: fadeUpVariants,
   fadeIn: fadeInVariants,
@@ -93,13 +82,17 @@ export function FadeInView({
   staggerChildren = false,
   staggerDelay = 0.1,
 }: FadeInViewProps) {
-  const { ref, inView } = useInView({
+  const { ref } = useInView({
     threshold,
     triggerOnce: once,
     rootMargin: '-40px 0px',
   })
 
   const selectedVariant = variantMap[variant] || fadeUpVariants
+  const selectedTransition =
+    typeof selectedVariant.visible === 'object' && selectedVariant.visible !== null && 'transition' in selectedVariant.visible
+      ? selectedVariant.visible.transition
+      : undefined
 
   const variants: Variants = staggerChildren
     ? {
@@ -117,7 +110,7 @@ export function FadeInView({
         visible: {
           ...selectedVariant.visible,
           transition: {
-            ...(selectedVariant.visible as any)?.transition,
+            ...(selectedTransition ?? {}),
             delay,
           },
         },
@@ -126,8 +119,9 @@ export function FadeInView({
   return (
     <motion.div
       ref={ref}
-      initial="hidden"
-      animate={inView ? 'visible' : 'hidden'}
+      // 内容默认保持可读；进入视口后只补充可选的动效，不阻塞首屏和无 JS 场景。
+      initial={false}
+      animate="visible"
       variants={variants}
       className={className}
     >

@@ -1,75 +1,18 @@
-// ============================================================
-// 参考文献（按原文标注顺序）
-// ============================================================
-
+// 作品内来源索引。主线只使用已能定位的公开材料；其余材料保留为待核，不进入关键结论。
 import type { Reference } from '@/types'
 
 export const references: Reference[] = [
-  {
-    id: 1,
-    title: '数字游民：个体化发展语境下的新型就业生态研究',
-    source: '王佳怡 等',
-  },
-  {
-    id: 2,
-    title: '2024全球数字游民洞察报告',
-    source: 'Nomad List',
-  },
-  {
-    id: 3,
-    title: 'MBO Partners 数字游民报告',
-    source: 'MBO Partners',
-  },
-  {
-    id: 4,
-    title: '2024远程工作统计数据',
-    source: 'Pumble',
-  },
-  {
-    id: 5,
-    title: '流动的潜能：数字游民实践中的机遇与挑战',
-    source: '学术论文',
-  },
-  {
-    id: 6,
-    title: '数字仲裁发展专项规划（2025-2030年）',
-    source: '中国仲裁协会',
-    url: 'https://www.china-arbitration.org.cn',
-  },
-  {
-    id: 7,
-    title: '中国OPC发展趋势报告（2025-2030）',
-    source: '国家市场监管总局 · 中关村人才协会',
-    url: 'https://www.samr.gov.cn',
-  },
-  {
-    id: 8,
-    title: '热搜下的"何去何从"：数字游民在争议中前行',
-    source: '媒体深度报道',
-  },
-  {
-    id: 9,
-    title: '浙江丽水市《支持数字游民发展若干政策措施》',
-    source: '丽水市人民政府',
-  },
-  {
-    id: 10,
-    title: '《"大黄山"全域数字游民集聚创业基地建设行动计划》',
-    source: '黄山市人民政府',
-  },
-  {
-    id: 11,
-    title: '山东省商务厅：「云端办公+在地居住」数字游民经济生态',
-    source: '山东省商务厅',
-  },
-  {
-    id: 12,
-    title: '全域：创新人才与乡村振兴的数字化融合',
-    source: '《经济日报》',
-  },
-  {
-    id: 13,
-    title: '2022雇佣关系趋势报告',
-    source: '智联招聘 / 北大国发院',
-  },
+  { id: 1, title: '《全景式数字游民洞察报告》（公开预览）', source: 'NCC / 第三方公开预览，完整原文待复核', url: 'https://www.fxbaogao.com/detail/4614525', status: 'pending', note: '只用于说明样本背景，不承担全国规模结论。' },
+  { id: 2, title: '当工作可以网约 数字游民一根网线“闯天下”', source: '中国青年报，新华网转载，2023-03-23', url: 'https://www.news.cn/2023-03/23/c_1129456154.htm', status: 'verified', locator: '正文第17—74段' },
+  { id: 3, title: '中国数字游民社区的发展演进调查', source: '姚建华，《人民论坛》，2026-07-20', url: 'https://paper.people.com.cn/rmlt/pc/content/202607/20/content_30178497.html', status: 'verified', locator: '第95段样本说明；第134段区位统计', note: '样本为公开可识别且截至2025年底正常运营的内地社区，不是人口普查。' },
+  { id: 4, title: '中国引导数字游民更好参与乡村振兴', source: '新华社，2025-03-27', url: 'https://www3.xinhuanet.com/politics/20250327/cb9de601c22e44c59843ab96124b30f8/c.html', status: 'verified', locator: '正文黄山社区与丰梧村案例' },
+  { id: 5, title: '青年与乡村的双向奔赴——浙江安吉青年入乡新观察', source: '新华社，2025-02-08', url: 'https://www.xinhuanet.com/20250208/e67b874a40c0474a825fed82f95d623c/c.html', status: 'verified', locator: '正文青来集与青年入乡案例' },
+  { id: 6, title: '大黄山全球数字游民集聚创业地建设行动方案', source: '安徽省大黄山办，2024-08-14发布', url: 'https://www.cnjx.gov.cn/OpennessContent/show/3392059.html', status: 'verified', locator: '正文第1—27条', note: '文中数字为目标，不是已实现成果。' },
+  { id: 7, title: '丽水市支持数字游民旅居共创十条措施', source: '浙江日报，商务部服务贸易指南转载，2025-12-12', url: 'https://tradeinservices.mofcom.gov.cn/article/szmy/hydt/202512/180554.html', status: 'reported', note: '主线仅概述政策方向，具体资格以正式文件为准。' },
+  { id: 8, title: '数字游民社区促进乡村振兴的实践探索', source: '《群言》，2024年第11期', url: 'https://www.mmzy.org.cn/qunyan/pmjl/202411/149042.aspx', status: 'verified', locator: '正文关于人才、产业、文化与治理的分析' },
+  { id: 9, title: '数字游民社区样本的统计口径说明', source: '据《人民论坛》调查注释整理', url: 'https://paper.people.com.cn/rmlt/pc/content/202607/20/content_30178497.html', status: 'verified', locator: '注释②' },
+  { id: 10, title: '第九届（2026）全国大学生数字编辑创新大赛山东赛区参赛通知', source: '山东大学新闻传播学院，2026-09-04', url: 'https://www.jc.sdu.edu.cn/info/1103/15254.htm', status: 'verified', locator: '第三部分总体要求；第五部分日程' },
+  { id: 11, title: '安吉DNA数字游民公社公开报道', source: '中国青年报，新华网转载，2023-03-23', url: 'https://www.news.cn/2023-03/23/c_1129456154.htm', status: 'verified', locator: '正文第46—58段' },
+  { id: 12, title: '黄山数字游民社区公开报道', source: '新华社，2025-03-27', url: 'https://www3.xinhuanet.com/politics/20250327/cb9de601c22e44c59843ab96124b30f8/c.html', status: 'verified', locator: '正文第1—12段' },
+  { id: 13, title: '待核统计与媒体材料', source: '暂不进入主线', status: 'pending', note: '用于保留旧版引用编号，完成核验前不展示为事实。' },
 ]

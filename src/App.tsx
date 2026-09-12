@@ -10,12 +10,8 @@ import { Chapter2Motivation } from '@/components/sections/Chapter2Motivation'
 import { Chapter3Migration } from '@/components/sections/Chapter3Migration'
 import { Chapter4Policy } from '@/components/sections/Chapter4Policy'
 import { Chapter5Conclusion } from '@/components/sections/Chapter5Conclusion'
-import { CollapseOverlay } from '@/components/shared/CollapseOverlay'
-import { useDepthFade } from '@/hooks/useDepthFade'
 
 export default function App() {
-  useDepthFade()
-
   return (
     <div className="bg-duck-950">
       {/* 全局噪点纹理 — 胶片颗粒感 */}
@@ -64,7 +60,6 @@ export default function App() {
       </main>
 
       <Footer />
-      <CollapseOverlay />
       <BackToTop />
     </div>
   )

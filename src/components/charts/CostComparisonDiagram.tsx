@@ -1,6 +1,4 @@
 import { motion } from 'framer-motion'
-import { useInView } from 'react-intersection-observer'
-import { useCountUp } from '@/hooks/useCountUp'
 import { FadeInView } from '@/components/shared/FadeInView'
 
 interface CostData {
@@ -30,7 +28,7 @@ function CostBar({
   color: string
   delay: number
 }) {
-  const barWidth = (value / maxValue) * 200
+  const barWidth = Math.max(0, Math.min(100, (value / maxValue) * 100))
 
   return (
     <motion.div
@@ -47,7 +45,7 @@ function CostBar({
           className="h-full rounded-full"
           style={{ backgroundColor: color }}
           initial={{ width: 0 }}
-          animate={{ width: barWidth }}
+          animate={{ width: `${barWidth}%` }}
           transition={{
             delay: delay + 0.3,
             duration: 1,
@@ -67,17 +65,6 @@ export function CostComparisonDiagram({
   rightData,
   savingsDifference,
 }: CostComparisonDiagramProps) {
-  const { ref: counterRef, inView } = useInView({
-    threshold: 0.3,
-    triggerOnce: true,
-  })
-
-  const countedDiff = useCountUp({
-    end: savingsDifference,
-    duration: 2500,
-    enabled: inView,
-  })
-
   const maxValue = Math.max(
     leftData.income,
     leftData.rent + leftData.food,
@@ -132,10 +119,10 @@ export function CostComparisonDiagram({
                   className="h-full rounded-full flex items-center justify-end pr-3"
                   style={{
                     backgroundColor: '#A8C5C3',
-                    width: `${(leftData.savings / maxValue) * 200}px`,
+                    width: `${Math.max(0, Math.min(100, (leftData.savings / maxValue) * 100))}%`,
                   }}
                   initial={{ width: 0 }}
-                  animate={{ width: `${(leftData.savings / maxValue) * 200}px` }}
+                  animate={{ width: `${Math.max(0, Math.min(100, (leftData.savings / maxValue) * 100))}%` }}
                   transition={{
                     delay: 0.9,
                     duration: 1,
@@ -196,10 +183,10 @@ export function CostComparisonDiagram({
                   className="h-full rounded-full flex items-center justify-end pr-3"
                   style={{
                     backgroundColor: '#6A9897',
-                    width: `${(rightData.savings / maxValue) * 200}px`,
+                    width: `${Math.max(0, Math.min(100, (rightData.savings / maxValue) * 100))}%`,
                   }}
                   initial={{ width: 0 }}
-                  animate={{ width: `${(rightData.savings / maxValue) * 200}px` }}
+                  animate={{ width: `${Math.max(0, Math.min(100, (rightData.savings / maxValue) * 100))}%` }}
                   transition={{
                     delay: 0.9,
                     duration: 1,
@@ -217,11 +204,11 @@ export function CostComparisonDiagram({
       </div>
 
       {/* 差额高亮 */}
-      <div ref={counterRef} className="mt-8 text-center">
+      <div className="mt-8 text-center">
         <motion.div
           className="inline-block bg-duck-900/60 rounded-full px-6 py-3 border border-duck-200/10"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={inView ? { opacity: 1, scale: 1 } : {}}
+          initial={false}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.2, duration: 0.5 }}
         >
           <span className="text-sm text-slate font-sans mr-2">
@@ -229,11 +216,11 @@ export function CostComparisonDiagram({
           </span>
           <motion.span
             className="text-2xl md:text-3xl font-bold font-serif text-duck-700"
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
+            initial={false}
+            animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 0.3 }}
           >
-            ¥{Math.round(countedDiff).toLocaleString()}
+            ¥{Math.round(savingsDifference).toLocaleString()}
           </motion.span>
         </motion.div>
         <p className="text-xs text-slate mt-2 font-sans">

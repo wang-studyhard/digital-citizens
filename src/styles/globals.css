@@ -37,7 +37,7 @@
   --color-cream: #f7f4ef;
   --color-charcoal: #d4dfe2;
   --color-slate: #9bb0b2;
-  --color-mist: #3a5052;
+  --color-mist: #7f9a9b;
 
   /* -- 图表渐变色阶 — 低饱和，暗色背景适配 -- */
   --color-chart-1: #a8c5c3;
@@ -48,7 +48,7 @@
 
   /* -- 字体系统 -- */
   --font-serif: 'SimSun', '宋体', 'Noto Serif SC', 'Source Han Serif SC', 'STSong', serif;
-  --font-sans: 'Inter', 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-sans: 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
   /* -- 圆角 -- */
@@ -249,107 +249,6 @@ body {
 }
 
 /* ============================================================
-   深度渐退 · Depth Fade
-   文本随滚动沉入水下 — opacity / scale / translateY
-   范围: opacity 0.2~1  scale 0.92~1  offset 0~12px
-   ============================================================ */
-
-/* 受影响的文本元素 — 从 --scroll-depth 计算视觉样式 */
-p, h1, h2, h3, h4, h5, h6,
-.prose-body, .chapter-title, .quote-text, .data-label,
-blockquote, li, figcaption, label {
-  --depth: var(--scroll-depth, 0);
-  opacity: calc(1 - var(--depth) * 0.8);
-  transform:
-    scale(calc(1 - var(--depth) * 0.08))
-    translateY(calc(var(--depth) * 12px));
-  will-change: transform, opacity;
-}
-
-/* 排除：按钮内文字 / 链接 / canvas / 图表 / 导航 */
-button, button *, a, a *, [role="button"], [role="button"] *,
-canvas, canvas *,
-svg:not(.depth-allow), svg text,
-[data-no-depth], [data-no-depth] *,
-nav, nav *, .glass-nav, .glass-nav *,
-.NavBar, .NavBar *,
-.ScrollProgress, .ScrollProgress * {
-  --depth: 0;
-  opacity: 1;
-  transform: none;
-  will-change: auto;
-}
-
-/* ============================================================
-   章节收缩深度指示器 · Chapter Collapse Indicator
-   标题随滚动缩小并固定至屏幕右侧竖向排列
-   ============================================================ */
-
-/* 固定层：贴在屏幕左侧，滚过后出现 */
-.chapter-collapse-fixed {
-  position: fixed;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 35;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  /* opacity 由 JS 通过 --collapse-progress 计算 */
-}
-
-/* 竖向章节标签 */
-.chapter-collapse-label {
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-  font-family: var(--font-serif);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: #b9c8be;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 12px rgba(185,200,190,0.2);
-  user-select: none;
-  white-space: nowrap;
-}
-
-/* 流内层：随滚动向右滑动 + 渐隐 */
-.chapter-collapse-inflow {
-  will-change: transform, opacity;
-}
-
-/* 章节标题模糊 — 独立于 depthFade (后者作用于子元素 transform/opacity) */
-.chapter-blur-target {
-  filter: blur(var(--chapter-blur, 0px));
-  /* will-change: filter 由 JS (useChapterBlur) 根据当前 blur 值条件设置，避免持续占用 GPU */
-}
-
-/* 手机端调整 */
-@media (max-width: 640px) {
-  .chapter-collapse-fixed {
-    left: 0.5rem;
-    gap: 0.25rem;
-  }
-  .chapter-collapse-label {
-    font-size: 0.85rem;
-  }
-}
-
-/* ============================================================
-   聚光灯入场 · Spotlight Entrance
-   黑色遮罩 + 圆形镂空，随滚动扩大揭示内容
-   ============================================================ */
-
-.spotlight-overlay {
-  will-change: mask-image, -webkit-mask-image;
-}
-
-.glass-intro-text {
-  will-change: opacity;
-  transition: none; /* opacity 由 JS rAF 驱动 */
-}
-
-/* ============================================================
    画像揭示气泡 · Profile Tooltip
    悬浮在像素画像上方，跟随指针，淡入淡出 0.2s
    ============================================================ */
@@ -364,44 +263,37 @@ nav, nav *, .glass-nav, .glass-nav *,
   font-variant-numeric: tabular-nums;
 }
 
-/* ============================================================
-   文本压力交互 · Text Pressure
-   悬停时水平压缩 + 字距收紧 + 颜色下沉（水下压力感）
-   弹性恢复曲线产生微回弹
-   ============================================================ */
-
-/* 默认 — 弹性恢复过渡 */
-p, .prose-body {
-  transition:
-    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-    letter-spacing 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-    color 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+.horizontal-scroll-section {
+  height: 100vh;
 }
 
-/* 悬停 — 水下压力压缩 */
-p:hover, .prose-body:hover {
-  transform:
-    scaleX(calc((1 - var(--depth, 0) * 0.08) * 0.97))
-    scaleY(calc(1 - var(--depth, 0) * 0.08))
-    translateY(calc(var(--depth, 0) * 12px));
-  letter-spacing: -0.5px;
-  color: #4a6b6e;
-  transition:
-    transform 0.4s ease-out,
-    letter-spacing 0.4s ease-out,
-    color 0.4s ease-out;
-}
-
-/* 排除：按钮 / 导航 / 图表内的段落不受压力效果 */
-button p, nav p, a p,
-[data-no-depth] p,
-.chapter-collapse-inflow p {
-  transition: none;
-}
-button p:hover, nav p:hover, a p:hover,
-[data-no-depth] p:hover,
-.chapter-collapse-inflow p:hover {
-  transform: none;
-  letter-spacing: inherit;
-  color: inherit;
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .horizontal-scroll-section {
+    height: auto;
+    min-height: 18rem;
+    overflow: visible;
+    padding: 4rem 0;
+  }
+  .horizontal-scroll-stage {
+    position: relative;
+    inset: auto;
+    min-height: inherit;
+  }
+  .horizontal-scroll-track {
+    flex-wrap: wrap;
+    white-space: normal;
+    transform: none !important;
+    padding-left: 8vw;
+    padding-right: 8vw;
+  }
+  .horizontal-scroll-track > span {
+    flex: 1 1 12rem;
+  }
 }

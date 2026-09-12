@@ -8,14 +8,11 @@
 export const surveySummary = {
   sampleSize: 282,
   rows: [
-    { metric: '平均年龄', value: '31岁', highlight: '90后占71.28%' },
-    { metric: '本科及以上学历', value: '86.52%', highlight: '硕士23.76%，博士1.42%' },
-    { metric: '海外留学比例', value: '19.50%', highlight: '英国36.36%居首' },
+    { metric: '平均年龄', value: '31岁', highlight: '样本中的平均值' },
+    { metric: '本科及以上学历', value: '86.52%', highlight: '本科61.34%，硕士23.76%，博士1.42%' },
     { metric: '性别比 (男:女)', value: '51.8 : 46.1', highlight: '多元性别认同2.13%' },
-    { metric: '信息技术+创意服务', value: '33%', highlight: '最大职业来源' },
-    { metric: '5年及以上从业经验', value: '55.31%', highlight: '职场老兵占多数' },
-    { metric: '1年内开始数字游民', value: '54.40%', highlight: '近半数为新进入者' },
-    { metric: '平均每周工作', value: '50小时', highlight: '高于传统办公40h/周' },
+    { metric: '信息技术+创意服务', value: '33%', highlight: '样本中两个职业类别合计' },
+    { metric: '5年及以上从业经验', value: '55.31%', highlight: '职业经历，不等于游民经历' },
   ],
 }
 
@@ -31,12 +28,12 @@ export const incomeHeatmap = {
     [27.4, 26.04, 30.14, 6.84, 9.58],
     [24.12, 41.44, 17.22, 13.81, 3.4],
   ],
-  note: '数据来源：NCC 2024《全景式数字游民洞察报告》n=282。随经验增长，高收入区间占比显著提升——"超56%新晋游民年收入≤10万"（已验证）。',
+  note: '数据来源：NCC 2024报告公开预览，n=282；完整原文取得前仅作样本观察，不作全国推断。',
 }
 
 // ---------- 表3: 2022-2024 挑战趋势（第二章） ----------
 
-// 数据来源：NCC 2024《全景式数字游民洞察报告》n=282 · Nomad List 2025（全球对比）
+// 数据来源：NCC 2024报告公开预览，n=282；年度数值的完整原始表待复核
 export const challengeTable = {
   columns: [
     { key: 'category', header: '挑战类别', align: 'left' as const },

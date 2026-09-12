@@ -1,15 +1,14 @@
-import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
-import { motion, useSpring, useMotionValue, useAnimationFrame } from 'framer-motion'
+import { useState, useCallback, useRef, useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { PixelDave } from '@/components/effects/PixelDave'
 
 // ============================================================
 // 数据粒子文本池
 // ============================================================
 const DATA_SNIPPETS = [
-  '71.28%', '31岁', 'n=282', '90后',
-  '¥15000', '76.4%', '80后', '00后',
-  '19.15%', '14.18%', '61.34%', '4300元',
-  '7000万+', '70%+', '1510万',
+  '工作', '迁徙', '社区', '技能',
+  '连接', '在地', '共创', '生活',
+  '乡村', '城市', '选择', '同行',
 ]
 
 // ============================================================
@@ -54,75 +53,7 @@ const PARTICLE_PRESETS = [
 // ============================================================
 export function Hero() {
   const heroRef = useRef<HTMLDivElement>(null)
-  const spotlightRef = useRef<HTMLDivElement>(null)
-  const glassRef = useRef<HTMLDivElement>(null)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
-
-  // ---- 聚光灯 · 虚拟进度（wheel 驱动，锁定期间禁止真滚动） ----
-  const rawProgress = useMotionValue(0)
-  const smoothProgress = useSpring(rawProgress, { stiffness: 70, damping: 24 })
-  const spotlightDone = useRef(false)
-  const touchStartY = useRef(0)
-
-  // wheel / touch → 累积虚拟进度 → 驱动聚光灯（仅未完成时拦截）
-  useEffect(() => {
-    const SENSITIVITY = 0.0012
-
-    const handleWheel = (e: WheelEvent) => {
-      if (spotlightDone.current) return // 已完成 → 不拦截
-
-      e.preventDefault()
-      const next = Math.max(0, Math.min(1, rawProgress.get() + e.deltaY * SENSITIVITY))
-      rawProgress.set(next)
-
-      if (next >= 1) {
-        spotlightDone.current = true // 永久标记，不再拦截任何事件
-      }
-    }
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0]?.clientY ?? 0
-    }
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (spotlightDone.current) return
-
-      const dy = touchStartY.current - (e.touches[0]?.clientY ?? touchStartY.current)
-      const next = Math.max(0, Math.min(1, rawProgress.get() + dy * SENSITIVITY * 0.4))
-      rawProgress.set(next)
-      touchStartY.current = e.touches[0]?.clientY ?? touchStartY.current
-
-      if (next >= 1) {
-        spotlightDone.current = true
-      } else if (next > 0.01) {
-        e.preventDefault()
-      }
-    }
-
-    window.addEventListener('wheel', handleWheel, { passive: false })
-    window.addEventListener('touchstart', handleTouchStart, { passive: true })
-    window.addEventListener('touchmove', handleTouchMove, { passive: false })
-
-    return () => {
-      window.removeEventListener('wheel', handleWheel)
-      window.removeEventListener('touchstart', handleTouchStart)
-      window.removeEventListener('touchmove', handleTouchMove)
-    }
-  }, [])
-
-  // 每帧更新聚光灯半径 + 毛玻璃透明度
-  useAnimationFrame(() => {
-    const p = smoothProgress.get()
-    const r = p * 150 // 从 0vmax 开始，初始完全黑场，随进度扩大至 150vmax 全透
-    const glassAlpha = Math.max(0, 1 - p * 4)
-
-    if (spotlightRef.current) {
-      spotlightRef.current.style.setProperty('--spotlight-r', `${r}vmax`)
-    }
-    if (glassRef.current) {
-      glassRef.current.style.opacity = String(glassAlpha)
-    }
-  })
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!heroRef.current) return
@@ -148,6 +79,7 @@ export function Hero() {
 
   return (
     <section
+      id="hero"
       ref={heroRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -308,49 +240,8 @@ export function Hero() {
         </svg>
       </motion.div>
 
-      {/* ================================================================ */}
-      {/*  LAYER 8 — 聚光灯黑色遮罩（圆形镂空随滚动扩大）                     */}
-      {/* ================================================================ */}
-      <div
-        ref={spotlightRef}
-        className="spotlight-overlay absolute inset-0 bg-black pointer-events-none"
-        style={{
-          zIndex: 40,
-          WebkitMaskImage:
-            'radial-gradient(circle at 50% 40%, transparent var(--spotlight-r, 0vmax), black calc(var(--spotlight-r, 0vmax) + 0.5vmax))',
-          maskImage:
-            'radial-gradient(circle at 50% 40%, transparent var(--spotlight-r, 0vmax), black calc(var(--spotlight-r, 0vmax) + 0.5vmax))',
-        }}
-      />
-
-      {/* ================================================================ */}
-      {/*  LAYER 9 — 毛玻璃引导文字（初始可见，滚动后淡出）                    */}
-      {/* ================================================================ */}
-      <div
-        ref={glassRef}
-        className="absolute inset-0 flex items-center pointer-events-none"
-        style={{
-          zIndex: 50,
-          justifyContent: 'center',
-          paddingTop: '0vh',
-        }}
-      >
-        <span
-          className="glass-intro-text font-mono text-sm md:text-base tracking-[0.3em] uppercase px-6 py-3"
-          style={{
-            color: '#b9c8be',
-            textShadow:
-              '0 0 24px rgba(185,200,190,0.30), 0 0 64px rgba(168,197,195,0.15), 0 2px 8px rgba(0,0,0,0.20)',
-            background: 'rgba(185,200,190,0.06)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            border: '1px solid rgba(185,200,190,0.12)',
-            borderRadius: '9999px',
-            marginTop: '-10vh',
-          }}
-        >
-          中国数字游民研究报告
-        </span>
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 rounded-full border border-duck-300/20 bg-duck-950/50 px-4 py-2 text-xs tracking-[0.18em] text-duck-200/80 backdrop-blur-sm">
+        向下阅读：从流动到共创
       </div>
     </section>
   )

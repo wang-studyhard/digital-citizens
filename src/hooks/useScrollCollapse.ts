@@ -11,8 +11,6 @@ export function useScrollCollapse(
   onChange?: (progress: number) => void,
 ) {
   const ticking = useRef(false)
-  const onChangeRef = useRef(onChange)
-  onChangeRef.current = onChange
 
   useEffect(() => {
     const update = () => {
@@ -26,7 +24,7 @@ export function useScrollCollapse(
       const raw = (vh - rect.top) / (vh + rect.height)
       const p = Math.max(0, Math.min(1, raw))
       el.style.setProperty('--collapse-progress', p.toFixed(3))
-      onChangeRef.current?.(p)
+      onChange?.(p)
       ticking.current = false
     }
 
@@ -45,5 +43,5 @@ export function useScrollCollapse(
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
-  }, [ref])
+  }, [ref, onChange])
 }

@@ -1,20 +1,5 @@
 import { motion } from 'framer-motion'
-import { FadeInView } from './FadeInView'
 import { DataSource } from './DataSource'
-import { CountUpNumber } from './CountUpNumber'
-
-// ============================================================
-// DataTable · 莫兰迪风格动画数据表
-// 行逐条淡入 + 滑入 + 数字递增，悬停高亮
-// ============================================================
-
-/** 解析 "71.28%" / "31岁" / "¥15000" 等 → { num, prefix, suffix } */
-function parseNum(val: string | number): { num: number; prefix: string; suffix: string } | null {
-  if (typeof val === 'number') return { num: val, prefix: '', suffix: '' }
-  const m = val.match(/^([^\d]*?)(\d+\.?\d*)([^\d]*)$/)
-  if (!m) return null
-  return { num: parseFloat(m[2]), prefix: m[1], suffix: m[3] }
-}
 
 interface Column {
   key: string
@@ -75,9 +60,8 @@ export function DataTable({
             {rows.map((row, i) => (
               <motion.tr
                 key={i}
-                initial={{ opacity: 0, x: -16 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
+                initial={false}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{
                   duration: 0.45,
                   delay: i * rowDelay,
@@ -88,7 +72,6 @@ export function DataTable({
                 {columns.map((col) => {
                   const val = row[col.key]
                   const isHighlight = highlightCol === col.key
-                  const parsed = parseNum(val)
                   return (
                     <td
                       key={col.key}
@@ -96,17 +79,7 @@ export function DataTable({
                         isHighlight ? 'font-semibold text-duck-700' : 'text-charcoal'
                       }`}
                     >
-                      {parsed ? (
-                        <CountUpNumber
-                          value={parsed.num}
-                          prefix={parsed.prefix}
-                          suffix={parsed.suffix}
-                          decimals={parsed.num % 1 !== 0 ? 2 : 0}
-                          duration={1000}
-                        />
-                      ) : (
-                        val
-                      )}
+                      {val}
                     </td>
                   )
                 })}

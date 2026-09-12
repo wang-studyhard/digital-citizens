@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useScrollProgress } from '@/hooks/useScrollProgress'
 
@@ -14,7 +14,7 @@ export function NavBar() {
   const progress = useScrollProgress()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [visible, setVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
+  const lastScrollY = useRef(0)
   const [activeChapter, setActiveChapter] = useState<string | null>(null)
 
   const isScrolled = progress > 0.03
@@ -23,12 +23,12 @@ export function NavBar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
-      setVisible(currentScrollY < lastScrollY || currentScrollY < 100)
-      setLastScrollY(currentScrollY)
+      setVisible(currentScrollY < lastScrollY.current || currentScrollY < 100)
+      lastScrollY.current = currentScrollY
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+  }, [])
 
   // ---- 当前章节检测 ----
   useEffect(() => {

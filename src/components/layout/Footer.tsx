@@ -1,10 +1,11 @@
 import { FadeInView } from '@/components/shared/FadeInView'
+import { DataSource } from '@/components/shared/DataSource'
 
 const STATS = [
-  { value: '282', label: '问卷样本量' },
-  { value: '7000万+', label: '中国数字游民规模' },
-  { value: '31', label: '平均年龄（岁）' },
-  { value: '76.4%', label: '00后愿意成为数字游民' },
+  { value: '282', label: '公开预览样本（n）', source: 1 },
+  { value: '77', label: '社区研究样本（家）', source: 3 },
+  { value: '52', label: '其中乡村社区（家）', source: 3 },
+  { value: '4', label: '本文案例地点' },
 ]
 
 export function Footer() {
@@ -24,8 +25,8 @@ export function Footer() {
               中国数字游民研究报告
             </h2>
             <p className="text-sm text-slate font-sans max-w-lg mx-auto leading-relaxed">
-              基于公开研究数据与282份问卷调查，以数据可视化叙事的方式，
-              呈现中国数字游民群体的人口画像、经济动机、地理流动与政策生态。
+              基于公开研究、媒体报道与政策文本，以数据可视化叙事的方式，
+              观察中国数字游民的工作安排、地方实践与合作条件。
             </p>
           </div>
 
@@ -36,7 +37,10 @@ export function Footer() {
                 <div className="text-xl md:text-2xl font-bold font-serif text-duck-400">
                   {s.value}
                 </div>
-                <div className="text-xs text-slate mt-1 font-sans">{s.label}</div>
+                <div className="text-xs text-slate mt-1 font-sans">
+                  {s.label}
+                  {s.source && <DataSource refNumber={s.source} />}
+                </div>
               </div>
             ))}
           </div>
@@ -44,9 +48,9 @@ export function Footer() {
           {/* ---- 研究方法说明 ---- */}
           <div className="max-w-xl mx-auto mb-10 text-center">
             <p className="text-xs text-mist font-sans leading-relaxed">
-              研究方法：问卷调查（n=282）+ 桌面研究 + 公开政策文件分析。
-              数据来源包括智联招聘、北大国发院、各地政府公开文件、行业报告等。
-              所有数据均已在文中标注来源编号，详见第五章参考文献。
+              研究方法：公开样本结构 + 媒体报道 + 政策文本分析。
+              公开预览中的282份问卷与77家社区均有明确统计边界，不能替代全国人口普查；
+              所有关键数字均在第五章标注来源编号。
             </p>
           </div>
 
@@ -56,7 +60,7 @@ export function Footer() {
               本网页仅用于研究与学术展示目的。数据版权归原作者所有，如需引用请注明出处。
             </span>
             <div className="flex items-center gap-4 text-cream/30">
-              <span>数据截至 2025</span>
+              <span>资料更新至 2026-09</span>
               <span className="text-duck-500">·</span>
               <span>样本量 n=282</span>
               <span className="text-duck-500">·</span>

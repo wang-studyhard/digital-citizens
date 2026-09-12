@@ -32,7 +32,6 @@ export function useCountUp({
 
   useEffect(() => {
     if (!enabled) {
-      setValue(0)
       return
     }
 
@@ -66,6 +65,8 @@ export function useCountUp({
         cancelAnimationFrame(rafRef.current)
       }
     }
+  // value is intentionally read once at animation start to avoid restarting on every frame.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [end, duration, enabled])
 
   return enabled ? Number(value.toFixed(decimals)) : 0
