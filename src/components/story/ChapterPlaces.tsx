@@ -57,7 +57,7 @@ function CommunityTypePie() {
       {communityChartData.function.map((item, index) => <li key={item.id}>
         <span className={`community-type-key__swatch community-type-key__swatch--${index}`} aria-hidden="true" />
         <span>{item.label}</span>
-        <strong><EvidenceValue metricId={item.id} /></strong>
+        <strong><EvidenceValue metricId={item.id} showSource={false} /></strong>
       </li>)}
     </ul>
   </div>
@@ -73,7 +73,7 @@ export function CommunityLocations() {
         <span>我们在每三家社区样本中，就有两家来自农村。</span>
       </p>
 
-      <ChartFrame id="community-units-chart" title="77家社区样本的城乡区位与纳入年份" unit="" population="研究纳入的77家中国内地正常运营社区" scope="研究样本；非全国普查" period="截至2025年末" cutoff="2025-12-31" sourceRefs={[3]}>
+      <ChartFrame id="community-units-chart" title="77家社区：区位与纳入年份" unit="" population="研究纳入的77家中国内地正常运营社区" scope="研究样本；非全国普查" period="截至2025年末" cutoff="2025-12-31" sourceRefs={[3]}>
         <div className="community-units">
           <div className="community-units__total"><strong>{communityTotal}</strong><span>家研究样本社区</span></div>
           <div className="community-units__location">
@@ -86,13 +86,13 @@ export function CommunityLocations() {
               })}
             </div>
             <ul className="community-units__labels" aria-label="城乡区位：研究样本社区家数">
-              {communityChartData.location.map((group, index) => <li key={group.id}><CommunityIcon group={index} /><span>{group.label}</span> <strong><EvidenceValue metricId={group.id} display={`${group.value} 家`} /></strong><span>{percentage(group.value)}</span></li>)}
+              {communityChartData.location.map((group, index) => <li key={group.id}><CommunityIcon group={index} /><span>{group.label}</span> <strong><EvidenceValue metricId={group.id} display={`${group.value} 家`} showSource={false} /></strong><span>{percentage(group.value)}</span></li>)}
             </ul>
           </div>
           <div className="community-units__growth">
             <h4>纳入年份</h4>
             <div className="community-units__bar" aria-hidden="true"><span style={{ width: percentage(before2025) }} /><span style={{ width: percentage(new2025) }} /></div>
-            <div className="community-units__growth-labels"><span>此前纳入 <strong>{before2025} 家</strong> · {percentage(before2025)}</span><span>2025年新增 <strong><EvidenceValue metricId={communityChartData.growth[0].id} display={`${new2025} 家`} /></strong> · {percentage(new2025)}</span></div>
+            <div className="community-units__growth-labels"><span>此前纳入 <strong>{before2025} 家</strong> · {percentage(before2025)}</span><span>2025年新增 <strong><EvidenceValue metricId={communityChartData.growth[0].id} display={`${new2025} 家`} showSource={false} /></strong> · {percentage(new2025)}</span></div>
           </div>
         </div>
       </ChartFrame>
@@ -103,9 +103,9 @@ export function CommunityLocations() {
 export function ChapterPlaces() {
   return (
     <section id="scene3" className="story-subsection" aria-labelledby="scene3-title">
-        <ChapterIntro id="scene3" title="这些社区长什么样" intro="它们很少表现为庞大的独立园区。更多时候，是一栋房子、一间旧厂房、一组民宿，或村庄里重新被使用的一小块空间。" />
+        <ChapterIntro id="scene3" title="这些社区长什么样" intro="它们很少是独立园区，更多是一栋房子、旧厂房、民宿，或村庄里重新被使用的小空间。" />
 
-        <ChartFrame id="community-types-chart" title="四种社区类型" unit="" population="研究纳入的77家中国内地正常运营社区" scope="功能类型仅有聚合占比" period="截至2025年末" cutoff="" locator="[3]正文第61、66段与图3说明" sourceRefs={[3]} sourcePosition="after" note={<>规模另按大小划分：中小型 <EvidenceValue metricId="community-small" />，大型 <EvidenceValue metricId="community-large" />。功能类型没有逐家记录。</>}>
+        <ChartFrame id="community-types-chart" title="四种社区类型" unit="" population="研究纳入的77家中国内地正常运营社区" scope="功能类型仅有聚合占比" period="截至2025年末" cutoff="" locator="[3]正文第61、66段与图3说明" sourceRefs={[3]} note={<>规模另按大小划分：中小型 <EvidenceValue metricId="community-small" showSource={false} />，大型 <EvidenceValue metricId="community-large" showSource={false} />。功能类型没有逐家记录。</>}>
           <CommunityTypePie />
         </ChartFrame>
 

@@ -21,7 +21,7 @@ const selectedEventIds = new Set([
 
 const contextEvents = [
   { id: 'anji-start-2021', date: '2021', place: '安吉', status: '已发生', claim: '安吉DNA数字游民公社开始运营。', sourceRef: 20 },
-  { id: 'community-research-2025', date: '2025', place: '研究样本', status: '已核验', claim: <>研究纳入 <EvidenceValue metricId="community-total-2025" />仍在正常运营的社区。</>, sourceRef: 3 },
+  { id: 'community-research-2025', date: '2025', place: '研究样本', status: '已核验', claim: <>研究纳入 <EvidenceValue metricId="community-total-2025" showSource={false} />仍在正常运营的社区。</>, sourceRef: 3 },
 ] as const
 
 type TimelineEntry = {
@@ -70,7 +70,7 @@ export function ChapterPolicy() {
           <span><i className="status-line status-line--target" />区域目标：面向未来的计划</span>
         </div>
 
-        <ChartFrame id="policy-timeline-chart" title="地方回应的时间线" unit="已发生的记录与面向未来的目标分列" population="安吉、研究样本、丽水与大黄山" scope="公开事件与区域目标" period="2021—2030" cutoff="" sourceRefs={[3, 6, 14, 20]} sourcePosition="after" note="方案发布、报道进展与未来目标属于不同证据状态；大黄山覆盖黄山、池州、安庆、宣城四市。">
+        <ChartFrame id="policy-timeline-chart" title="地方回应的时间线" unit="已发生的记录与面向未来的目标分列" population="安吉、研究样本、丽水与大黄山" scope="公开事件与区域目标" period="2021—2030" cutoff="" sourceRefs={[3, 6, 14, 20]} note="方案发布、报道进展与未来目标属于不同证据状态；大黄山覆盖黄山、池州、安庆、宣城四市。">
           <section className="policy-period" aria-labelledby="policy-records-title"><h4 id="policy-records-title">已发生与已报道的记录</h4><div className="policy-timeline">{timelineEntries.filter((event) => event.kind !== 'target').map((event) => <TimelineRecord key={event.id} event={event} />)}</div></section>
           <section className="policy-period" aria-labelledby="policy-targets-title"><h4 id="policy-targets-title">面向未来的区域目标</h4><div className="policy-timeline">{timelineEntries.filter((event) => event.kind === 'target').map((event) => <TimelineRecord key={event.id} event={event} />)}</div></section>
         </ChartFrame>
