@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 
 const NAV_ITEMS = [
-  { id: 'scene1', label: '样本' },
-  { id: 'scene2', label: '工作' },
-  { id: 'scene3', label: '社区' },
-  { id: 'scene4', label: '案例' },
-  { id: 'scene5', label: '政策' },
-  { id: 'scene6', label: '边界' },
-  { id: 'scene7', label: '结论' },
+  { id: 'scene1', label: '网络与社区' },
+  { id: 'scene4', label: '停留与人群' },
+  { id: 'scene7', label: '地方共创' },
+  { id: 'scene10', label: '回应与责任' },
+  { id: 'scene12', label: '尾声' },
 ]
 
 export function NavBar() {
@@ -45,12 +43,11 @@ export function NavBar() {
   }, [mobileOpen])
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
     setMobileOpen(false)
   }
 
   const activeItem = NAV_ITEMS.find((item) => item.id === active) ?? NAV_ITEMS[0]
-  const activeNumber = String(NAV_ITEMS.findIndex((item) => item.id === active) + 1).padStart(2, '0')
 
   return (
     <nav className="site-nav" aria-label="章节导航">
@@ -69,15 +66,15 @@ export function NavBar() {
         </div>
         <button type="button" className="site-nav__evidence" onClick={(event) => window.dispatchEvent(new CustomEvent('open-evidence', { detail: { trigger: event.currentTarget } }))}>来源</button>
         <button ref={menuRef} type="button" className="site-nav__menu" onClick={() => setMobileOpen(true)} aria-haspopup="dialog" aria-expanded={mobileOpen} aria-controls="mobile-nav">
-          <span>{activeNumber} / 07 · {activeItem.label}</span><strong>目录</strong>
+          <span>{activeItem.label}</span><strong>目录</strong>
         </button>
       </div>
-      <dialog ref={dialogRef} id="mobile-nav" className="nav-dialog" onCancel={() => setMobileOpen(false)} onClose={() => { setMobileOpen(false); menuRef.current?.focus() }}>
+      <dialog ref={dialogRef} id="mobile-nav" className="nav-dialog" aria-label="阅读目录" onCancel={() => setMobileOpen(false)} onClose={() => { setMobileOpen(false); menuRef.current?.focus({ preventScroll: true }) }}>
         <div className="nav-dialog__header"><span>阅读目录</span><button type="button" onClick={() => setMobileOpen(false)} aria-label="关闭目录">关闭</button></div>
         <div className="nav-dialog__links">
-          {NAV_ITEMS.map((item, index) => (
+          {NAV_ITEMS.map((item) => (
             <button key={item.id} type="button" className={active === item.id ? 'is-active' : ''} onClick={() => scrollTo(item.id)}>
-              <span>{String(index + 1).padStart(2, '0')}</span><strong>{item.label}</strong>{active === item.id && <em>正在阅读</em>}
+              <strong>{item.label}</strong>{active === item.id && <em>正在阅读</em>}
             </button>
           ))}
         </div>

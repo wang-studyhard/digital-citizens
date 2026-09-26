@@ -2,7 +2,7 @@
 
 ## 定位
 
-本项目是“数字江河”数据新闻 H5：用有限样本、社区研究、公开报道和政策文本，观察工作地点移动后的人与地方关系。当前主线是 V3 Freeze Candidate：研究台账 × 地方现场，不是比赛参赛版。
+本项目是“数字江河”数据新闻 H5：用有限样本、社区研究、公开报道和政策文本，观察工作地点移动后的人与地方关系。当前本地主线是 V6.2 本地候选，首屏加5个编号章节；2026-09-26按用户要求合章，正文、数据与图表保留。Batch 4已完成本地修订验收，下一步为Batch 5素材审核与接入，尚未部署或确认比赛参赛版。
 
 ## 启动与验证
 
@@ -19,24 +19,34 @@ npm run preview
 
 - React 19 + TypeScript + Vite
 - Tailwind CSS v4
-- Framer Motion：节点布局、轻量交互和页面反馈
+- Framer Motion：已安装；当前故事入口尚未实现 Batch 6 叙事动效
 - GSAP、Visx、ECharts：保留为工程工具；未进入当前入口的旧图表不得重新接回主线
-- CSS/SVG：研究台账、横向条形图、点阵、证据表格和关系图形
+- CSS/SVG：当前双点图、分支流程、构成图、饼图、社区图标与提案单位图、日历、横条和时间线
 
 ## 现役目录
 
 ```text
-src/App.tsx                         页面入口与 Scene 0–7
-src/components/scenes/              Scene 0–7 的独立叙事区块
+src/App.tsx                         页面入口：首屏与5章；主章锚点scene1/4/7/10/12
+src/components/story/               现役叙事区块；当前文稿以源码为准
+src/components/scenes/              V3 旧叙事区块；未完成零引用审计前保留
 src/components/shared/              Scene 外壳、图表、证据表、证据抽屉和值
 src/components/layout/              固定目录导航与页尾
 src/data/evidence.ts                主线数字唯一入口
-src/data/derived.ts                 由证据 ID 派生的图表视图与步骤
+src/data/chartData.ts               当前生产图表的数据视图
+src/data/derived.ts                 历史派生数据；不可据此恢复旧图表
 src/data/references.ts              来源与定位
+src/data/chartSpecs.ts              Batch 1 历史候选规格；不驱动当前生产图表
+src/data/legacyCandidates.ts        旧数据候选隔离层，不得被生产组件引用
 public/media/manifest.json          图片尺寸、角色、授权与审核状态
 docs/source-registry.md             来源台账
 docs/content-audit.md               内容边界与审计
-docs/plan-status.md                 蓝图 Gate/P0/P1/P2 状态
+docs/V6_2_STORY_ARCHITECTURE.md     当前5章故事结构与旧锚点映射
+docs/V4_CURRENT_WEB_COPY.md         2026-09-22 历史文稿快照
+docs/V6_2_WEB_COPY_20260926.md       本轮本地网页文稿快照
+docs/V6_2_BATCH4_ACCEPTANCE_20260926.md 本轮验收与证据
+docs/V6_2_BATCH5_ASSET_HANDOFF.md    当前素材位置与赛事待核事项
+docs/V6_2_BATCH4_PRESERVATION_RULES.md 当前修正清单与续改规则
+docs/V4_CODEX_EXECUTION_PLAN.md     当前 Batch 状态与下一步
 scripts/validate-content.ts         内容范围门禁
 scripts/check-performance.mjs       构建资产预算
 ```
@@ -51,7 +61,8 @@ scripts/check-performance.mjs       构建资产预算
 
 ## 当前发布边界
 
-- V3 已由 `v3-freeze-candidate` 推送到 `main` 并发布到 GitHub Pages；当前线上地址见 `docs/plan-status.md`。
-- 后续每次发布前必须运行 `npm run verify`；发布也不代表比赛资格已确认。
+- 公开 GitHub Pages 的最近已知版本仍是此前的 V3，本轮未重新联网回读；V6.2的Batch 4已完成本地验收，未推送或部署。
+- 后续每次发布前必须运行 `npm run verify`；只有用户明确批准后才可部署，部署后还要单独完成公开页回读。
 - 不把原始蓝图文件纳入提交，不删除用户残留文件，不自动清理工作区。
-- 详细完成度和待补项以 `docs/plan-status.md` 为准；无法核实的来源保持 `reported` 或 `pending`。
+- 当前完成度和待补项以 `docs/V4_CODEX_EXECUTION_PLAN.md` 为准；无法核实的来源保持 `reported` 或 `pending`。
+- 继续修改页面前先核对 `docs/V6_2_BATCH4_PRESERVATION_RULES.md` 与相关源码；保留用户改过的章节结构、图表与已删除冗余。旧文稿、旧图表规格和历史截图不覆盖当前源码；修改中发现文件已变化则重新读取。

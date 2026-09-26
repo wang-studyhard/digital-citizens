@@ -153,6 +153,14 @@ export interface SurveyResult {
 }
 
 /** 参考文献 */
+export type SourceTier =
+  | 'official'
+  | 'authoritative-media'
+  | 'research'
+  | 'project-survey'
+  | 'institutional-notice'
+  | 'pending'
+
 export interface Reference {
   id: number
   title: string
@@ -161,6 +169,7 @@ export interface Reference {
   locator?: string
   status?: 'verified' | 'reported' | 'pending'
   type?: 'SURVEY' | 'RESEARCH' | 'REPORT' | 'POLICY' | 'NOTICE' | 'OFFICIAL' | 'PENDING'
+  sourceTier: SourceTier
   usedFor?: string
   note?: string
 }

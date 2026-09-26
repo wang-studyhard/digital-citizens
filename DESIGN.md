@@ -1,4 +1,6 @@
-# 数字江河 · V3 设计系统
+# 数字江河 · V3 设计系统（历史参考）
+
+以下保留 V3 的设计记录，其中图表类型、照片和交互条款不能替代当前 V6.2 页面事实。当前图形与阅读修订依据 `docs/V4_CHART_MATRIX.md` 和 `docs/V6_2_BATCH4_PRESERVATION_RULES.md`；当前实现以 `src/components/story/*` 为准。
 
 ## 设计意图
 
@@ -42,7 +44,7 @@ night       #213746
 - `VizFigure` 统一数据图证据元数据和 fallback 表格。
 - `EvidenceTable` 桌面为表格，移动端为纵向条目或自身容器横滑；body 不横向滚动。
 - `ImageCard` 默认自然比例，支持 `width` / `height`、alt、caption、credit、synthetic 标记和失败占位。
-- `NavBar` 桌面固定显示 7 个阅读入口与进度，移动端为 `03 / 07 · 社区` + 目录 dialog。
+- `NavBar` 当前显示5个主章入口与阅读进度：网络与社区、停留与人群、地方共创、回应与责任、尾声。移动端沿用同一目录；旧场景作为章内小节保留。
 
 ## 动效
 
@@ -54,4 +56,4 @@ night       #213746
 
 ## 验收底线
 
-Scene 0—7 独立可读；390 / 430 / 768 / 1024 / 1440 / 1920px 无全局横向溢出；图片有尺寸、alt 和失败占位；图表有静态表格；键盘、触摸、Escape、focus-visible 和 reduced-motion 可用。V3 已发布为公开 GitHub Pages 版本，正式比赛版仍需另行确认。
+Scene 00—12 独立可读；390 / 430 / 768 / 1024 / 1440 / 1920px 无全局横向溢出；图片有尺寸、alt 和失败占位；图表有静态表格；键盘、触摸、Escape、focus-visible 和 reduced-motion 可用。正式比赛版仍需另行确认和部署。

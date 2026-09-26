@@ -1,6 +1,90 @@
 // 第四章数据：政策与地方实践。目标、措施和报道结果分开存放。
 import type { PolicyCard } from '@/types'
 
+export type PolicyEvent = {
+  id: string
+  place: '丽水' | '安吉' | '大黄山' | '黟县'
+  date: string
+  kind: 'action' | 'reported' | 'target'
+  claim: string
+  evidenceIds: readonly string[]
+  sourceRefs: readonly number[]
+  limitation: string
+}
+
+export const policyEvents = [
+  {
+    id: 'dahuangshan-plan-2024',
+    place: '大黄山',
+    date: '2024-08-14',
+    kind: 'action',
+    claim: '安徽省大黄山办印发全球数字游民集聚创业地建设行动方案。',
+    evidenceIds: [],
+    sourceRefs: [6],
+    limitation: '方案发布不等于目标已经完成。',
+  },
+  {
+    id: 'lishui-progress-2025',
+    place: '丽水',
+    date: '2025-12-04',
+    kind: 'reported',
+    claim: '公开报道记录 4 个常态化社区、6 个旅居型驿站与 3000 余名入驻者。',
+    evidenceIds: ['lishui-communities-2025', 'lishui-stations-2025', 'lishui-participants-2025'],
+    sourceRefs: [7],
+    limitation: '入驻人数不等于长期居住或项目效果。',
+  },
+  {
+    id: 'yixian-progress-2025',
+    place: '黟县',
+    date: '2025',
+    kind: 'reported',
+    claim: '政府公开页面记录入住、活动、项目设计、任务与消费等后续进展。',
+    evidenceIds: ['huangshan-stays-2025-followup', 'huangshan-events-2025-followup', 'huangshan-local-design-2025-followup', 'huangshan-tasks-2025-followup', 'huangshan-consumption-2025-followup'],
+    sourceRefs: [16],
+    limitation: '公开进展不是独立效果评估，消费数字不能作单一因果归因。',
+  },
+  {
+    id: 'anji-workstations-2026',
+    place: '安吉',
+    date: '2026-04-30',
+    kind: 'target',
+    claim: '安吉数字游民共创计划发布 100 个乡村工位。',
+    evidenceIds: ['anji-rural-workstations-2026'],
+    sourceRefs: [15],
+    limitation: '计划发布不等于工位已被使用；青年入乡数据也不等于数字游民人数。',
+  },
+  {
+    id: 'lishui-progress-2026',
+    place: '丽水',
+    date: '2026-06-18',
+    kind: 'reported',
+    claim: '公开报道记录 5 个常态化社区，以及 41 个提案和 12 个落地项目。',
+    evidenceIds: ['lishui-communities-2026', 'lishui-proposals-2026', 'lishui-landed-projects-2026'],
+    sourceRefs: [14],
+    limitation: '公开报道的进展不等于全市普查或长期就业。',
+  },
+  {
+    id: 'dahuangshan-target-2027',
+    place: '大黄山',
+    date: '2027',
+    kind: 'target',
+    claim: '行动方案提出到 2027 年建设约 8 个大型基地、累计集聚 500 家团队、吸引 20 万以上人次。',
+    evidenceIds: ['huangshan-target-bases-2027', 'huangshan-target-teams-2027', 'huangshan-target-visits-2027'],
+    sourceRefs: [6],
+    limitation: '这是政策目标，不是已完成结果。',
+  },
+  {
+    id: 'dahuangshan-target-2030',
+    place: '大黄山',
+    date: '2030',
+    kind: 'target',
+    claim: '行动方案提出到 2030 年建设约 15 个大型基地、累计集聚 1000 家团队、吸引 100 万人次。',
+    evidenceIds: ['huangshan-target-bases-2030', 'huangshan-target-teams-2030', 'huangshan-target-visits-2030'],
+    sourceRefs: [6],
+    limitation: '这是政策目标，不是已完成结果。',
+  },
+] as const satisfies readonly PolicyEvent[]
+
 export const policyCards: PolicyCard[] = [
   {
     city: '丽水',

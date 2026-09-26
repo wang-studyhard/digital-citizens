@@ -1,13 +1,41 @@
 import type { EvidenceMetric } from '@/types'
 
 /**
- * V3 Evidence Registry
+ * V6.2 Evidence Registry
  *
  * 这是主线数字的唯一入口。NCC 条目描述社区渠道样本；77 家条目描述
  * 一项研究纳入的社区样本；安吉、黄山和丽水条目描述公开报道或政策文本，
  * 不把地方案例外推成全国人口或全国经济结果。
  */
 export const evidenceMetrics: EvidenceMetric[] = [
+  {
+    id: 'internet-users-2025', value: 11.25, unit: '亿人',
+    population: '中国互联网上网人数', geography: '中国', scope: 'national-internet-access',
+    period: '2025年末', cutoff: '2025-12-31', sourceId: 18,
+    locator: '公报通信业段：互联网上网人数11.25亿人', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: true,
+  },
+  {
+    id: 'internet-penetration-2025', value: 80.1, unit: '%',
+    population: '中国人口', geography: '中国', scope: 'national-internet-access',
+    period: '2025年末', cutoff: '2025-12-31', sourceId: 18,
+    locator: '公报通信业段：互联网普及率80.1%', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: true,
+  },
+  {
+    id: 'rural-internet-penetration-2025', value: 69.5, unit: '%',
+    population: '中国农村地区人口', geography: '中国农村地区', scope: 'national-rural-internet-access',
+    period: '2025年末', cutoff: '2025-12-31', sourceId: 18,
+    locator: '公报通信业段：农村地区互联网普及率69.5%', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: true,
+  },
+  {
+    id: 'villages-5g-coverage-2026', value: 95, unit: '%以上行政村',
+    population: '中国行政村', geography: '中国', scope: 'national-5g-infrastructure',
+    period: '截至2026年一季度', cutoff: '2026-03-31', sourceId: 19,
+    locator: '新闻发布会“网络覆盖更广”段：行政村95%以上通5G', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: true,
+  },
   {
     id: 'ncc-response-total', value: 827, unit: '份问卷',
     population: 'NCC 社区渠道问卷参与者', geography: '中国（社区渠道）', scope: 'community-channel-sample',
@@ -216,25 +244,74 @@ export const evidenceMetrics: EvidenceMetric[] = [
     note: '不能写成安吉数字游民人口。',
   },
   {
+    id: 'anji-dna-stays-2022', value: 473, unit: '位入住者',
+    population: '2022年安吉DNA数字游民公社入住者', geography: '浙江安吉', scope: 'anji-dna-community-case',
+    period: '2022年', cutoff: '报道日期：2023-02-18', sourceId: 20,
+    locator: '正文第177段：2022年入住人数', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'anji-dna-average-age-2022', value: 31, unit: '岁',
+    population: '2022年安吉DNA数字游民公社入住者', geography: '浙江安吉', scope: 'anji-dna-community-case',
+    period: '2022年', cutoff: '报道日期：2023-02-18', sourceId: 20,
+    locator: '正文第177段：平均入住年龄', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'anji-dna-average-stay-2022', value: 47, unit: '天',
+    population: '2022年安吉DNA数字游民公社入住者', geography: '浙江安吉', scope: 'anji-dna-community-case',
+    period: '2022年', cutoff: '报道日期：2023-02-18', sourceId: 20,
+    locator: '正文第177段：平均入住天数', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'anji-dna-postgraduate-2022', value: 37, unit: '%',
+    population: '2022年安吉DNA数字游民公社入住者', geography: '浙江安吉', scope: 'anji-dna-community-case',
+    period: '2022年', cutoff: '报道日期：2023-02-18', sourceId: 20,
+    locator: '正文第177段：硕士及以上学历占比', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'anji-dna-work-hours-2022', value: 6.8, unit: '小时/日',
+    population: '2022年安吉DNA数字游民公社入住者', geography: '浙江安吉', scope: 'anji-dna-community-case',
+    period: '2022年', cutoff: '报道日期：2023-02-18', sourceId: 20,
+    locator: '正文第177段：每日平均工作时长', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
     id: 'huangshan-rooms', value: 58, unit: '个房间',
     population: '黄山黟县社区公开报道中的旅居空间', geography: '安徽黟县', scope: 'huangshan-community-case',
     period: '报道截至2025-03-27', cutoff: '2025-03-27', sourceId: 4,
-    locator: '正文工业遗址改造与房间数段', claimType: 'reported-fact', status: 'verified',
+    locator: '新华社正文第31—38段：酿酒工业遗址、58个房间', claimType: 'reported-fact', status: 'verified',
     canUseAsPrimary: true, canGeneralizeNationally: false,
   },
   {
     id: 'huangshan-stays', value: 500, unit: '人左右',
     population: '黄山黟县社区公开报道中的旅居者', geography: '安徽黟县', scope: 'huangshan-community-case',
     period: '成立不到一年时的报道', cutoff: '2025-03-27', sourceId: 4,
-    locator: '正文社区运营与旅居人数段', claimType: 'reported-fact', status: 'verified',
+    locator: '新华社正文第38段：成立不到一年、近500人旅居', claimType: 'reported-fact', status: 'verified',
     canUseAsPrimary: true, canGeneralizeNationally: false,
     note: '是旅居案例的报道数量，不代表长期居住人数或全市规模。',
+  },
+  {
+    id: 'huangshan-min-stay', value: 2, unit: '周',
+    population: '黄山黟县社区公开报道中的入住规则', geography: '安徽黟县', scope: 'huangshan-community-case',
+    period: '报道截至2025-03-27', cutoff: '2025-03-27', sourceId: 4,
+    locator: '正文社区入住时间段：最短2个星期', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+  },
+  {
+    id: 'huangshan-max-stay', value: 3, unit: '个月',
+    population: '黄山黟县社区公开报道中的入住建议', geography: '安徽黟县', scope: 'huangshan-community-case',
+    period: '报道截至2025-03-27', cutoff: '2025-03-27', sourceId: 4,
+    locator: '正文社区入住时间段：最长不建议超过3个月', claimType: 'reported-fact', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
   },
   {
     id: 'huangshan-target-bases-2027', value: 8, unit: '个基地',
     population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
     period: '目标至2027年', cutoff: '政策目标时点：2027', sourceId: 6,
-    locator: '行动方案相关目标条款', claimType: 'policy-target', status: 'target',
+    locator: '行动方案“总体要求”：到2027年建成8个左右大型基地', claimType: 'policy-target', status: 'target',
     canUseAsPrimary: true, canGeneralizeNationally: false,
     note: '目标不是已实现结果。',
   },
@@ -242,7 +319,7 @@ export const evidenceMetrics: EvidenceMetric[] = [
     id: 'huangshan-target-teams-2027', value: 500, unit: '个团队',
     population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
     period: '目标至2027年', cutoff: '政策目标时点：2027', sourceId: 6,
-    locator: '行动方案相关目标条款', claimType: 'policy-target', status: 'target',
+    locator: '行动方案“总体要求”：到2027年累计集聚500家团队', claimType: 'policy-target', status: 'target',
     canUseAsPrimary: true, canGeneralizeNationally: false,
     note: '目标不是已实现结果。',
   },
@@ -250,28 +327,52 @@ export const evidenceMetrics: EvidenceMetric[] = [
     id: 'huangshan-target-visits-2027', value: 200000, unit: '人次',
     population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
     period: '目标至2027年', cutoff: '政策目标时点：2027', sourceId: 6,
-    locator: '行动方案相关目标条款', claimType: 'policy-target', status: 'target',
+    locator: '行动方案“总体要求”：到2027年吸引20万以上人次', claimType: 'policy-target', status: 'target',
     canUseAsPrimary: true, canGeneralizeNationally: false,
     note: '目标不是已实现结果。',
   },
   {
+    id: 'huangshan-target-bases-2030', value: 15, unit: '个大型基地',
+    population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
+    period: '目标至2030年', cutoff: '政策目标时点：2030', sourceId: 6,
+    locator: '行动方案“总体要求”：到2030年目标', claimType: 'policy-target', status: 'target',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '原文为“15个左右大型数字游民基地”，目标不是已实现结果。',
+  },
+  {
+    id: 'huangshan-target-teams-2030', value: 1000, unit: '个团队',
+    population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
+    period: '目标至2030年', cutoff: '政策目标时点：2030', sourceId: 6,
+    locator: '行动方案“总体要求”：到2030年目标', claimType: 'policy-target', status: 'target',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '目标不是已实现结果。',
+  },
+  {
+    id: 'huangshan-target-visits-2030', value: 1000000, unit: '人次',
+    population: '大黄山行动方案的政策目标', geography: '大黄山区域', scope: 'policy-target',
+    period: '目标至2030年', cutoff: '政策目标时点：2030', sourceId: 6,
+    locator: '行动方案“总体要求”：到2030年目标', claimType: 'policy-target', status: 'target',
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '原文为“100万人次”，目标不是已实现结果。',
+  },
+  {
     id: 'lishui-communities-2025', value: 4, unit: '个社区',
     population: '丽水公开报道中的常态化数字游民社区', geography: '浙江丽水', scope: 'lishui-policy-case',
-    period: '2025', cutoff: '2025-12-12', sourceId: 7,
+    period: '2025', cutoff: '公开报道日期：2025-12-04', sourceId: 7,
     locator: '公开报道中的社区进展段', claimType: 'reported-result', status: 'reported',
     canUseAsPrimary: true, canGeneralizeNationally: false,
   },
   {
     id: 'lishui-stations-2025', value: 6, unit: '个旅居型驿站',
     population: '丽水公开报道中的旅居型驿站', geography: '浙江丽水', scope: 'lishui-policy-case',
-    period: '2025', cutoff: '2025-12-12', sourceId: 7,
+    period: '2025', cutoff: '公开报道日期：2025-12-04', sourceId: 7,
     locator: '公开报道中的旅居型驿站段', claimType: 'reported-result', status: 'reported',
     canUseAsPrimary: true, canGeneralizeNationally: false,
   },
   {
     id: 'lishui-participants-2025', value: 3000, unit: '余人',
     population: '丽水公开报道中的入驻者', geography: '浙江丽水', scope: 'lishui-policy-case',
-    period: '2025', cutoff: '2025-12-12', sourceId: 7,
+    period: '2025', cutoff: '公开报道日期：2025-12-04', sourceId: 7,
     locator: '公开报道中的入驻人数段', claimType: 'reported-result', status: 'reported',
     canUseAsPrimary: true, canGeneralizeNationally: false,
     note: '入驻人数不能直接等同于长期留下或共创项目成果。',
@@ -322,12 +423,12 @@ export const evidenceMetrics: EvidenceMetric[] = [
     canUseAsPrimary: true, canGeneralizeNationally: false,
   },
   {
-    id: 'huangshan-stays-2025-followup', value: 5000, unit: '余人次',
+    id: 'huangshan-stays-2025-followup', value: 5000, unit: '余名数字游民',
     population: '黟县政府公开信息中的数字游民民宿入住', geography: '安徽黟县', scope: 'huangshan-policy-case',
     period: '自2024-07运营以来', cutoff: '政府公开信息：2025', sourceId: 16,
     locator: '正文黟县数字游民生态段：累计入住民宿', claimType: 'reported-result', status: 'reported',
     canUseAsPrimary: true, canGeneralizeNationally: false,
-    note: '入住人次不等于长期居住人数。',
+    note: '原文为“累计吸引5000余名数字游民入住民宿”；不等于长期居住人数。',
   },
   {
     id: 'huangshan-events-2025-followup', value: 47, unit: '场活动',
@@ -357,6 +458,20 @@ export const evidenceMetrics: EvidenceMetric[] = [
     locator: '正文黟县数字游民生态段：带动消费', claimType: 'reported-result', status: 'reported',
     canUseAsPrimary: true, canGeneralizeNationally: false,
     note: '仅复述政府公开口径，不解释为数字游民单独创造的经济价值。',
+  },
+  {
+    id: 'digital-economy-core-value-added-2024', value: 14.0891, unit: '万亿元',
+    population: '中国数字经济核心产业', geography: '中国', scope: 'national-digital-economy',
+    period: '2024年', cutoff: '2024-12-31', sourceId: 21,
+    locator: '正文首段：全国数字经济核心产业增加值140891亿元', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: true,
+  },
+  {
+    id: 'digital-economy-core-gdp-share-2024', value: 10.5, unit: '%',
+    population: '中国国内生产总值', geography: '中国', scope: 'national-digital-economy',
+    period: '2024年', cutoff: '2024-12-31', sourceId: 21,
+    locator: '正文首段：数字经济核心产业增加值占GDP比重10.5%', claimType: 'research-statistic', status: 'verified',
+    canUseAsPrimary: true, canGeneralizeNationally: true,
   },
 ]
 
