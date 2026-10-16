@@ -4,7 +4,7 @@ type ChapterIntroProps = {
   id: string
   number?: string
   title: string
-  intro: string
+  intro: ReactNode
 }
 
 function ChapterGlyph({ id }: { id: string }) {

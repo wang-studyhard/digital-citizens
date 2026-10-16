@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 const NAV_ITEMS = [
+  { id: 'introduction', label: '认识数字游民' },
   { id: 'scene1', label: '网络与社区' },
   { id: 'scene4', label: '停留与人群' },
   { id: 'scene7', label: '地方共创' },
@@ -9,7 +10,7 @@ const NAV_ITEMS = [
 ]
 
 export function NavBar() {
-  const [active, setActive] = useState('scene1')
+  const [active, setActive] = useState('introduction')
   const [progress, setProgress] = useState(0)
   const [mobileOpen, setMobileOpen] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)

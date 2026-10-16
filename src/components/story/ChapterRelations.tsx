@@ -1,18 +1,16 @@
 import { DataSource } from '@/components/shared/DataSource'
 import { ChartFrame } from '@/components/shared/ChartFrame'
 import { EvidenceValue } from '@/components/shared/EvidenceValue'
+import { ImageCard } from '@/components/shared/ImageCard'
 import { lishuiCoCreationData, yixianActionData } from '@/data/chartData'
+import { editorialPhoto } from '@/data/editorialPhoto'
 import { ChapterIntro } from './ChapterIntro'
 
-function ActionIcon({ index }: { index: number }) {
-  const drawing = [
-    <><path d="M40 69c12-15 20-24 20-36a20 20 0 0 0-40 0c0 12 8 21 20 36Z" /><circle cx="40" cy="32" r="7" /><path d="M15 69h50" /></>,
-    <><circle cx="27" cy="28" r="6" /><circle cx="53" cy="28" r="6" /><path d="M15 54c1-10 5-15 12-15s11 5 12 15M41 54c1-10 5-15 12-15s11 5 12 15M17 63h46" /></>,
-    <><path d="M18 12h34l10 10v46H18V12ZM52 12v10h10M27 33h22M27 43h17" /><path d="m34 58 19-19 6 6-19 19-10 3 4-9Z" /></>,
-    <><path d="M13 19h27v30H13V19ZM40 31h27v30H40V31ZM24 26h8M48 40h11" /><path d="m29 53 9 9 14-16M17 66h46" /></>,
-  ][index]
-  return <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">{drawing}</svg>
-}
+const menuPhoto = editorialPhoto('tidenews-anji-menu-wall')
+const newspaperPhoto = editorialPhoto('tidenews-baichayuan-newspapers')
+const notebookIllustration = editorialPhoto('generated-anji-notebook-concept')
+const yixianPhoto = editorialPhoto('xinhua-yixian-heidou-discussion')
+const lishuiIllustration = editorialPhoto('generated-lishui-cocreation-concept')
 
 export function ChapterRelations() {
   return (
@@ -22,20 +20,27 @@ export function ChapterRelations() {
           <h3 className="chapter-passage-title">故事从一份菜单开始</h3>
 
           <article className="case-archive menu-story" aria-labelledby="menu-story-title">
-            <p className="case-location">浙江 / 安吉</p>
+            <p className="case-location">01 / 浙江 · <strong>安吉</strong></p>
             <h3 id="menu-story-title">把专业能力用在一件地方小事上</h3>
             <div className="menu-story__sequence">
               <p>一位社区成员为曹大姐的小面店<strong>手绘菜单</strong>，取名“大姐面馆”。<DataSource refNumber={20} /></p>
               <p>社区成员还编辑两期《白茶原小报》，参与三册《白茶原手账2022》的撰稿、绘画、编辑和设计。<DataSource refNumber={20} /></p>
+              <div className="menu-story__materials">
+                <ImageCard src={`${import.meta.env.BASE_URL}${menuPhoto.path.slice(1)}`} alt={menuPhoto.alt} caption={menuPhoto.caption} credit={`报道：${menuPhoto.publishedAt}｜图片来源：DNA｜${menuPhoto.publisher}刊载`} sourceUrl={menuPhoto.sourceUrl} width={menuPhoto.intrinsicWidth} height={menuPhoto.intrinsicHeight} />
+                <ImageCard src={`${import.meta.env.BASE_URL}${newspaperPhoto.path.slice(1)}`} alt={newspaperPhoto.alt} caption={newspaperPhoto.caption} credit={`报道：${newspaperPhoto.publishedAt}｜${newspaperPhoto.publisher}报道配图`} sourceUrl={newspaperPhoto.sourceUrl} width={newspaperPhoto.intrinsicWidth} height={newspaperPhoto.intrinsicHeight} />
+              </div>
+              <ImageCard className="menu-story__handbook" src={`${import.meta.env.BASE_URL}${notebookIllustration.path.slice(1)}`} alt={notebookIllustration.alt} caption={notebookIllustration.caption} width={notebookIllustration.intrinsicWidth} height={notebookIllustration.intrinsicHeight} />
               <p>一份菜单无法证明村庄因此发生巨大变化。</p>
               <p>人与地方之间，多了一条具体的连接。</p>
             </div>
           </article>
       <section id="scene8" className="story-subsection" aria-labelledby="scene8-title">
           <ChapterIntro id="scene8" title="从住下来，到一起做事" intro="黟县公开材料记录到访，也记录专业能力如何进入地方项目。" />
+          <p className="case-location">02 / 安徽 · <strong>黟县</strong></p>
+          <ImageCard className="yixian-field-photo" src={`${import.meta.env.BASE_URL}${yixianPhoto.path.slice(1)}`} alt={yixianPhoto.alt} caption={yixianPhoto.caption} credit={`${yixianPhoto.publishedAt}｜${yixianPhoto.photographer} 摄｜${yixianPhoto.publisher}`} sourceUrl={yixianPhoto.sourceUrl} width={yixianPhoto.intrinsicWidth} height={yixianPhoto.intrinsicHeight} />
 
           <ChartFrame id="yixian-action-chart" title="四类并列的地方行动" unit="人数、场次、项目与任务分别记录" population="黟县政府公开信息" scope="民宿与地方项目" period="2024年7月运营以来；2025年公开" cutoff="" locator="[16]数字游民生态段" sourceRefs={[16]} note="四项记录的对象与单位不同，不能计算参与者逐步转化的比例；5000余名为报道概数。">
-            <div className="action-visual">{yixianActionData.map((item, index) => <div className="action-visual__item" key={item.id}><ActionIcon index={index} /><span>{['抵达', '相遇', '参与', '协作'][index]}</span><strong><EvidenceValue metricId={item.id} showSource={false} /></strong><p>{item.label}</p></div>)}</div>
+            <div className="action-visual">{yixianActionData.map((item, index) => <div className="action-visual__item" key={item.id}><span>{['入住记录', '活动记录', '项目设计', '揭榜任务'][index]}</span><strong><EvidenceValue metricId={item.id} showSource={false} /></strong><p>{item.label}</p></div>)}</div>
           </ChartFrame>
 
           <div className="action-conclusion">
@@ -48,6 +53,7 @@ export function ChapterRelations() {
 
       <section id="scene9" className="story-subsection" aria-labelledby="scene9-title">
           <ChapterIntro id="scene9" title="41个想法，12个落地" intro="旅居记录谁来到这里；共创还要看哪些想法真正进入地方。" />
+          <p className="case-location">03 / 浙江 · <strong>丽水</strong></p>
 
           <div className="story-summary" aria-label="丽水公开进展">
             <p className="story-summary__eyebrow">丽水52赫兹社区 · 试运营不足一年</p>
@@ -68,7 +74,9 @@ export function ChapterRelations() {
             </div>
           </ChartFrame>
 
-          <p className="limits-rule limits-rule--chapter limits-rule--center"><span>空间让人相遇。具体的事情，让<strong>关系继续发生</strong>。</span></p>
+          <ImageCard className="lishui-cocreation-illustration" src={`${import.meta.env.BASE_URL}${lishuiIllustration.path.slice(1)}`} alt={lishuiIllustration.alt} caption={lishuiIllustration.caption} width={lishuiIllustration.intrinsicWidth} height={lishuiIllustration.intrinsicHeight} />
+
+          <p className="limits-rule limits-rule--chapter limits-rule--center"><span className="story-line">空间让人相遇。</span><span className="story-line">具体的事情，让<strong>关系继续发生</strong>。</span></p>
       </section>
         </div>
       </section>

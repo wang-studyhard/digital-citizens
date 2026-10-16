@@ -5,6 +5,7 @@ import { ChapterCases } from '@/components/story/ChapterCases'
 import { ChapterInfrastructure } from '@/components/story/ChapterInfrastructure'
 import { ChapterPolicy } from '@/components/story/ChapterPolicy'
 import { ChapterRelations } from '@/components/story/ChapterRelations'
+import { Introduction } from '@/components/story/Introduction'
 import { Epilogue } from '@/components/story/Epilogue'
 import { Prologue } from '@/components/story/Prologue'
 
@@ -14,6 +15,7 @@ export default function App() {
       <NavBar />
       <main>
         <Prologue />
+        <Introduction />
         <ChapterInfrastructure />
         <ChapterCases />
         <ChapterRelations />

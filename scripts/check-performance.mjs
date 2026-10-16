@@ -29,6 +29,7 @@ const report = []
 
 for (const file of files) {
   const extension = extname(file).toLowerCase()
+  if (extension === '.png') failures.push(`${file}: PNG is not allowed; use WebP or SVG`)
   const limit = limits[extension]
   if (!limit) continue
   const bytes = statSync(file).size

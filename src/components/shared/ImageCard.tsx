@@ -5,6 +5,7 @@ type ImageCardProps = {
   alt: string
   caption?: string
   credit?: string
+  sourceUrl?: string
   width: number
   height: number
   fit?: 'natural' | 'contain' | 'cover'
@@ -23,6 +24,7 @@ export function ImageCard({
   alt,
   caption,
   credit,
+  sourceUrl,
   width,
   height,
   fit = 'natural',
@@ -60,11 +62,12 @@ export function ImageCard({
           />
         )}
       </div>
-      {(caption || credit || synthetic) && (
+      {(caption || credit || sourceUrl || synthetic) && (
         <figcaption>
           {caption && <span>{caption}</span>}
           {synthetic && <span className="image-card__synthetic">{syntheticLabel}</span>}
           {credit && <small>{credit}</small>}
+          {sourceUrl && <a href={sourceUrl} target="_blank" rel="noopener noreferrer">查看原始报道</a>}
         </figcaption>
       )}
     </figure>

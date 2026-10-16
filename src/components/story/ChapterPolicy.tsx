@@ -76,7 +76,7 @@ export function ChapterPolicy() {
         </ChartFrame>
 
         <p className="policy-boundary">2027和2030两组数字是大黄山区域目标，不是黄山市单独完成量。</p>
-        <p className="limits-rule limits-rule--chapter limits-rule--center"><span>政策可以搭桥。一段关系是否持续，仍需回到<strong>人和地方共同经历的时间</strong>。</span></p>
+        <p className="limits-rule limits-rule--chapter limits-rule--center"><span className="story-line">政策可以搭桥。</span><span className="story-line">一段关系是否持续，仍需回到<strong>人和地方共同经历的时间</strong>。</span></p>
         <ChapterMovement />
       </div>
     </section>

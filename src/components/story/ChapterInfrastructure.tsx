@@ -32,7 +32,7 @@ export function ChapterInfrastructure() {
         <div className="network-overview">
           <div className="network-overview__copy">
             <p>截至2025年末，中国网民规模达到 <strong><EvidenceValue metricId={infrastructureChartData.users.id} showSource={false} /></strong>。<DataSource refNumber={18} /></p>
-            <p>农村地区互联网普及率仍低于全国水平。网络扩大了远程协作的可能，也留下了接入差异。</p>
+            <p><span className="story-line">农村地区互联网普及率仍低于全国水平。</span><span className="story-line">网络扩大了远程协作的可能，也留下了接入差异。</span></p>
           </div>
 
           <figure id="internet-reach-chart" className="network-figure" aria-labelledby="internet-reach-chart-title">
@@ -61,7 +61,7 @@ export function ChapterInfrastructure() {
           </figure>
         </div>
 
-        <p className="network-transition"><span>这些数字没有回答中国究竟有多少数字游民，却说明更多地方具备了网络协作的条件。</span><span>空间如何承接流动？一项社区研究提供了观察窗口。</span></p>
+        <p className="network-transition"><span className="story-line">这些数字没有回答中国究竟有多少数字游民，却说明更多地方具备了网络协作的条件。</span><span className="story-line">空间如何承接流动？</span><span className="story-line">一项社区研究提供了观察窗口。</span></p>
 
         <CommunityLocations />
         <ChapterPlaces />

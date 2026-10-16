@@ -27,6 +27,16 @@ function datum(id: string, label: string, derived = false): ChartDatum {
   }
 }
 
+export const introTrendData = [2019, 2020, 2021, 2022, 2023, 2024, 2025].map((year) =>
+  datum(`us-nomads-${year}`, String(year)),
+)
+
+export const introResidenceData = [
+  ['spain', '西班牙'], ['uk', '英国'], ['germany', '德国'], ['bosnia', '波黑'],
+  ['croatia', '克罗地亚'], ['us', '美国'], ['thailand', '泰国'],
+  ['north-macedonia', '北马其顿'], ['vietnam', '越南'], ['indonesia', '印度尼西亚'],
+].map(([code, label]) => datum(`nomad-residence-${code}`, label))
+
 export const sampleFlowData = {
   received: datum('ncc-response-total', '回收问卷'),
   valid: datum('ncc-valid-total', '有效问卷'),

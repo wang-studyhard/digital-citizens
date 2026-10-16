@@ -333,7 +333,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .community-type-pie__segment--1 > path { fill: #647958; }
 .community-type-pie__segment--2 > path { fill: #627f91; }
 .community-type-pie__segment--3 > path { fill: #a74434; }
-.community-type-pie__icon { color: #fff; }
 .community-type-key { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
 .community-type-key li { display: grid; grid-template-columns: 1.15rem minmax(0, 1fr) auto; align-items: center; gap: .8rem; min-height: 4rem; border-bottom: 1px solid var(--line); font-size: 1rem; }
 .community-type-key li:first-child { border-top: 1px solid var(--line); }
@@ -469,13 +468,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 #yixian-action-chart .chart-frame__header h3 { max-width: none; }
 #yixian-action-chart .chart-frame__header p { max-width: none; }
 #yixian-action-chart .chart-frame__plot { margin-top: 1.4rem; }
-.action-visual { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
-.action-visual__item { display: grid; justify-items: start; align-content: start; min-width: 0; min-height: 14rem; padding: 1.2rem; background: var(--paper-2); }
-.action-visual__item svg { width: 3rem; height: 3rem; color: var(--field); }
-.action-visual__item:nth-child(even) svg { color: var(--accent); }
-.action-visual__item > span { margin-top: 1rem; color: var(--ink-soft); font-size: .78rem; }
-.action-visual__item > strong { margin-top: .25rem; color: var(--ink); font: 600 clamp(1.2rem, 2vw, 1.7rem)/1.4 var(--serif); white-space: nowrap; }
-.action-visual__item > p { margin: .35rem 0 0; color: var(--ink-soft); font-size: .75rem; }
+.action-visual { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+.action-visual__item { display: grid; justify-items: start; align-content: start; min-width: 0; padding: 1.25rem 1rem 1.1rem; border-right: 1px solid var(--line); }
+.action-visual__item:first-child { padding-left: 0; }
+.action-visual__item:last-child { border-right: 0; }
+.action-visual__item > span { color: var(--field); font-size: .8rem; }
+.action-visual__item > strong { margin-top: .55rem; color: var(--ink); font: 600 clamp(1.2rem, 2vw, 1.7rem)/1.4 var(--serif); }
+.action-visual__item > p { margin: .4rem 0 0; color: var(--ink-soft); font-size: .8rem; }
 .action-conclusion { display: grid; margin-top: 3rem; }
 
 @media (min-width: 900px) {
@@ -495,13 +494,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .sample-journey__reading > p { grid-column: 1 / -1; }
   #scene6 .profile-grid { grid-template-columns: 1fr; gap: 2rem; }
   #scene6 .profile-gender { grid-column: 1; }
-  .action-visual__item { min-height: 12rem; padding: .8rem; }
+  .action-visual__item { padding: 1rem; }
   .action-visual__item > strong { white-space: normal; }
   .limits-rule--chapter strong { display: inline; margin: 0; }
 }
 @media (max-width: 500px) {
   .action-visual { grid-template-columns: 1fr; }
-  .action-visual__item { min-height: 0; }
+  .action-visual__item { border-right: 0; border-bottom: 1px solid var(--line); padding: 1rem 0; }
+  .action-visual__item:last-child { border-bottom: 0; }
 }
 
 /* The former sample chapter now closes the stay chapter as a second, separate evidence window. */
@@ -566,8 +566,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .policy-timeline__axis svg { width: 1.8rem; height: 1.8rem; flex: none; fill: var(--paper); stroke: var(--field); stroke-width: 2; }
 .policy-timeline__event--target .policy-timeline__axis svg { stroke: var(--accent); }
 .policy-timeline__event--context .policy-timeline__axis svg { stroke: var(--mist); }
-.policy-timeline__content { min-width: 0; padding: 1rem 1.2rem; background: var(--paper-2); }
-.policy-timeline__event--target .policy-timeline__content { background: #f2e9e5; }
+.policy-timeline__content { min-width: 0; padding: 1rem 1.2rem; border-bottom: 1px solid var(--line); }
+.policy-timeline__event--target .policy-timeline__content { background: #f2e9e5; border-bottom: 0; }
 .policy-timeline__heading { display: flex; align-items: baseline; gap: .75rem; }
 .policy-timeline__heading strong { color: var(--ink); font: 600 1.1rem var(--serif); }
 .policy-timeline__heading span { color: var(--field); font: .67rem var(--mono); }
@@ -578,10 +578,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .policy-timeline__sources .data-source { min-height: 24px; margin-left: 0; }
 .policy-boundary { max-width: none !important; margin: 1.2rem 0 0; color: var(--ink-soft); font-size: .78rem; line-height: 1.6; }
 
-.movement-sequence { display: grid; gap: .65rem; margin-top: 2rem; text-align: center; }
-.movement-sequence p { max-width: none; margin: 0; color: var(--ink); font: 500 clamp(1.05rem, 1.6vw, 1.3rem)/1.65 var(--serif); }
+.movement-sequence { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); gap: clamp(2rem, 7vw, 7rem); margin-top: 2rem; }
+.movement-sequence__intro p { max-width: 24ch; margin: 0 0 1.1rem; color: var(--ink); font: 500 clamp(1.05rem, 1.6vw, 1.3rem)/1.65 var(--serif); }
+.movement-sequence__questions { margin: 0; padding: 0; list-style: none; counter-reset: question; }
+.movement-sequence__questions li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; border-top: 1px solid var(--line); padding: 1rem 0; color: var(--ink); font: 500 clamp(1.05rem, 1.6vw, 1.3rem)/1.65 var(--serif); counter-increment: question; }
+.movement-sequence__questions li::before { color: var(--field); font: .8rem var(--mono); content: counter(question, decimal-leading-zero); }
 .movement-sequence strong { color: var(--accent); font-weight: 700; }
-#scene11 .movement-source { max-width: none; margin-top: 2.5rem; color: var(--ink-soft); font-size: .76rem; line-height: 1.7; text-align: center; }
+#scene11 .movement-source { max-width: 48rem; margin-top: 2.5rem; color: var(--ink-soft); font-size: .8rem; line-height: 1.7; }
 
 @media (min-width: 900px) {
   #scene10 .scene-heading__copy > p, #lishui-cocreation-chart .chart-frame__header p, #policy-timeline-chart .chart-frame__header p, .policy-boundary, #scene11 .movement-source { white-space: normal; }
@@ -688,13 +691,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .proposal-pages { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .5rem; }
 }
 .survey-flow { max-width: 58rem; margin: 0 auto; }
-.survey-flow__node { display: grid; align-content: center; gap: .2rem; padding: .8rem 1rem; background: var(--paper-2); }
+.survey-flow__node { display: grid; align-content: center; gap: .2rem; padding: .8rem 1rem; border-top: 1px solid var(--line); }
 .survey-flow__node > span { font-size: .85rem; }
 .survey-flow__node strong { font: 600 clamp(1.3rem, 2.5vw, 1.8rem)/1.7 var(--mono); }
 .survey-flow__node small { color: var(--ink-soft); font-size: .75rem; }
-.survey-flow__node--valid { border: 1px solid var(--field); }
-.survey-flow__node--nomads { border: 1px solid var(--accent); }
-.survey-flow__node--excluded { background: transparent; border: 1px solid var(--line); }
+.survey-flow__node--valid { border-top-color: var(--field); }
+.survey-flow__node--nomads { border-top-color: var(--accent); }
+.survey-flow__node--excluded { border-top-color: var(--line); }
 .survey-flow__branches { margin: 0 0 0 1.25rem; padding: 1rem 0 0 1.25rem; border-left: 1px solid var(--mist); list-style: none; }
 .survey-flow__branches > li { position: relative; min-width: 0; margin: 0 0 1rem; }
 .survey-flow__branches > li:last-child { margin-bottom: 0; }
@@ -792,7 +795,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .epilogue-conclusion .epilogue-conclusion__kicker { color: var(--field); font: 500 .8rem/1.7 var(--sans); }
 .epilogue-conclusion > p:not(.epilogue-conclusion__kicker) { max-width: 30em; font-size: clamp(1.35rem, 2.1vw, 1.8rem); line-height: 1.6; }
 .epilogue-conclusion__action { justify-content: flex-start; }
-#scene12 .epilogue-closing { justify-content: center; max-width: 38rem; margin-right: auto; margin-left: auto; color: var(--ink); text-align: center; }
+#scene12 .epilogue-closing { justify-content: center; max-width: 56rem; margin-right: auto; margin-left: auto; color: var(--ink); text-align: center; }
 
 @media (max-width: 720px) {
   .hero-scene { padding: 7.5rem 1rem 4rem; }
@@ -878,11 +881,21 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 #scene4 .huangshan-reading { max-width: none; }
 #scene4 .huangshan-reading__current { max-width: none; }
 #scene4 .huangshan-reading__current h4 { font-size: clamp(1.45rem, 2.4vw, 1.95rem); }
+#scene4 .case-archive__body .image-card, #scene4 .huangshan-reading .image-card { width: min(100%, 52rem); margin: 1.5rem auto 0; }
+#scene4 .image-card figcaption { font-size: .85rem; }
+#scene4 .image-card figcaption small { font-size: .72rem; }
+#scene4 .image-card figcaption a { display: inline-flex; width: fit-content; min-height: 44px; align-items: center; color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
+#scene4 .image-card figcaption a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 #scene7 .menu-story__sequence { gap: 1.2rem; }
 #scene7 .menu-story__sequence p, #scene7 .menu-story__sequence p:nth-child(3), #scene7 .menu-story__sequence p:last-child { margin: 0; color: var(--ink); font-size: clamp(1.05rem, 1.6vw, 1.2rem); line-height: 1.85; }
 #scene7 .menu-story__sequence p + p { margin-top: 0; }
 #scene7 .menu-story__sequence p:last-child { font-weight: 600; }
-#yixian-action-chart .action-visual__item svg { width: 4.5rem; max-width: none; height: 4.5rem; }
+#scene7 .menu-story__materials { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.25rem, 3vw, 2rem); margin: .5rem 0 1.5rem; }
+#scene7 .menu-story__materials .image-card figcaption { font-size: .8rem; }
+#scene7 .menu-story__materials .image-card figcaption small { font-size: .7rem; }
+#scene7 .menu-story__materials .image-card figcaption a { display: inline-flex; width: fit-content; min-height: 44px; align-items: center; color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
+#scene7 .menu-story__materials .image-card figcaption a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 640px) { #scene7 .menu-story__materials { grid-template-columns: minmax(0, 1fr); } }
 
 #scene12 .economy-context { max-width: none; }
 .epilogue-story { gap: 1rem; }
@@ -895,12 +908,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 #scene12 .epilogue-closing strong { font-size: 1.3em; }
 
 @media (min-width: 980px) {
-  .hero-intro p, .scene-heading p, .network-overview__copy p, #scene3 .subsection-heading p, #scene9 .subsection-heading p, #scene4 .case-archive__intro-copy > p:not(.case-location), #scene4 .case-archive__body p, #scene4 .huangshan-reading__current h4, #scene12 .economy-context { max-width: none; white-space: nowrap; }
   .subsection-heading { max-width: none; }
   #scene4 .case-archive__body { text-align: left; }
 }
 @media (max-width: 979px) {
-  .hero-intro p, .scene-heading p, .network-overview__copy p, #scene4 .case-archive__intro-copy > p, #scene4 .case-archive__body p, #scene4 .huangshan-reading__current h4, #scene12 .economy-context { white-space: normal; }
   .scene-heading__title { align-items: start; }
   .scene-heading__glyph { margin-top: .25rem; }
 }
@@ -916,4 +927,260 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   #scene4 .case-archive--anji .case-archive__body { text-align: left; }
   #scene4 .case-archive--anji .case-archive__body p { font-weight: 400; }
   .epilogue-conclusion__action { justify-content: center; }
+}
+
+/* 序章把调查图形改为与正文一致的纸面阅读结构。 */
+.introduction { background: var(--paper-field); }
+.introduction__heading { max-width: 46rem; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+.introduction__heading h2 { margin: 0 0 1.2rem; font: 600 clamp(2.25rem, 4.3vw, 3.75rem)/1.3 var(--serif); letter-spacing: -.025em; }
+.introduction__heading p, .introduction__china p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.9; }
+.introduction__figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 5vw, 5rem); }
+.introduction__figure { min-width: 0; margin: 0; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+.introduction__figure h3, .introduction__china h3 { margin: 0 0 .65rem; font: 600 clamp(1.3rem, 2vw, 1.65rem)/1.5 var(--serif); }
+.introduction__figure-intro { min-height: 3.2em; margin: 0 0 1.5rem; color: var(--ink-soft); font-size: .9rem; line-height: 1.7; }
+.introduction__trend { display: block; width: 100%; height: auto; overflow: visible; }
+.introduction__trend .introduction__axis { fill: none; stroke: var(--line); stroke-width: 1; }
+.introduction__trend polyline { fill: none; stroke: var(--chart-primary); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.introduction__trend circle { fill: var(--paper-field); stroke: var(--chart-primary); stroke-width: 3; }
+.introduction__trend circle:last-child { fill: var(--accent); stroke: var(--accent); }
+.introduction__years { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; text-align: center; }
+.introduction__years li { min-width: 0; }
+.introduction__years span, .introduction__years strong { display: block; font-variant-numeric: tabular-nums; }
+.introduction__years span { color: var(--ink-soft); font: .72rem/1.5 var(--mono); }
+.introduction__years strong { color: var(--ink); font: 600 .86rem/1.5 var(--sans); }
+.introduction__years li:last-child strong { color: var(--accent); }
+.introduction__residence { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem 1.4rem; margin: 0; padding: 0; list-style: none; }
+.introduction__residence li { display: grid; grid-template-columns: 5.5em minmax(0, 1fr) 3.2em; align-items: center; gap: .55rem; min-width: 0; color: var(--ink); font-size: .78rem; }
+.introduction__residence li > span:first-child { white-space: nowrap; }
+.introduction__residence strong { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.introduction__bar { height: .5rem; background: var(--chart-track); }
+.introduction__bar > span { display: block; height: 100%; background: var(--chart-primary); }
+.introduction__figure figcaption { margin-top: 1.3rem; color: var(--ink-soft); font-size: .75rem; line-height: 1.75; }
+.introduction__figure .figure-notes { margin-top: .15rem; }
+.introduction__china { max-width: 47rem; margin-top: clamp(3.5rem, 7vw, 6rem); }
+.introduction__china p + p { margin-top: 1.1rem; }
+.introduction__next { display: inline-flex; align-items: center; gap: .6rem; min-height: 44px; margin-top: 1.4rem; color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: .28em; }
+@media (max-width: 900px) { .introduction__figures { grid-template-columns: 1fr; gap: 3rem; }.introduction__figure-intro { min-height: 0; } }
+@media (max-width: 540px) { .introduction__heading p, .introduction__china p { font-size: .95rem; }.introduction__years span { font-size: .62rem; }.introduction__years strong { font-size: .72rem; }.introduction__residence { grid-template-columns: 1fr; gap: .5rem; } }
+
+/* 静态编辑版：现场、地点索引与证据各有明确层级。 */
+.hero-scene { padding: clamp(6.5rem, 10vh, 8rem) max(1.5rem, 4vw) 3.5rem; }
+.hero-scene__inner { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(22rem, .85fr); gap: clamp(2.5rem, 6vw, 6rem); align-items: center; width: min(100%, 1240px); }
+.hero-copy h1, .hero-question { margin-right: 0; margin-left: 0; text-align: left; }
+.hero-copy h1 { font-size: clamp(4.2rem, 7vw, 6rem); }
+.hero-question { max-width: 18em; font-size: clamp(1.45rem, 2.5vw, 2.1rem); }
+.hero-intro { width: min(100%, 35rem); margin-left: 0; }
+.hero-intro p { white-space: normal; }
+.hero-start { margin-left: 0; }
+.hero-dossier { min-width: 0; }
+.hero-dossier__photo { margin: 0; }
+.hero-dossier__photo figcaption { gap: .15rem; padding-top: .5rem; font-size: .75rem; }
+.hero-dossier__photo figcaption small { font: .72rem/1.6 var(--sans); }
+.hero-dossier__photo figcaption a { width: fit-content; min-height: 28px; color: var(--accent); font-size: .75rem; }
+
+.introduction__heading { margin-bottom: clamp(2rem, 4vw, 3rem); }
+.introduction__china { max-width: 44rem; margin: 0 0 clamp(3rem, 6vw, 5rem); border-left: 2px solid var(--field); padding-left: clamp(1rem, 2vw, 1.75rem); }
+.introduction__china h3 { font-size: clamp(1.55rem, 2.5vw, 2rem); }
+.introduction__global { max-width: 64rem; border-top: 1px solid var(--ink); padding-top: 1rem; }
+.introduction__global-label { margin: 0 0 1.5rem; color: var(--field); font: 500 .8rem var(--sans); }
+.introduction__figures { gap: clamp(2rem, 4vw, 4rem); }
+.introduction__figure { padding-top: 1rem; }
+.introduction__figure h3 { font-size: clamp(1.15rem, 1.7vw, 1.4rem); }
+.introduction__figure figcaption { font-size: .78rem; }
+.introduction__next { margin-top: 2rem; }
+
+.scene { padding-top: clamp(4.5rem, 6vw, 6rem); padding-bottom: clamp(5rem, 7vw, 7rem); }
+.scene-heading { margin-bottom: clamp(2rem, 4vw, 3.5rem); }
+.case-location { display: flex; align-items: center; gap: .55rem; width: fit-content; margin: 0 0 .7rem; border-top: 1px solid var(--field); padding-top: .6rem; color: var(--field); font: 500 .82rem/1.5 var(--sans); letter-spacing: 0; }
+.case-location svg { width: 1.5rem; height: 1.5rem; }
+.case-location strong { font-weight: 700; }
+#scene4 .huangshan-reading { width: min(100%, 44rem); margin-top: 2rem; }
+#scene4 .huangshan-reading__visual { border-top: 1px solid var(--line); background: transparent; padding: 1.1rem 0; }
+.yixian-field-photo { width: min(100%, 44rem); margin: 1.3rem 0 3rem; }
+.yixian-field-photo figcaption { font-size: .82rem; }
+.yixian-field-photo figcaption small { font-size: .75rem; }
+.yixian-field-photo figcaption a { display: inline-flex; width: fit-content; min-height: 44px; align-items: center; color: var(--accent); }
+#scene7 .menu-story__materials { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
+#scene7 .menu-story__materials .image-card figcaption, #scene7 .menu-story__materials .image-card figcaption small { font-size: .78rem; }
+#scene7 .menu-story__handbook { width: min(100%, 42rem); margin: .5rem 0 clamp(2rem, 4vw, 3rem); }
+#scene9 .lishui-cocreation-illustration { width: min(100%, 42rem); margin: clamp(2rem, 4vw, 3rem) auto 0; }
+.action-visual__item > strong { overflow-wrap: normal; }
+.policy-timeline__event:not(.policy-timeline__event--target) .policy-timeline__content { background: transparent; }
+.policy-timeline__content > p { font-size: .9rem; }
+.policy-timeline__content > small { font-size: .78rem; }
+.policy-timeline__heading span { font-size: .75rem; }
+.policy-timeline__axis { font-size: .78rem; }
+.footer-meta, .footer-kicker { font-size: .78rem; }
+.data-source, .figure-notes, .figure-notes summary, .chart-frame__header p, .chart-source-line p, .chart-frame > figcaption { font-size: .78rem; }
+.chart-source-line p > span:first-child { font-size: .72rem; }
+.reference-number, .reference-status, .reference-item p, .reference-item > a, .reference-item__meta dt, .reference-item__meta dd { font-size: .75rem; }
+.reference-item { padding: 1.2rem; }
+.reference-item__meta { gap: 1rem; }
+
+@media (max-width: 900px) {
+  .hero-scene__inner { grid-template-columns: minmax(0, 1fr) minmax(18rem, .8fr); gap: 2rem; }
+  .movement-sequence { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+@media (max-width: 720px) {
+  .hero-scene { min-height: 0; padding: 5.5rem 1rem 3rem; }
+  .hero-scene__inner { grid-template-columns: 1fr; gap: 2rem; }
+  .hero-copy h1 { font-size: clamp(3.1rem, 13vw, 4.2rem); }
+  .hero-question { max-width: 16em; font-size: clamp(1.25rem, 5vw, 1.6rem); }
+  .hero-intro { margin-top: 1.4rem; font-size: .94rem; line-height: 1.7; }
+  .hero-start { margin-top: 1rem; font-size: .9rem; }
+  .hero-dossier { border-top: 1px solid var(--ink); padding: 1rem 0 0; }
+  .hero-dossier__photo { width: min(100%, 20rem); }
+  .hero-dossier__photo figcaption { font-size: .72rem; }
+  .introduction__china { margin-bottom: 3rem; }
+  .introduction__heading p, .introduction__china p { font-size: 1rem; }
+  .introduction__years span { font-size: .72rem; }
+  .introduction__years strong { font-size: .8rem; }
+  .introduction__residence li { font-size: .82rem; }
+  .scene { padding-top: 4rem; padding-bottom: 5rem; }
+  .scene-heading { margin-bottom: 2.5rem; }
+  .yixian-field-photo { margin-bottom: 2.5rem; }
+  #scene7 .menu-story__materials { grid-template-columns: 1fr; }
+  .action-visual__item { border-right: 0; border-bottom: 1px solid var(--line); padding: 1rem 0; }
+  .action-visual__item:first-child { padding-left: 0; }
+  .action-visual__item:last-child { border-bottom: 0; }
+  .policy-timeline__content { padding: .9rem 0; }
+  .movement-sequence__questions li { grid-template-columns: 2rem 1fr; gap: .6rem; }
+  .footer-meta { margin-top: 2rem; }
+}
+
+/* 封面的三个地点现在是进入案例的阅读导航。 */
+.case-route { width: min(100%, 1240px); margin: clamp(2.5rem, 5vw, 4rem) auto 0; }
+.case-route > p { margin: 0 0 .7rem; color: var(--field); font: 600 .78rem/1.5 var(--sans); }
+.case-route ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+.case-route li { min-width: 0; border-top: 1px solid var(--ink); }
+.case-route li + li { border-left: 1px solid var(--line); padding-left: 1.3rem; }
+.case-route a { display: grid; align-content: start; gap: .3rem; min-height: 10.5rem; padding: 1rem 1.3rem 1rem 0; text-decoration: none; }
+.case-route a > span { color: var(--field); font: 500 .78rem/1.5 var(--sans); }
+.case-route strong { color: var(--ink); font: 700 clamp(1.25rem, 2vw, 1.55rem)/1.45 var(--serif); }
+.case-route small { max-width: 30ch; color: var(--ink-soft); font: .86rem/1.6 var(--sans); }
+.case-route em { width: fit-content; margin-top: .35rem; border-bottom: 1px solid currentColor; color: var(--accent); font: 600 .78rem/1.5 var(--sans); font-style: normal; }
+.case-route a:hover strong, .case-route a:focus-visible strong { color: var(--accent); }
+#anji-stay-title, #yixian-stay-title { scroll-margin-top: 6rem; }
+
+/* 正文使用固定的阅读层级；每个句子是后续动效可以独立选取的行。 */
+.story-line, .limits-rule--chapter .story-line { display: block; }
+.story-line + .story-line { margin-top: .28rem; }
+.introduction__heading { margin-right: auto; margin-left: auto; text-align: center; }
+.introduction__heading h2 { font-size: clamp(2.5rem, 4.6vw, 4rem); font-weight: 700; }
+.scene-heading { grid-template-columns: minmax(0, 1fr); justify-items: center; width: min(100%, 70rem); margin-right: auto; margin-left: auto; text-align: center; }
+.scene-heading__index { padding-top: 0; }
+.scene-heading__copy { width: 100%; }
+.scene-heading__title { justify-content: center; }
+.scene-heading h2 { font-weight: 700; text-wrap: balance; }
+.scene-heading p { margin-right: auto; margin-left: auto; }
+.network-overview__copy { width: min(100%, 68ch); margin-right: auto; margin-left: auto; text-align: left; }
+#scene4 .case-archive--anji .case-archive__body { text-align: left; }
+.subsection-heading, .subsection-heading h3, .chapter-passage-title { text-align: left; }
+.subsection-heading h3, .chapter-passage-title { font-size: clamp(1.65rem, 2.45vw, 2rem); font-weight: 700; }
+.case-archive h3 { font-size: clamp(1.8rem, 2.8vw, 2.5rem); font-weight: 700; }
+.chart-frame__header h3 { font-size: clamp(1.4rem, 2.1vw, 1.8rem); font-weight: 700; }
+
+.hero-intro p,
+.introduction__heading p, .introduction__china p,
+.scene-heading p, .subsection-heading p,
+.network-overview__copy p,
+#scene4 .case-archive__intro-copy > p:not(.case-location),
+#scene4 .case-archive__body > p, #scene4 .case-archive__reflection p,
+.survey-passage__header p,
+#scene7 .menu-story__sequence > p,
+#scene8 .action-conclusion > p,
+#scene9 .story-summary > p:not(.story-summary__eyebrow),
+#scene11 .movement-sequence__intro p,
+#scene12 .epilogue-story p, #scene12 .epilogue-story p:first-child,
+#scene12 .epilogue-story p:nth-child(5), #scene12 .epilogue-story__questions p {
+  max-width: 68ch;
+  color: var(--ink);
+  font: 400 1.05rem/1.85 var(--sans);
+  white-space: normal;
+}
+#scene7 .menu-story__sequence > p:last-child { font-weight: 400; }
+.hero-intro strong, .introduction__heading strong, .introduction__china strong,
+.scene-heading strong, .subsection-heading strong, .network-overview__copy p strong,
+#scene4 .case-archive__intro-copy p strong, #scene4 .case-archive__body p strong,
+#scene4 .case-archive__reflection p strong, #scene7 .menu-story__sequence p strong,
+#scene8 .action-conclusion p strong, #scene9 .story-summary p strong,
+#scene12 .epilogue-story p strong { color: var(--ink); font-size: 1.08em; font-weight: 700; }
+.huangshan-reading__current blockquote { max-width: none; margin: .55rem 0; color: var(--ink-soft); font: 400 1.05rem/1.8 var(--serif); }
+.huangshan-reading__current > span, .huangshan-reading__current p { color: var(--mist); font-size: .75rem; }
+
+.image-card figcaption > span:first-child::before,
+.introduction__figure figcaption::before, .chart-frame__header > p::before,
+.community-units__unit-note::before, .people-comparison__key::before,
+.profile-dots__deck::before, .policy-boundary::before,
+#scene8 .action-conclusion small::before, #scene11 .movement-source::before,
+#scene12 .economy-context::before, #scene12 .epilogue-story small::before,
+#scene12 .epilogue-conclusion small::before, .figure-notes__note::before { content: '* '; color: var(--field); }
+.image-card figcaption > span:first-child, .introduction__figure figcaption,
+.chart-frame__header > p, .community-units__unit-note, .people-comparison__key,
+.profile-dots__deck, .policy-boundary, #scene8 .action-conclusion small,
+#scene11 .movement-source, #scene12 .economy-context,
+#scene12 .epilogue-story small, #scene12 .epilogue-conclusion small,
+.figure-notes__note { color: var(--mist); font-size: .75rem; line-height: 1.7; }
+
+@media (min-width: 900px) {
+  .hero-question { max-width: none; font-size: clamp(1.25rem, 1.7vw, 1.5rem); }
+  #scene4 .case-archive--huangshan .case-archive__intro-copy > p:nth-of-type(2),
+  #scene7 .menu-story__sequence > p:nth-of-type(2),
+  #scene11 .movement-sequence__intro > p:nth-of-type(2) { max-width: none; }
+}
+@media (min-width: 900px) and (max-width: 1100px) {
+  .movement-sequence { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 2rem; }
+  .movement-sequence__questions li { grid-template-columns: 2rem 1fr; gap: .75rem; }
+}
+@media (min-width: 900px) and (max-width: 979px) {
+  .movement-sequence { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+
+@media (max-width: 720px) {
+  .case-route { margin-top: 2.5rem; }
+  .case-route ol { grid-template-columns: minmax(0, 1fr); }
+  .case-route li + li { border-left: 0; padding-left: 0; }
+  .case-route a { min-height: 0; padding: .9rem 0 1.2rem; }
+  .introduction__heading h2 { font-size: clamp(2rem, 9vw, 2.2rem); text-wrap: balance; }
+  .scene-heading { gap: .65rem; }
+  .scene-heading h2 { font-size: clamp(2rem, 8vw, 2.65rem); }
+  .hero-intro p, .introduction__heading p, .introduction__china p,
+  .scene-heading p, .subsection-heading p, .network-overview__copy p,
+  #scene4 .case-archive__intro-copy > p:not(.case-location), #scene4 .case-archive__body > p,
+  #scene4 .case-archive__reflection p, .survey-passage__header p,
+  #scene7 .menu-story__sequence > p, #scene8 .action-conclusion > p,
+  #scene9 .story-summary > p:not(.story-summary__eyebrow),
+  #scene11 .movement-sequence__intro p, #scene12 .epilogue-story p { font-size: 1rem; }
+}
+@media (max-width: 380px) {
+  body { min-width: 0; }
+  .site-nav__inner { gap: .6rem; }
+  .site-nav__menu > span { display: none; }
+}
+
+/* 首屏默认静态可读；媒体可用时才延长滚动舞台。 */
+.hero-scene--scroll { display: block; min-height: 100svh; padding: 0; }
+.hero-scene--scroll .hero-scene__sticky { position: relative; display: grid; align-items: center; min-height: 100svh; isolation: isolate; overflow: hidden; padding: 7rem max(1.5rem, 6vw) 4rem; }
+.hero-scene--scroll .hero-scene__inner { position: relative; z-index: 1; display: block; width: min(100%, 1240px); }
+.hero-scene--scroll .hero-copy { width: min(100%, 46rem); text-shadow: 0 1px 12px rgba(242, 239, 230, .5); }
+.hero-scene--scroll .hero-question { max-width: 25em; }
+.hero-media, .hero-media__poster, .hero-media__video, .hero-media__wash, .hero-river { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-media { pointer-events: none; }
+.hero-media__poster, .hero-media__video { object-fit: cover; filter: saturate(.82) contrast(.92) brightness(1.03); }
+.hero-media__video, .hero-river { visibility: hidden; }
+.hero-media__wash { background: linear-gradient(90deg, rgba(242, 239, 230, .8), rgba(242, 239, 230, .55) 48%, rgba(242, 239, 230, .18)), rgba(242, 239, 230, .18); }
+.hero-river__path { fill: none; stroke: var(--accent); stroke-width: 1.4; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.hero-river__node { fill: var(--paper); stroke: var(--accent); stroke-width: 1.4; opacity: 0; }
+.hero-followup { width: min(100% - 3rem, 1240px); margin: 0 auto; padding: 3rem 0 1rem; }
+.hero-followup .hero-dossier { width: min(100%, 34rem); }
+
+@media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
+  .hero-scene--scrub { height: 350vh; }
+  .hero-scene--scrub .hero-scene__sticky { position: sticky; top: 0; height: 100svh; }
+  .hero-scene--scrub .hero-media__video, .hero-scene--scrub .hero-river { visibility: visible; }
+}
+@media (max-width: 768px) {
+  .hero-scene--scroll .hero-scene__sticky { padding: 7rem 1.25rem 3rem; }
+  .hero-scene--scroll .hero-copy { width: 100%; }
+  .hero-scene--scroll .hero-media__wash { background: rgba(242, 239, 230, .82); }
 }

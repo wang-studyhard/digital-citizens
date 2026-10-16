@@ -32,7 +32,7 @@ function EducationBooks() {
 export function ChapterPeople() {
   return (
       <section id="scene6" className="story-subsection" aria-labelledby="scene6-title">
-          <ChapterIntro id="scene6" title="他们是谁" intro="前面的问卷留下282名数字游民有效回答。接下来只看这组样本内部的年龄、学历与性别认同。" />
+          <ChapterIntro id="scene6" title="他们是谁" intro={<><span className="story-line">前面的问卷留下282名数字游民有效回答。</span><span className="story-line">接下来只看这组样本内部的年龄、学历与性别认同。</span></>} />
 
           <figure className="profile-dots" aria-labelledby="people-profile-title">
             <div className="profile-dots__title"><h3 id="people-profile-title">282人的年龄、学历与性别认同</h3><FigureNotes sourceRefs={[1]} population="NCC社区渠道282名数字游民" scope="仅样本内部比例" period="2024年4月至5月" cutoff="" locator="[1]年龄、学历与性别分布" note="样本渠道有限，不能推算全国数字游民。" /></div>

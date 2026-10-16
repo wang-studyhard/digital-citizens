@@ -6,7 +6,7 @@ export function Epilogue() {
   return (
     <section id="scene12" className="scene scene--paper" aria-labelledby="scene12-title">
       <div className="scene-shell">
-        <ChapterIntro id="scene12" number="05" title="人才流动的新支流" intro="过去很长一段时间里，人跟着工作走。数字技术正在让这种关系出现新的可能。" />
+        <ChapterIntro id="scene12" number="05" title="人才流动的新支流" intro={<><span className="story-line">过去很长一段时间里，人跟着工作走。</span><span className="story-line">数字技术正在让这种关系出现新的可能。</span></>} />
 
         <p className="economy-context">2024年，全国数字经济核心产业增加值为 <EvidenceValue metricId="digital-economy-core-value-added-2024" showSource={false} />，占GDP的 <EvidenceValue metricId="digital-economy-core-gdp-share-2024" showSource={false} />；不能据此解释具体社区的发展原因。<DataSource refNumber={21} /></p>
 

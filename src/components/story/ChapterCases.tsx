@@ -1,12 +1,16 @@
 import { EvidenceValue } from '@/components/shared/EvidenceValue'
 import { DataSource } from '@/components/shared/DataSource'
 import { ChartFrame } from '@/components/shared/ChartFrame'
+import { ImageCard } from '@/components/shared/ImageCard'
 import { sampleFlowData, stayScaleData } from '@/data/chartData'
+import { editorialPhoto } from '@/data/editorialPhoto'
 import { ChapterIntro } from './ChapterIntro'
 import { ChapterPeople } from './ChapterPeople'
 
 const anjiFullWeeks = Math.floor(stayScaleData.anji.value / 7)
 const anjiRemainingDays = stayScaleData.anji.value % 7
+
+const anjiPhoto = editorialPhoto('xinhua-anji-shared-office')
 
 function PlaceIcon({ place }: { place: 'anji' | 'yixian' }) {
   return <svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">
@@ -77,7 +81,7 @@ export function ChapterCases() {
         <article className="case-archive case-archive--anji" aria-labelledby="anji-stay-title">
           <div className="case-archive__intro">
             <div className="case-archive__intro-copy">
-              <p className="case-location"><PlaceIcon place="anji" />浙江 <strong>安吉</strong></p>
+              <p className="case-location"><PlaceIcon place="anji" /><span>01 / 浙江 · <strong>安吉</strong></span></p>
               <h3 id="anji-stay-title">在社区住上一段时间</h3>
               <p>2022年，安吉DNA数字游民公社记录了 <EvidenceValue metricId="anji-dna-stays-2022" showSource={false} />，平均年龄 <EvidenceValue metricId="anji-dna-average-age-2022" showSource={false} />。<DataSource refNumber={20} /></p>
             </div>
@@ -88,23 +92,24 @@ export function ChapterCases() {
           </div>
           <div className="case-archive__body">
             <p>记录呈现了工作与停留，无法判断每个人怎样融入当地生活。</p>
+            <ImageCard src={`${import.meta.env.BASE_URL}${anjiPhoto.path.slice(1)}`} alt={anjiPhoto.alt} caption={anjiPhoto.caption} credit={`${anjiPhoto.publishedAt}｜${anjiPhoto.photographer} 摄｜${anjiPhoto.publisher}`} sourceUrl={anjiPhoto.sourceUrl} width={anjiPhoto.intrinsicWidth} height={anjiPhoto.intrinsicHeight} />
           </div>
         </article>
 
         <article className="case-archive case-archive--huangshan" aria-labelledby="yixian-stay-title">
           <div className="case-archive__intro">
             <div className="case-archive__intro-copy">
-              <p className="case-location"><PlaceIcon place="yixian" />安徽 <strong>黟县</strong></p>
+              <p className="case-location"><PlaceIcon place="yixian" /><span>02 / 安徽 · <strong>黟县</strong></span></p>
               <h3 id="yixian-stay-title">旧厂房里的共居空间</h3>
               <p>旧酿酒工业遗址改成共居空间，有 <EvidenceValue metricId="huangshan-rooms" showSource={false} />；开办不足一年，已有 <EvidenceValue metricId="huangshan-stays" showSource={false} />来此旅居。<DataSource refNumber={4} /></p>
             </div>
           </div>
           <div className="huangshan-reading">
             <div className="huangshan-reading__visual">
-              <div className="huangshan-reading__current"><span>一位旅居者的声音</span><h4>“我辞去了在杭州的白领工作，很享受这种旅居状态。”</h4><p>——朱文静，新华社报道，2025年3月</p></div>
+              <div className="huangshan-reading__current"><span>一位旅居者的声音</span><blockquote>“我辞去了在杭州的白领工作，很享受这种旅居状态。”</blockquote><p>——朱文静，新华社报道，2025年3月</p></div>
             </div>
-            <div className="case-archive__reflection"><p>社区规定了入住的时间范围。住客是否参与地方日常，还要看具体发生的事情。</p></div>
           </div>
+          <div className="case-archive__reflection"><p><span className="story-line">社区规定了入住的时间范围。</span><span className="story-line">住客是否参与地方日常，还要看具体发生的事情。</span></p></div>
         </article>
 
         <ChartFrame id="stay-scale-chart" title={<>停留时间：<strong>安吉平均值</strong>与<strong>黟县入住规则</strong></>} unit="" population="安吉DNA 2022年入住者；黟县社区入住规则" scope="两处独立案例" period="安吉2022年；黟县报道截至2025年3月" cutoff="" locator="[20]平均入住天数段；[4]社区入住时间段" sourceRefs={[20, 4]} note="47天是安吉已入住者的平均值；2周至3个月是黟县社区的入住规则。两种口径不能按同一标尺比较。">
@@ -126,7 +131,7 @@ export function ChapterCases() {
           <header className="survey-passage__header">
             <span>另一扇窗口 / NCC 社区渠道调查</span>
             <h3 id="scene5-title">从地方停留，转向一组人的样本</h3>
-            <p>上面的停留数字来自安吉和黟县两处案例。下面的问卷来自另一项调查，不能把受访者视为这两处社区的同一批入住者。</p>
+            <p><span className="story-line">上面的停留数字来自安吉和黟县两处案例。</span><span className="story-line">下面的问卷来自另一项调查，不能把受访者视为这两处社区的同一批入住者。</span></p>
           </header>
           <ChartFrame id="sample-flow-chart" title="从回收到两组有效回答" unit="问卷清洗与分组" population="NCC社区渠道问卷" scope="仅社区渠道样本" period="2024年4月至5月" cutoff="" locator="[1]公开预览p.04研究说明" sourceRefs={[1]} note={<>另有 <EvidenceValue metricId={sampleFlowData.interviews.id} showSource={false} />，属于独立的定性材料，不作为有效问卷的第三分支。</>}>
             <SampleJourney />

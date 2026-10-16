@@ -19,15 +19,6 @@ function CommunityIcon({ group }: { group: number }) {
   </svg>
 }
 
-function CommunityTypeIcon({ index }: { index: number }) {
-  return <g fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-    {index === 0 && <><path d="M3 10 12 4l9 6H3Zm2 3h14M6 13v7m5-7v7m6-7v7M3 21h18" /><path d="M9 8h6" /></>}
-    {index === 1 && <><path d="M3 20 9 9l4 6 2-3 6 8H3Z" /><path d="M12 10c0-4 3-6 8-6 0 5-2 8-7 8M12 12l5-5" /></>}
-    {index === 2 && <><path d="M3 21V9h6v12m3 0V4h8v17M6 12h1m-1 3h1m-1 3h1m9-11h1m-1 4h1m-1 4h1M2 21h20" /></>}
-    {index === 3 && <><path d="M3 21V12l5 3v-3l5 3V9h8v12H3Zm14-12V4h3v5M6 18h2m3 0h2m3 0h2" /></>}
-  </g>
-}
-
 function CommunityTypePie() {
   const center = 160
   const radius = 146
@@ -42,14 +33,9 @@ function CommunityTypePie() {
         }
         const [x1, y1] = point(start, radius)
         const [x2, y2] = point(end, radius)
-        const mid = (start + end) / 2
-        const [iconX, iconY] = point(mid, 92)
         const segment = `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${item.value > 50 ? 1 : 0} 1 ${x2} ${y2} Z`
         return <g className={`community-type-pie__segment community-type-pie__segment--${index}`} key={item.id}>
           <path d={segment} />
-          <g className="community-type-pie__icon" transform={`translate(${iconX - 18} ${iconY - 18}) scale(1.5)`}>
-            <CommunityTypeIcon index={index} />
-          </g>
         </g>
       })}
     </svg>

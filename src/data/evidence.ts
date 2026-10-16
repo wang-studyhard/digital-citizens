@@ -8,6 +8,32 @@ import type { EvidenceMetric } from '@/types'
  * 不把地方案例外推成全国人口或全国经济结果。
  */
 export const evidenceMetrics: EvidenceMetric[] = [
+  ...([
+    ['2019', 7.3], ['2020', 10.9], ['2021', 15.7], ['2022', 16.9],
+    ['2023', 17.3], ['2024', 18.1], ['2025', 18.5],
+  ] as const).map(([year, value]) => ({
+    id: `us-nomads-${year}`, value, unit: '百万人',
+    population: 'MBO调查估计的美国数字游民劳动者', geography: '美国', scope: 'us-mbo-annual-estimate',
+    period: `${year}年`, cutoff: `报告年份：${year}年`, sourceId: 23,
+    locator: `Share of Digital Nomads by Worker Type图：${year}年总量`,
+    claimType: 'survey-statistic' as const, status: 'verified' as const,
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '同一机构历年调查的估计人数，不等于全球总量。',
+  })),
+  ...([
+    ['spain', '西班牙', 13.1], ['uk', '英国', 8.8], ['germany', '德国', 7.4],
+    ['bosnia', '波黑', 5.6], ['croatia', '克罗地亚', 5.6], ['us', '美国', 5.6],
+    ['thailand', '泰国', 4.2], ['north-macedonia', '北马其顿', 4.0],
+    ['vietnam', '越南', 3.8], ['indonesia', '印度尼西亚', 3.4],
+  ] as const).map(([code, country, value]) => ({
+    id: `nomad-residence-${code}`, value, unit: '%',
+    population: 'E-Wanderlust核心分析组502名跨国数字游民', geography: country,
+    scope: 'ewanderlust-current-residence-sample', period: '2024—2025年', cutoff: '2025-04-05', sourceId: 24,
+    locator: `PDF第4页 Countries of Residence：${country} ${value}%`,
+    claimType: 'survey-statistic' as const, status: 'verified' as const,
+    canUseAsPrimary: true, canGeneralizeNationally: false,
+    note: '受访时的居住国，不是全球数字游民分布。',
+  })),
   {
     id: 'internet-users-2025', value: 11.25, unit: '亿人',
     population: '中国互联网上网人数', geography: '中国', scope: 'national-internet-access',
