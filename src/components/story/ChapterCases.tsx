@@ -2,10 +2,11 @@ import { EvidenceValue } from '@/components/shared/EvidenceValue'
 import { DataSource } from '@/components/shared/DataSource'
 import { ChartFrame } from '@/components/shared/ChartFrame'
 import { ImageCard } from '@/components/shared/ImageCard'
-import { sampleFlowData, stayScaleData } from '@/data/chartData'
+import { stayScaleData } from '@/data/chartData'
 import { editorialPhoto } from '@/data/editorialPhoto'
 import { ChapterIntro } from './ChapterIntro'
 import { ChapterPeople } from './ChapterPeople'
+import { SampleOpening } from './SampleOpening'
 
 const anjiFullWeeks = Math.floor(stayScaleData.anji.value / 7)
 const anjiRemainingDays = stayScaleData.anji.value % 7
@@ -52,24 +53,6 @@ function YixianStayGraphic() {
       <path d="M301 44h104M321 11v14m64-14v14M321 66h64M321 84h46" />
     </g>
   </svg>
-}
-
-function SampleJourney() {
-  const nomads = sampleFlowData.branches[0]
-  const explorers = sampleFlowData.branches[1]
-  return <div className="survey-flow">
-    <div className="survey-flow__node"><span>回收问卷</span><strong><EvidenceValue metricId={sampleFlowData.received.id} showSource={false} /></strong></div>
-    <ul className="survey-flow__branches" aria-label="回收问卷清洗结果">
-      <li>
-        <div className="survey-flow__node survey-flow__node--valid"><span>保留有效问卷</span><strong><EvidenceValue metricId={sampleFlowData.valid.id} showSource={false} /></strong></div>
-        <ul className="survey-flow__branches" aria-label="有效问卷分组">
-          <li><div className="survey-flow__node survey-flow__node--nomads"><span>数字游民</span><strong><EvidenceValue metricId={nomads.id} showSource={false} /></strong></div></li>
-          <li><div className="survey-flow__node"><span>探索者</span><strong><EvidenceValue metricId={explorers.id} showSource={false} /></strong></div></li>
-        </ul>
-      </li>
-      <li><div className="survey-flow__node survey-flow__node--excluded"><span>清洗后未保留</span><strong>{sampleFlowData.excluded.value} 份</strong><small>派生：{sampleFlowData.received.value}－{sampleFlowData.valid.value}</small></div></li>
-    </ul>
-  </div>
 }
 
 export function ChapterCases() {
@@ -127,17 +110,7 @@ export function ChapterCases() {
           </div>
         </ChartFrame>
 
-        <section id="scene5" className="survey-passage" aria-labelledby="scene5-title">
-          <header className="survey-passage__header">
-            <span>另一扇窗口 / NCC 社区渠道调查</span>
-            <h3 id="scene5-title">从地方停留，转向一组人的样本</h3>
-            <p><span className="story-line">上面的停留数字来自安吉和黟县两处案例。</span><span className="story-line">下面的问卷来自另一项调查，不能把受访者视为这两处社区的同一批入住者。</span></p>
-          </header>
-          <ChartFrame id="sample-flow-chart" title="从回收到两组有效回答" unit="问卷清洗与分组" population="NCC社区渠道问卷" scope="仅社区渠道样本" period="2024年4月至5月" cutoff="" locator="[1]公开预览p.04研究说明" sourceRefs={[1]} note={<>另有 <EvidenceValue metricId={sampleFlowData.interviews.id} showSource={false} />，属于独立的定性材料，不作为有效问卷的第三分支。</>}>
-            <SampleJourney />
-          </ChartFrame>
-          <p className="limits-rule limits-rule--chapter limits-rule--center"><span>以下画像只观察这<strong>282个人</strong>。</span></p>
-        </section>
+        <SampleOpening />
         <ChapterPeople />
       </div>
     </section>

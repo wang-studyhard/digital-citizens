@@ -14,7 +14,7 @@ export function Prologue() {
             <div className="hero-copy">
               <h1 id="hero-title">数字江河</h1>
               <p className="hero-question">当工作地点可以移动，<em>一个地方怎样让短暂的停留产生具体的连接？</em></p>
-              <div className="hero-intro" aria-label="作品导语">
+              <div className="hero-intro" role="group" aria-label="作品导语">
                 <p><span className="story-line">工作可以在不同地方继续，停留又会改变人与地方的关系。</span><span className="story-line">先认识数字游民，再走进中国社区。</span></p>
               </div>
               <a className="hero-start" href="#introduction">沿着这条河往下看 <span aria-hidden="true">↓</span></a>
@@ -23,7 +23,7 @@ export function Prologue() {
         </div>
       </section>
       <div className="hero-followup">
-        <div className="hero-dossier" aria-label="安吉共享办公现场">
+        <div className="hero-dossier" role="group" aria-label="安吉共享办公现场">
           <ImageCard className="hero-dossier__photo" src={`${import.meta.env.BASE_URL}${coverPhoto.path.slice(1)}`} alt={coverPhoto.alt} caption={coverPhoto.caption} credit={`${coverPhoto.publishedAt}｜${coverPhoto.photographer} 摄｜${coverPhoto.publisher}`} sourceUrl={coverPhoto.sourceUrl} width={coverPhoto.intrinsicWidth} height={coverPhoto.intrinsicHeight} loading="eager" fetchPriority="high" />
         </div>
         <nav className="case-route" aria-label="按地点进入案例">

@@ -1,7 +1,12 @@
+import { useLayoutEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ChartFrame } from '@/components/shared/ChartFrame'
 import { EvidenceValue } from '@/components/shared/EvidenceValue'
 import { communityChartData } from '@/data/chartData'
 import { ChapterIntro } from './ChapterIntro'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const communityTotal = communityChartData.total[0].value
 const before2025 = communityChartData.growth[1].value
@@ -50,8 +55,30 @@ function CommunityTypePie() {
 }
 
 export function CommunityLocations() {
+  const rootRef = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const media = gsap.matchMedia()
+    media.add('(min-width: 769px) and (prefers-reduced-motion: no-preference)', () => {
+      const dots = rootRef.current!.querySelector<HTMLElement>('.community-units__dots')!
+      const icons = [...dots.querySelectorAll<SVGSVGElement>('.community-units__dot')]
+      const bounds = dots.getBoundingClientRect()
+      const positions = icons.map((icon, index) => {
+        const rect = icon.getBoundingClientRect()
+        return {
+          x: bounds.left + (index % 11 + 0.5) * bounds.width / 11 - rect.left - rect.width / 2,
+          y: bounds.top + (Math.floor(index / 11) + 0.5) * bounds.height / 7 - rect.top - rect.height / 2,
+        }
+      })
+      gsap.from(icons, {
+        x: index => positions[index].x, y: index => positions[index].y,
+        duration: 0.4, ease: 'power2.out', clearProps: 'transform',
+        scrollTrigger: { trigger: dots, start: 'top 78%', once: true },
+      })
+    }, rootRef)
+    return () => media.revert()
+  }, [])
   return (
-    <div id="scene2" className="community-passage">
+    <div ref={rootRef} id="scene2" className="community-passage">
       <p className="community-passage__lead">
         <span>77家社区，52家在乡村。</span>
         <span>短短几年里，一种新的承接空间开始出现。</span>
@@ -66,10 +93,9 @@ export function CommunityLocations() {
             <h4>城乡区位</h4>
             <p className="community-units__unit-note">一个图标代表一家研究样本社区</p>
             <div className="community-units__dots" aria-hidden="true">
-              {Array.from({ length: communityTotal }, (_, index) => {
-                const group = index < communityChartData.location[0].value ? 0 : index < communityChartData.location[0].value + communityChartData.location[1].value ? 1 : 2
-                return <CommunityIcon key={index} group={group} />
-              })}
+              {communityChartData.location.map((group, groupIndex) => <div className={`community-units__group community-units__group--${groupIndex}`} key={group.id}>
+                {Array.from({ length: group.value }, (_, index) => <CommunityIcon key={index} group={groupIndex} />)}
+              </div>)}
             </div>
             <ul className="community-units__labels" aria-label="城乡区位：研究样本社区家数">
               {communityChartData.location.map((group, index) => <li key={group.id}><CommunityIcon group={index} /><span>{group.label}</span> <strong><EvidenceValue metricId={group.id} display={`${group.value} 家`} showSource={false} /></strong><span>{percentage(group.value)}</span></li>)}

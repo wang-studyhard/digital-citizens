@@ -88,7 +88,7 @@ export function HeroScrollMedia() {
       <div className="hero-media__wash" />
       <svg className="hero-river" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <path ref={pathRef} className="hero-river__path" pathLength="1" d="M 0 820 C 210 690 300 610 500 645 C 700 680 820 665 970 555 C 1110 455 1260 500 1395 410 C 1510 335 1590 245 1710 210 C 1810 180 1870 145 1920 110" />
-        {nodes.map((position) => <circle key={position} className="hero-river__node" r="4" />)}
+        {nodes.map((position) => <circle key={position} className="hero-river__node" cx="0" cy="0" r="4" />)}
       </svg>
     </div>
   )

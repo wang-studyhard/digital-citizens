@@ -5,6 +5,7 @@ type ChapterIntroProps = {
   number?: string
   title: string
   intro: ReactNode
+  visualIntro?: ReactNode
 }
 
 function ChapterGlyph({ id }: { id: string }) {
@@ -18,15 +19,17 @@ function ChapterGlyph({ id }: { id: string }) {
   return <svg className="scene-heading__glyph" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">{paths[id]}</svg>
 }
 
-export function ChapterIntro({ id, number, title, intro }: ChapterIntroProps) {
+export function ChapterIntro({ id, number, title, intro, visualIntro }: ChapterIntroProps) {
   if (!number) return (
     <header className="subsection-heading">
+      {visualIntro}
       <h3 id={`${id}-title`}>{title}</h3>
       <p>{intro}</p>
     </header>
   )
   return (
     <header className="scene-heading">
+      {visualIntro}
       <span className="scene-heading__index" aria-hidden="true">{number}</span>
       <div className="scene-heading__copy">
         <div className="scene-heading__title"><h2 id={`${id}-title`}>{title}</h2><ChapterGlyph id={id} /></div>

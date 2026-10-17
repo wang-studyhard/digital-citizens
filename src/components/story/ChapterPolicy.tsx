@@ -7,9 +7,9 @@ import { ChapterIntro } from './ChapterIntro'
 import { ChapterMovement } from './ChapterMovement'
 
 const kindLabel: Record<PolicyEvent['kind'], string> = {
-  action: '已发布',
-  reported: '已报道',
-  target: '区域目标',
+  action: '措施已发布',
+  reported: '公开报道',
+  target: '未来目标',
 }
 
 const selectedEventIds = new Set([
@@ -20,8 +20,8 @@ const selectedEventIds = new Set([
 ])
 
 const contextEvents = [
-  { id: 'anji-start-2021', date: '2021', place: '安吉', status: '已发生', claim: '安吉DNA数字游民公社开始运营。', sourceRef: 20 },
-  { id: 'community-research-2025', date: '2025', place: '研究样本', status: '已核验', claim: <>研究纳入 <EvidenceValue metricId="community-total-2025" showSource={false} />仍在正常运营的社区。</>, sourceRef: 3 },
+  { id: 'anji-start-2021', date: '2021', place: '安吉', status: '运营记录', claim: '安吉DNA数字游民公社开始运营。', sourceRef: 20 },
+  { id: 'community-research-2025', date: '2025', place: '研究样本', status: '研究记录', claim: <>研究纳入 <EvidenceValue metricId="community-total-2025" showSource={false} />，均为当时正常运营的社区。</>, sourceRef: 3 },
 ] as const
 
 type TimelineEntry = {
@@ -64,18 +64,28 @@ export function ChapterPolicy() {
         <ChapterIntro id="scene10" number="04" title="地方回应与公共议题" intro="空间运营、共创进展与政策目标，在不同时间留下不同记录。" />
         <h3 className="chapter-passage-title">地方开始回应</h3>
 
-        <div className="policy-status-legend" aria-label="时间线状态">
-          <span><i className="status-line status-line--measure" />已发生：运营、研究或方案发布</span>
-          <span><i className="status-line status-line--reported" />已报道：公开材料记录的进展</span>
-          <span><i className="status-line status-line--target" />区域目标：面向未来的计划</span>
+        <div className="policy-status-legend" role="group" aria-label="时间线状态">
+          <span><i className="status-line status-line--measure" />措施：方案已发布</span>
+          <span><i className="status-line status-line--reported" />报道：公开材料记录的进展</span>
+          <span><i className="status-line status-line--target" />目标：面向未来的计划</span>
         </div>
 
         <ChartFrame id="policy-timeline-chart" title="地方回应的时间线" unit="已发生的记录与面向未来的目标分列" population="安吉、研究样本、丽水与大黄山" scope="公开事件与区域目标" period="2021—2030" cutoff="" sourceRefs={[3, 6, 14, 20]} note="方案发布、报道进展与未来目标属于不同证据状态；大黄山覆盖黄山、池州、安庆、宣城四市。">
-          <section className="policy-period" aria-labelledby="policy-records-title"><h4 id="policy-records-title">已发生与已报道的记录</h4><div className="policy-timeline">{timelineEntries.filter((event) => event.kind !== 'target').map((event) => <TimelineRecord key={event.id} event={event} />)}</div></section>
-          <section className="policy-period" aria-labelledby="policy-targets-title"><h4 id="policy-targets-title">面向未来的区域目标</h4><div className="policy-timeline">{timelineEntries.filter((event) => event.kind === 'target').map((event) => <TimelineRecord key={event.id} event={event} />)}</div></section>
+          <div className="policy-evidence-periods">
+            <section className="policy-period" aria-labelledby="policy-records-title"><h4 id="policy-records-title">已发生与公开报道</h4><div className="policy-timeline">{timelineEntries.filter((event) => event.kind !== 'target').map((event) => <TimelineRecord key={event.id} event={event} />)}</div></section>
+            <section className="policy-period policy-period--targets" aria-labelledby="policy-targets-title"><h4 id="policy-targets-title">面向未来的区域目标</h4><div className="policy-timeline">{timelineEntries.filter((event) => event.kind === 'target').map((event) => <TimelineRecord key={event.id} event={event} />)}</div></section>
+          </div>
         </ChartFrame>
 
-        <p className="policy-boundary">2027和2030两组数字是大黄山区域目标，不是黄山市单独完成量。</p>
+        <p className="policy-boundary">2027和2030两组数字是大黄山区域目标，覆盖黄山、池州、安庆、宣城四市，不是黄山市单独完成量。</p>
+        <section className="policy-evidence-reading" aria-labelledby="policy-evidence-title">
+          <h3 id="policy-evidence-title">这些记录能确认什么</h3>
+          <dl>
+            <div><dt>方案明确了方向</dt><dd>已发布的行动方案说明政策准备推动什么，目标仍需在未来兑现。<DataSource refNumber={6} /></dd></div>
+            <div><dt>报道留下了进展</dt><dd>社区、提案与落地项目进入公开记录，长期就业和持续效果还不能由此确定。<DataSource refNumber={14} /></dd></div>
+            <div><dt>持续的关系仍需观察</dt><dd>社区能否持续运营、合作能否延续，需要长期记录。</dd></div>
+          </dl>
+        </section>
         <p className="limits-rule limits-rule--chapter limits-rule--center"><span className="story-line">政策可以搭桥。</span><span className="story-line">一段关系是否持续，仍需回到<strong>人和地方共同经历的时间</strong>。</span></p>
         <ChapterMovement />
       </div>

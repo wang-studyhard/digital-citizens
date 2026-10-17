@@ -25,7 +25,7 @@ export function NavBar() {
         const element = document.getElementById(item.id)
         return element && element.getBoundingClientRect().top <= marker
       })
-      if (current) setActive(current.id)
+      setActive(current?.id ?? NAV_ITEMS[0].id)
     }
     window.addEventListener('scroll', update, { passive: true })
     window.addEventListener('resize', update)
@@ -54,7 +54,7 @@ export function NavBar() {
     <nav className="site-nav" aria-label="章节导航">
       <div className="site-nav__progress" style={{ transform: `scaleX(${progress})` }} aria-hidden="true" />
       <div className="site-nav__inner">
-        <a className="site-nav__brand" href="#scene0" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>
+        <a className="site-nav__brand" href="#scene0" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }) }}>
           <span className="site-nav__mark" aria-hidden="true">↗</span>
           <span>数字江河</span>
         </a>
@@ -70,7 +70,19 @@ export function NavBar() {
           <span>{activeItem.label}</span><strong>目录</strong>
         </button>
       </div>
-      <dialog ref={dialogRef} id="mobile-nav" className="nav-dialog" aria-label="阅读目录" onCancel={() => setMobileOpen(false)} onClose={() => { setMobileOpen(false); menuRef.current?.focus({ preventScroll: true }) }}>
+      <dialog ref={dialogRef} id="mobile-nav" className="nav-dialog" aria-label="阅读目录" onKeyDown={(event) => {
+        if (event.key !== 'Tab') return
+        const controls = event.currentTarget.querySelectorAll<HTMLButtonElement>('button')
+        const first = controls[0]
+        const last = controls[controls.length - 1]
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault()
+          last?.focus()
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault()
+          first?.focus()
+        }
+      }} onCancel={() => setMobileOpen(false)} onClose={() => { setMobileOpen(false); menuRef.current?.focus({ preventScroll: true }) }}>
         <div className="nav-dialog__header"><span>阅读目录</span><button type="button" onClick={() => setMobileOpen(false)} aria-label="关闭目录">关闭</button></div>
         <div className="nav-dialog__links">
           {NAV_ITEMS.map((item) => (

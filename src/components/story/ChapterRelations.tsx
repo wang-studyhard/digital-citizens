@@ -23,15 +23,27 @@ export function ChapterRelations() {
             <p className="case-location">01 / 浙江 · <strong>安吉</strong></p>
             <h3 id="menu-story-title">把专业能力用在一件地方小事上</h3>
             <div className="menu-story__sequence">
-              <p>一位社区成员为曹大姐的小面店<strong>手绘菜单</strong>，取名“大姐面馆”。<DataSource refNumber={20} /></p>
-              <p>社区成员还编辑两期《白茶原小报》，参与三册《白茶原手账2022》的撰稿、绘画、编辑和设计。<DataSource refNumber={20} /></p>
-              <div className="menu-story__materials">
+              <div className="field-spread">
                 <ImageCard src={`${import.meta.env.BASE_URL}${menuPhoto.path.slice(1)}`} alt={menuPhoto.alt} caption={menuPhoto.caption} credit={`报道：${menuPhoto.publishedAt}｜图片来源：DNA｜${menuPhoto.publisher}刊载`} sourceUrl={menuPhoto.sourceUrl} width={menuPhoto.intrinsicWidth} height={menuPhoto.intrinsicHeight} />
+                <div className="field-spread__copy">
+                  <h4>为小面店手绘菜单</h4>
+                  <p>一位社区成员为曹大姐的小面店<strong>手绘菜单</strong>，取名“大姐面馆”。<DataSource refNumber={20} /></p>
+                </div>
+              </div>
+              <div className="field-spread field-spread--publications">
+                <div className="field-spread__copy">
+                  <h4>编辑地方小报与手账</h4>
+                  <p>社区成员还编辑两期《白茶原小报》，参与三册《白茶原手账2022》的撰稿、绘画、编辑和设计。<DataSource refNumber={20} /></p>
+                </div>
                 <ImageCard src={`${import.meta.env.BASE_URL}${newspaperPhoto.path.slice(1)}`} alt={newspaperPhoto.alt} caption={newspaperPhoto.caption} credit={`报道：${newspaperPhoto.publishedAt}｜${newspaperPhoto.publisher}报道配图`} sourceUrl={newspaperPhoto.sourceUrl} width={newspaperPhoto.intrinsicWidth} height={newspaperPhoto.intrinsicHeight} />
               </div>
-              <ImageCard className="menu-story__handbook" src={`${import.meta.env.BASE_URL}${notebookIllustration.path.slice(1)}`} alt={notebookIllustration.alt} caption={notebookIllustration.caption} width={notebookIllustration.intrinsicWidth} height={notebookIllustration.intrinsicHeight} />
-              <p>一份菜单无法证明村庄因此发生巨大变化。</p>
-              <p>人与地方之间，多了一条具体的连接。</p>
+              <div className="menu-story__supplement">
+                <ImageCard className="menu-story__handbook" src={`${import.meta.env.BASE_URL}${notebookIllustration.path.slice(1)}`} alt={notebookIllustration.alt} caption={notebookIllustration.caption} width={notebookIllustration.intrinsicWidth} height={notebookIllustration.intrinsicHeight} />
+                <div>
+                  <p>一份菜单无法证明村庄因此发生巨大变化。</p>
+                  <p>人与地方之间，多了一条具体的连接。</p>
+                </div>
+              </div>
             </div>
           </article>
       <section id="scene8" className="story-subsection" aria-labelledby="scene8-title">
@@ -55,13 +67,13 @@ export function ChapterRelations() {
           <ChapterIntro id="scene9" title="41个想法，12个落地" intro="旅居记录谁来到这里；共创还要看哪些想法真正进入地方。" />
           <p className="case-location">03 / 浙江 · <strong>丽水</strong></p>
 
-          <div className="story-summary" aria-label="丽水公开进展">
+          <div className="story-summary" role="group" aria-label="丽水公开进展">
             <p className="story-summary__eyebrow">丽水52赫兹社区 · 试运营不足一年</p>
             <p>同一报道还称，丽水已有 <EvidenceValue metricId="lishui-communities-2026" showSource={false} />。<DataSource refNumber={14} /></p>
           </div>
 
           <ChartFrame id="lishui-cocreation-chart" title="提案中的落地进展" unit="一张纸页代表1个提案，共41项" population="丽水52赫兹社区共创提案" scope="该社区试运营不足一年" period="截至2026年6月报道" cutoff="" locator="[14]共创项目段" sourceRefs={[14]} note="余下29项由41－12推得；报道未称已落地，不代表失败或正在推进。纸页只表达数量，不是原始文件，也不对应具体项目身份。">
-            <div className="proposal-outcome" aria-label="41个共创提案中，12个已落地，其余29个未被报道为落地">
+            <div className="proposal-outcome" role="group" aria-label="41个共创提案中，12个已落地，其余29个未被报道为落地">
               <div className="proposal-pages" aria-hidden="true">{Array.from({ length: lishuiCoCreationData.proposals.value }, (_, index) => {
                 const landed = index < lishuiCoCreationData.landed.value
                 return <svg key={index} className={landed ? 'is-landed' : undefined} viewBox="0 0 36 46" focusable="false">
